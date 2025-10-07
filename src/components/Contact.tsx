@@ -25,7 +25,7 @@ const Contact = () => {
     {
       icon: MapPin,
       label: "Ubicación",
-      value: "Jose Ingenieros 135 2B, Rafaela",
+      value: "Jose Ingenieros 1-- 2-, Rafaela",
       href: null
     }
   ];
