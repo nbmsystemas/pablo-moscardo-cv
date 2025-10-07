@@ -18,7 +18,7 @@ const Experience = () => {
       period: "2018 - 2019",
       current: false,
       description: "Encargado de Casa Central y 6 Sucursales. Sistema, Redes, Servidores, Seguridad Informática, Procesos, Infraestructura, Desarrollo, personal a cargo (2).",
-      reference: "Ref. 03492 - 452749/750 Agostina RRHH"
+      reference: "Ref.: Disponible a Solicitud del interesado"
     },
     {
       title: "Perito Oficial & Perito de Parte",
