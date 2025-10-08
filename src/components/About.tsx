@@ -33,7 +33,7 @@ const About = () => {
                 </p>
               </div>
 
-              <div className="ml-8 grid md:grid-cols-2 gap-3">
+              <div className="ml-4 sm:ml-8 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
                   "IA & Automatización",
                   "Consultoría en IA",
@@ -80,7 +80,7 @@ const About = () => {
         </Card>
 
         {/* Personal Info Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
           {[
             { label: "DNI", value: "27.484.---" },
             { label: "Fecha de Nacimiento", value: "17 de Julio 1979" },

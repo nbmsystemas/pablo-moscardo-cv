@@ -62,7 +62,7 @@ const Contact = () => {
         </div>
 
         {/* Contact Info Grid */}
-        <div className="grid md:grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
           {contactInfo.map((info, index) => {
             const Icon = info.icon;
             return (
@@ -83,7 +83,7 @@ const Contact = () => {
                           href={info.href}
                           target={info.href.startsWith('http') ? '_blank' : undefined}
                           rel={info.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                          className="text-foreground font-medium hover:text-primary transition-colors break-all"
+                          className="text-foreground font-medium hover:text-primary transition-colors break-words text-sm sm:text-base"
                         >
                           {info.value}
                         </a>
@@ -104,7 +104,7 @@ const Contact = () => {
             <h3 className="text-xl font-semibold text-foreground mb-6 text-center">
               Redes Sociales
             </h3>
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-4">
               {socialLinks.map((social, index) => {
                 const Icon = social.icon;
                 return (

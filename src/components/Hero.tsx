@@ -30,7 +30,7 @@ const Hero = () => {
             <div className="order-1 md:order-2 text-center md:text-left">
               {/* Name and Title */}
               <div className="animate-fade-in">
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-glow">
+                <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-glow leading-tight">
                   PABLO MOSCARDO
                 </h1>
                 <div className="h-1 w-32 mx-auto md:mx-0 bg-gradient-to-r from-primary to-accent mb-8 rounded-full" />
@@ -38,10 +38,10 @@ const Hero = () => {
 
               {/* Professional Title */}
               <div className="animate-fade-in-left delay-200">
-                <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold text-muted-foreground mb-4 font-mono">
+                <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold text-muted-foreground mb-4 font-mono leading-tight">
                   INGENIERO EN SISTEMAS DE INFORMACIÓN
                 </h2>
-                <p className="text-lg md:text-xl text-primary font-medium mb-8">
+                <p className="text-base sm:text-lg md:text-xl text-primary font-medium mb-8 leading-relaxed">
                   Auditor & Consultor IT | Ethical Hacker | Security Expert
                 </p>
               </div>
@@ -49,29 +49,29 @@ const Hero = () => {
               {/* Experience Badge */}
               <div className="animate-scale-in delay-400 mb-12">
                 <div className="inline-block px-6 py-3 bg-card border border-primary/30 rounded-full">
-                  <p className="text-lg font-semibold text-primary">
+                  <p className="text-base sm:text-lg font-semibold text-primary">
                     +20 Años de Experiencia en IT
                   </p>
                 </div>
               </div>
 
               {/* Contact Links */}
-              <div className="animate-fade-in-right delay-600 flex flex-wrap justify-center md:justify-start gap-4 mb-8">
-            <Button variant="outline" size="lg" asChild className="group border-primary/50 hover:border-primary hover:bg-primary/10">
+              <div className="animate-fade-in-right delay-600 flex flex-wrap justify-center md:justify-start gap-2 sm:gap-4 mb-8">
+            <Button variant="outline" size="sm" className="group border-primary/50 hover:border-primary hover:bg-primary/10 sm:size-lg" asChild>
               <a href="mailto:pablo.ezequiel.moscardo@gmail.com" className="flex items-center gap-2">
                 <Mail className="w-5 h-5 group-hover:text-primary transition-colors" />
                 <span>Email</span>
               </a>
             </Button>
             
-            <Button variant="outline" size="lg" asChild className="group border-primary/50 hover:border-primary hover:bg-primary/10">
+            <Button variant="outline" size="sm" className="group border-primary/50 hover:border-primary hover:bg-primary/10 sm:size-lg" asChild>
               <a href="tel:+5493492640293" className="flex items-center gap-2">
                 <Phone className="w-5 h-5 group-hover:text-primary transition-colors" />
                 <span>Teléfono</span>
               </a>
             </Button>
             
-            <Button variant="outline" size="lg" asChild className="group border-primary/50 hover:border-primary hover:bg-primary/10">
+            <Button variant="outline" size="sm" className="group border-primary/50 hover:border-primary hover:bg-primary/10 sm:size-lg" asChild>
               <a href="https://nbmsystemas.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
                 <Globe className="w-5 h-5 group-hover:text-primary transition-colors" />
                 <span>Website</span>
@@ -80,7 +80,7 @@ const Hero = () => {
           </div>
 
               {/* Social Links */}
-              <div className="animate-fade-in delay-800 flex justify-center md:justify-start gap-6">
+              <div className="animate-fade-in delay-800 flex justify-center md:justify-start gap-4 sm:gap-6">
             <a 
               href="https://linkedin.com/in/pablo-moscardo" 
               target="_blank" 
