@@ -1119,6 +1119,11 @@
 }
 
 .cv-shell {
+  /* MC-13 replaces this placeholder; until then its title must not spill.
+     `container-type` here is what lets the descendant title cap itself against
+     this box: cqw resolves against the nearest ANCESTOR container, so the title
+     may use it but this rule must not. */
+  container-type: inline-size;
   max-width: 62ch;
   padding: clamp(20px, 3vw, 44px);
   background: var(--paper-hi);
@@ -1139,7 +1144,11 @@
   font-family: var(--ff-display);
   font-weight: 900;
   font-stretch: 125%;
-  font-size: clamp(34px, 7vw, 72px);
+  /* Width-capped, never raw vw — the same rule the masthead had to learn. Hubot
+     Sans expanded 900 sets COMPLETO at ~8.95em, and the shell is 62ch wide, so
+     the old `clamp(34px, 7vw, 72px)` overflowed its own container by 100px at
+     1440 and spilled the page. Measured cap: 100cqw / 9.2. */
+  font-size: min(clamp(28px, 5vw, 54px), calc(100cqw / 9.2));
   line-height: 0.9;
   letter-spacing: -0.005em;
   text-transform: uppercase;
@@ -1228,5 +1237,45 @@
 
   .cards {
     margin-top: 11px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   WIDE + SHORT BAND (>=1720px wide, <=1000px tall)
+
+   The 820px band above is not enough on its own, because the content floor rises
+   with viewport WIDTH while the stage height does not: every object here scales
+   from vw, so at 1920 the lead column's title alone is 187px tall where at 1440 it
+   is 146px. Measured floors before this band: 1366 -> 730, 1440 -> 743,
+   1600 -> 769, but 1920 -> 880, 2000 -> 889, 2560 -> 990. The 820px band therefore
+   left a hole at 1920x820 (+17), 1920x860 (+10), 2000x850 (+23) and 2560x950 (+20)
+   — which is the ordinary 1920x1080 or 2560x1080 monitor with browser chrome.
+
+   THE RAMP IS CONTINUOUS WITH THE BASE CLAMP AND WITH THE 820px BAND. At 1000px
+tall `62vh - 400px` is exactly 220px, the same value the base
+   `clamp(180px, 22vh, 290px)` resolves to, so the hand-off is seamless in both
+   directions and no viewport sees a jump. The 130px floor is still above the
+   landscape's own honest minimum from the 820px band's derivation (107px at 1600
+   wide) and above the motto plate's ~105px, so it spends neither.
+
+   Deliberately width-scoped: 1440x900 and 1600x900 keep the verified 198px footer,
+   and 1920x1080 / 2560x1440 stay outside the band entirely.
+   --------------------------------------------------------------------------- */
+@media (min-width: 1720px) and (max-height: 1000px) {
+  :root {
+    --foot-h: clamp(130px, calc(62vh - 400px), 220px);
+  }
+
+  .title__rule {
+    margin-top: 6px;
+  }
+
+  .tagline,
+  .contact {
+    margin-top: 7px;
+  }
+
+  .cards {
+    margin-top: 9px;
   }
 }

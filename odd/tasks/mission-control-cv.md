@@ -794,13 +794,25 @@ Slice record (feature-branch-chain):
 
 ## 11. Acceptance criteria
 
-1. `/` renders one viewport with no page scroll at `>=1180px` wide and `>=768px` tall. **Re-derived by
-   measurement, not assumed**: the MC-25 correction round closed the lock at 1180x784, 1280x784,
-   1280x800, 1366x768, 1440x784, 1440x800, 1600x784, 1600x800, 1440x900, 1600x900, 1920x1080,
-   2000x900 and 2560x1440 (`pageScroll: false` at all thirteen). 1366x768 now scrolls **0px** where
-   Stage 1 scrolled 16px. Above the required band, 1920x800 scrolls 20px and 2560x900 48px — wide-plus-
-   short, where the reference itself scrolls 183px at 2000x900; these two are accepted and out of
-   scope. Below 1180px the page degrades to a scrollable single column with no overlap or clipping.
+1. `/` renders one viewport with no page scroll at `>=1180px` wide. **The floor is width-dependent and
+   was re-derived by measurement, not assumed**, because every object on the page scales from `vw` while
+   the stage height does not:
+
+   | width | measured floor |
+   |---|---|
+   | 1366 | ~730px |
+   | 1440 | 743px |
+   | 1600 | 769px |
+   | 1920 | 773px |
+   | 2000 | <784px |
+   | 2560 | 834px |
+
+   Verified locking: 1180x820, 1180x900, 1280x800, 1280x1024, 1366x768, 1440x784, 1440x800,
+   1440x900, 1536x864, 1600x784, 1600x800, 1600x900, 1680x1050, 1720x784, 1800x784, 1800x820,
+   1920x784, 1920x820, 1920x860, 1920x950, 1920x1080, 2000x850, 2000x900, 2400x900, 2560x950,
+   2560x990, 2560x1000, 2560x1440, 3440x1310. **1366x768 now scrolls 0px** where Stage 1 scrolled 16px.
+   Below 1180px the page degrades to a scrollable single column with no overlap, no broken card names
+   and no horizontal overflow; tablet and phone widths scroll by design.
 2. Every element of §7.5 is present and visually consistent with §7.1–§7.6.
 3. The central artwork is recognizably *not* dilum's: ringed gas giant + `PE-01` wedge probe.
 4. `/cv` reachable from the landing and returns to `/`; all CV content from the inventory is
@@ -834,5 +846,10 @@ Slice record (feature-branch-chain):
 | Stage 1 | MC-08/MC-09 landed | Delegated WRITER C for the two panels plus the footer landscape. It self-verified (typecheck clean, lint delta 0, 6 viewports, settled screenshot) and caught a real defect during its own triangulation: 239px of stacked panels pushed the 1366x768 content floor from 784 to 798 and the scroll from 16 to 30px; it found the cause (an anonymous line-box strut under the inline-block orbit title) and brought the block to 199px, restoring the documented floor exactly. §7.5's `minmax(0,10.5em)` key column is a documented deviation — a 94.5px track cannot hold `REDES & INFRAESTRUCTURA` at any font size, because track and text scale together. | `src/components/mission/{StatusPanel,OrbitPanel,MissionFooter}.tsx`, `src/styles/panels.css`, `src/index.css` |
 | Stage 1 | parent spot check | MC-08/MC-09 verified by the parent against the writer's claims: `npx tsc -p tsconfig.app.json --noEmit` exit 0; `npm run lint` 10 problems (3 errors / 7 warnings), byte-identical to the §9.1 base, so zero new; harness over 9 viewports — `pageScroll: false` everywhere the lock applies, 1366x768 back to `doc 784 / scrollBy 16`, `stubs: []`, `brokenNames: []`, `errors: []`, and `spill` unchanged from the pre-writer baseline. Combined panel block 199px at every >=1180px viewport. | same commands, re-run by the parent |
 | Stage 1 | **owner correction** | The owner rejected the object hierarchy: the panels are too small, and the site reads as security-only for a full-stack developer. Both were real. (a) `orbitItems`/`statusRows` were 4-of-5 and 4-of-6 security-flavoured although the data layer is broader, and the tagline claimed "+20 años en seguridad informática" while `cv.ts:71` gives his latest role as "Desarrollador Full Stack & Consultor IA". (b) Measured against the live reference, our status panel is 336x116 where the reference is 504x214 and our artwork is 546x282 where the reference is 621x497. | §7.11, §7.12 |
-| Stage 1 | root cause found by measurement | The size gap is **structural, not typographic**. The reference has no "row 2": its art column runs from above `.main` to below it (1440: 51→704 vs main 159→704), its status panel is a stage-level `<aside>` floating over the footer band (footer 684→900, panel 698→912), and its orbit panel sits inside the art column's empty bottom-right corner. Our MC-10b grid created that row, and the row starved the art and shrank the panels. | reference measured at 1180/1440/1920/2000, `node /tmp/measure.mjs --url https://dilum.dev/` |
 | Stage 1 | MC-24 | Landing copy and capability readouts rebalanced to the owner's actual profile. Tagline now leads with the identity and keeps `+20 años` as a whole-career figure; security is one of four named areas, and two of six status rows. | `src/data/mission.ts`, `src/data/cv.ts` |
+| Stage 1 | root cause found by measurement | The size gap is **structural, not typographic**. The reference has no "row 2": its art column runs from above `.main` to below it (1440: 51→704 vs main 159→704), its status panel is a stage-level `<aside>` floating over the footer band (footer 684→900, panel 698→912), and its orbit panel sits inside the art column's empty bottom-right corner. Our MC-10b grid created that row, and the row starved the art and shrank the panels. | reference measured at 1180/1440/1920/2000, `node /tmp/measure.mjs --url https://dilum.dev/` |
+| Stage 1 | MC-11 independent verification | A fresh read-only `gentle-ai-verify` re-ran every check against the writer's claims. It confirmed: typecheck clean; lint 3 errors / 7 warnings byte-identical to §9.1 (all 7 warnings in untouched `ui/*`); `pageScroll: false` at all 13 then-tested viewports; `/cv` 200 with a working back link and the six design-system files inlined before the first Tailwind utility with no leftover `@import`; zero `stage-stub`/`data-stub`/`TODO`/`console.log`/`eslint-disable` leftovers; the `FIG. 08` occlusion fixed **by geometric measurement**, not by reading. It also reported that it **could not read the screenshots** (its model has no image input), so the visual half of the review is the parent's and is not double-covered. | `odd/` + the parent's own 27-viewport matrix |
+| Stage 1 | MC-11 findings F1/F2 | The verifier found two things the parent and the writer had both missed, and both were real. **F1 (medium):** the MC-25b compression band was `max-height: 820px`, so the lock still failed at 1920x820 (+17), 1920x860 (+10), 2000x850 (+23) and 2560x950 (+20) — i.e. the ordinary 1920x1080 or 2560x1080 monitor with browser chrome. Root cause: the content floor rises with viewport WIDTH (1366→730, 1440→743, 1600→769, but 1920→880, 2000→889, 2560→990) because the objects scale from `vw` while the stage height does not. **F2 (low-medium):** the `/cv` placeholder title overflowed its own 62ch shell by 100px at 1440x900 and spilled the page, because `clamp(34px, 7vw, 72px)` in Hubot Sans expanded sets `COMPLETO` at ~8.95em in a 434px content box. Both fixed in the same correction: a second, width-scoped band (`min-width: 1720px`, `max-height: 1000px`) with a `--foot-h` ramp continuous with the base clamp at 1000px, and a `container-type: inline-size` + `min(<clamp>, 100cqw / 9.2)` cap on the placeholder title. | re-measured: 27/27 wide viewports lock, `/cv` spill `[]` at four viewports |
+| Stage 1 | teacher note | The verifier's report is a model of the form `gentle-ai-verify` should return: it did not restate the writer's claims as fact, it measured, it declined to judge what it could not observe (the screenshots) instead of guessing, and it separated candidate-caused findings from pre-existing ones. Its F1 was the highest-value finding of the whole slice — found by probing widths the parent's own matrix had never combined with short heights. | `odd/mission-control-cv.md` §11 |
+| Stage 1 | MC-12 delivery decision | Owner resolved the `ask-on-risk` chain strategy at the Stage-1 preview checkpoint: **`feature-branch-chain`** — all work-unit commits stay on `feat/mission-control-cv`, one pull request at the end, reviewed commit by commit. Owner also approved **Vitest as a dev-only dependency** (MC-28), which changes the Stage-2 verification policy for data and pure logic; layout and motion keep the measured path. | §10, §5, §9 |
+| Stage 1 | MC-12 | Stage 1 committed as two work units: `docs(odd)` for the feature contract and `feat(landing)` for the implementation. No push. `package-lock.json` deliberately left out — it carries a pre-existing unrelated `"peer": true` diff (§5). | `babe1ea`, `9a109e7` |
