@@ -14,8 +14,11 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        // Mission Control CV: font stacks live in src/styles/tokens.css and are
+        // consumed here so any remaining Tailwind markup follows the same type.
+        sans: ['var(--ff-mono)'],
+        display: ['var(--ff-display)'],
+        mono: ['var(--ff-mono)'],
       },
       colors: {
         border: "hsl(var(--border))",

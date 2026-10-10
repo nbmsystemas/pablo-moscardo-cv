@@ -1,0 +1,57 @@
+/* ==========================================================================
+   Mission Control CV — design tokens
+   Owner: MC-01. Single source of truth for color, rhythm, motion and type.
+
+   HARD RULE: exactly ONE accent hue lives in this file (the --orange family).
+   There is no second accent, no text gradient, and no decorative shadow
+   beyond the card hover shadow declared in landing.css.
+   ========================================================================== */
+
+:root {
+  /* Paper / ink family */
+  --paper: #f3efe5; /* reference uses #f5f1e8 — deliberately shifted */
+  --paper-hi: #faf7f0;
+  --paper-lo: #e4ded1;
+  --ink: #16161a; /* cool-shifted from pure #151515 */
+  --ink-2: #2b2b2b;
+  --ink-soft: #5b574f;
+  --ink-faint: #a39c90;
+  --rule: #dcd5c8;
+  --rule-strong: #c3bbac;
+
+  /* Single hot accent — deeper / burnt, not the reference orange */
+  --orange: #e35d15;
+  --orange-ink: #93380a;
+  --orange-soft: #f79155;
+  --on-orange: #fdf6ee;
+
+  /* Layout rhythm */
+  --pad: clamp(16px, 2.1vw, 36px);
+  /* Capped at 180px, not 212px. The badge is a 208/150 slab, so its width IS
+     its height: letting it reach 212px grew the header from 129px to 153px
+     between 1440 and 2000px, and the landed viewport lock broke by 28px
+     (measured: docHeight 928 at 2000x900). The extra width bought nothing. */
+  --badge-w: clamp(132px, 12.4vw, 180px);
+  --head-gap: clamp(22px, 3.6vw, 64px);
+  --foot-h: 210px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Type */
+  --ff-display: "Hubot Sans", "Arial Black", sans-serif;
+  --ff-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* Footer band grows with the available width. */
+@media (min-width: 760px) {
+  :root {
+    --foot-h: 260px;
+  }
+}
+
+@media (min-width: 1180px) {
+  :root {
+    --foot-h: clamp(180px, 22vh, 290px);
+  }
+}
