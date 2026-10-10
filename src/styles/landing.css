@@ -1279,3 +1279,80 @@ tall `62vh - 400px` is exactly 220px, the same value the base
     margin-top: 9px;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   11. Boot sequence
+
+   The page powers up in reading order, the way a console would: badge, then
+   telemetry, motto, the masthead glyphs, the title rule, the tagline, the card
+   strip, the contact row, and finally the readout panels.
+
+   §7.6 already asked for this ("stagger element entrances with a `--d` custom
+   property and `animation-delay: var(--d, 0s)`") and Stage 1 only ever wired the
+   badge and the masthead glyphs. Everything else appeared instantly, so the page
+   had no boot at all — the owner noticed the reference's tagline flickering in
+   and asked for the effect. The reference's own cadence was measured, not
+   guessed: telemetry 200ms, motto 350ms, tagline 700ms, title rule 900ms, cards
+   950ms + 70ms per item, contact 1450ms, panels 1500/1600ms.
+
+   `both` fill mode is load-bearing: it holds the from-state (opacity 0) during
+   the delay, which is what makes a stagger visible instead of a flash of
+   pre-rendered content.
+
+   Reduced motion needs nothing here. base.css forces
+   `animation-duration: 1ms !important` and `animation-delay: 0s !important` on
+   every element, so each one lands on its final keyframe immediately.
+
+   The card delays are literal per-index values rather than `calc(var(--d) + …)`
+   because `--d` is inherited: an override set anywhere above the list would
+   collapse all six cards onto one delay and destroy the stagger.
+   --------------------------------------------------------------------------- */
+.telemetry {
+  animation: boot-flicker 0.9s linear both;
+  animation-delay: var(--d, 0.2s);
+}
+
+.motto {
+  animation: boot-flicker 0.9s linear both;
+  animation-delay: var(--d, 0.35s);
+}
+
+.tagline {
+  animation: boot-flicker 0.9s linear both;
+  animation-delay: var(--d, 0.7s);
+}
+
+.title__rule {
+  animation: boot-up 0.8s var(--ease-out) both;
+  animation-delay: var(--d, 0.9s);
+}
+
+.cards__list > li {
+  animation: boot-up 0.8s var(--ease-out) both;
+  animation-delay: 0.95s;
+}
+
+.cards__list > li:nth-child(2) {
+  animation-delay: 1.02s;
+}
+
+.cards__list > li:nth-child(3) {
+  animation-delay: 1.09s;
+}
+
+.cards__list > li:nth-child(4) {
+  animation-delay: 1.16s;
+}
+
+.cards__list > li:nth-child(5) {
+  animation-delay: 1.23s;
+}
+
+.cards__list > li:nth-child(6) {
+  animation-delay: 1.3s;
+}
+
+.contact {
+  animation: boot-up 0.8s var(--ease-out) both;
+  animation-delay: var(--d, 1.45s);
+}

@@ -462,19 +462,26 @@
 
 /* ---------------------------------------------------------------------------
    6. Footer motto
-   `--paper-hi` on dark, per §7.5 — and the plate is the dark surface, not the
-   band: §7.7 draws the landscape as 1px --ink-soft line art, which a dark band
-   would swallow. It also gives the page its last hard edge, echoing the badge
-   slab and the card hover.
+
+   Owner correction: the dark plate is GONE. It was a hard ink rectangle behind
+   the two lines and the owner rejected it on sight.
+
+   Removing the surface moves the legibility problem onto the text, so the type
+   inverts: `--paper-hi` on ink becomes `--ink` on paper, which is the same
+   contrast pair the rest of the page already uses. The padding goes with the
+   plate — with no surface to sit in, it only pushed the block off the `--pad`
+   line that every other element on the page aligns to.
+
+   §7.5 originally specified `--paper-hi`-on-dark and the plate was how that was
+   read; that line is superseded. The orange rule stays: it is the one mark that
+   survives the inversion and it keeps the block from floating on the terrain.
    --------------------------------------------------------------------------- */
 .foot__motto {
   position: absolute;
   left: var(--pad);
   bottom: var(--pad);
   z-index: 1;
-  padding: 10px 14px 11px;
-  background: var(--ink);
-  color: var(--paper-hi);
+  color: var(--ink);
 }
 
 .foot__label {
@@ -506,10 +513,6 @@
    trims so it never eats the whole landscape.
    --------------------------------------------------------------------------- */
 @media (max-width: 759px) {
-  .foot__motto {
-    padding: 8px 11px 9px;
-  }
-
   .foot__label {
     font-size: 9px;
     letter-spacing: 0.22em;
@@ -519,4 +522,15 @@
   .foot__rule {
     margin-top: 7px;
   }
+}
+
+/* ---------------------------------------------------------------------------
+   8. Boot sequence — the two readout panels
+
+   The panels are the last objects of the landing's boot (§7.6), after the
+   contact row. Their delays are the reference's measured cadence.
+   --------------------------------------------------------------------------- */
+.orbit {
+  animation: boot-up 0.8s var(--ease-out) both;
+  animation-delay: var(--d, 1.5s);
 }
