@@ -28,7 +28,7 @@ export const mottoWords: string[] = [
 export const titleLines: string[] = ["PABLO", "MOSCARDO"];
 
 export const tagline =
-  "Ingeniero en Sistemas y desarrollador full stack — +20 años en software, datos e infraestructura: DevOps, seguridad, algoritmos e IA.";
+  "Ingeniero en Sistemas | Full Stack Developer — +20 años de experiencia en software, datos, DevOps, IA, seguridad y algoritmos.";
 
 export const specLabels: string[] = [
   "Fig. 01",
