@@ -314,8 +314,9 @@ orange right-edge bar.
 
 **`<MissionFooter />`** — height `var(--foot-h)`, negative side margins, contains a landscape
 `<svg>` layer (rocky horizon + **observation dish array** per §7.7) and a motto block bottom-left:
-`PONIENDO` / `IDEAS EN ÓRBITA` in `--paper-hi`-on-dark, `letter-spacing: .26em`, with a 34×3px
-orange rule underneath.
+`PONIENDO` / `IDEAS EN ÓRBITA` in **`--ink` on the paper with no plate** (§7.14 — §7.5 originally said
+`--paper-hi`-on-dark and that is superseded), `letter-spacing: .26em`, with a 34×3px orange rule
+underneath.
 
 ### 7.6 Motion vocabulary — `src/styles/motion.css`
 
@@ -402,7 +403,7 @@ and stay legible at 212px+. Do not use a webfont for the monogram.
 | Telemetry · clock label | `MISSION CLOCK` |
 | Motto words | `EXPLORAR / AUDITAR / CONSTRUIR / REPETIR` |
 | Title | `PABLO` / `MOSCARDO` |
-| Tagline | `Ingeniero en Sistemas y desarrollador full stack — +20 años en software, datos e infraestructura: DevOps, seguridad, algoritmos e IA.` (133 chars, 3 lines at 1440) |
+| Tagline | `Ingeniero en Sistemas | Full Stack Developer — +20 años de experiencia en software, datos, DevOps, IA, seguridad y algoritmos.` (126 chars, 3 lines at 1440 — see §7.14) |
 | Spec label | `Fig. 01` · `Deep-space survey probe` · `PE-01 · Vigilante` · `///` |
 | Orbit panel title | `CURRENT ORBIT` |
 | Status panel title | `SYSTEM STATUS` |
@@ -609,6 +610,99 @@ would only pad empty sky. Closing this needs the artwork's viewBox and layer lay
 Stage 3 as MC-27**, and it is why the art column shows more negative space below the scene than the
 reference does.
 
+## 7.13 `/cv` — the full mission log (Stage 2, normative)
+
+`/cv` is the **same visual system at long-scroll**, not a second design. It reuses the Stage-1
+components and idioms verbatim; anything it needs that does not exist yet must be built from the
+established primitives (`.panel-title`, `.status__row`, `.card`, the paper/ink palette, one orange
+accent, mono micro-labels at 9–10.5px with `.16em`–`.26em` tracking, `FIG.` numbering).
+
+**Shell (MC-13)**
+
+- `.stage.stage--cv` — the landing's stage treatment but **no viewport lock** and no `overflow: hidden`.
+  `BlueprintFrame` stays decorative and `>=1180px`-only. Header reuses `<Badge />`,
+  `<Telemetry />`, `<Motto />` unchanged.
+- **Sticky mission-log nav**: `MISSION LOG` as `.panel-title`, then the six `sections` entries as
+  in-page anchors. `scroll-padding-top` on the scroll container must clear the sticky header — the
+  current site's sticky header overlaps anchor targets, which is a known defect this fixes.
+- **Anchor ids are frozen**: `#sobre-mi`, `#experiencia`, `#habilidades`, `#proyectos`,
+  `#educacion`, `#contacto` (§7.10). They come from `sections` in `src/data/cv.ts`.
+- A visible `<Link>` back to `/` in the header.
+- `.cv-shell` and `.cv-shell__title` (the Stage-1 placeholder) are **deleted**, not restyled.
+
+**Sections**
+
+| Task | Section | Data | Treatment |
+|---|---|---|---|
+| MC-14 | Briefing (`#sobre-mi`) | `profile.presentation`, `notableAreas` | prose in the lead column; areas as a bordered list |
+| MC-14 | Education (`#educacion`) | `education[]` | rows with the `type` micro-label surfaced (§7.9 defect 3) |
+| MC-15 | Experience (`#experiencia`) | `experience[]` | `FIG.`-numbered rows using the status-row idiom: period as the left key, title/company as the value, description as a second line, `current` flagged in orange |
+| MC-16 | Skills (`#habilidades`) | `skillGroups[]` | one panel per group, skills as chips. **No numeric levels** — §7.9 is explicit that the 16-cell bars are a landing-only visual device |
+| MC-16 | Projects (`#proyectos`) | `projects[]` | the card idiom; `highlight` gets the orange treatment, `link` becomes an external anchor |
+| MC-17 | Contact (`#contacto`) | `contact`, `socials` | the contact-block idiom; `cta` closes it |
+| MC-17 | Footer | — | reuse `<MissionFooter />`; it is a landing artefact and must not be duplicated |
+
+**Constraints**
+
+- `/cv` scrolls by design, so `pageScroll: false` does **not** apply to it. What must hold: no
+  horizontal overflow, no clipped content, no overlap, no console errors, and every anchor id
+  reachable with the sticky header clear of it.
+- Every string comes from the data layer. `/cv` must print the same canonical `+20 años` figure and
+  must not reintroduce a security-only framing (MC-28's tests cover the data; the rendered page must
+  agree).
+- No new runtime dependency, no Tailwind utility rewrite, one accent hue, motion disabled under
+  `prefers-reduced-motion: reduce`.
+
+---
+
+## 7.14 Owner corrections after the Stage-1 preview
+
+Two changes the owner asked for after seeing Stage 1 rendered. Both supersede the contract text they
+touch; neither is a defect report.
+
+1. **The tagline is reworded (MC-29).** The owner supplied the wording:
+   `Ingeniero en Sistemas | Full Stack Developer — +20 años de experiencia en software, datos, DevOps, IA, seguridad y algoritmos.`
+   Two notes on it. (a) The owner's draft had a **period** after `datos`; it ships with a comma,
+   because the period ends the sentence and leaves `DevOps, IA, seguridad y algoritmos.` as a fragment
+   with no verb, breaking the parallelism of the list. (b) It uses the English `Full Stack Developer`
+   while `profile.headline` says `Desarrollador Full Stack`; the owner's wording wins, and the two are
+   deliberately left as-is because the tagline is a display line and the headline is a data field.
+   Measured 126 chars, 3 lines at 1440x900, inside the 145-char/3-line budget.
+2. **The footer motto's dark plate is deleted (MC-30).** `PONIENDO / IDEAS EN ÓRBITA` sat in a hard ink
+   rectangle; the owner rejected the rectangle. Removing the surface inverts the type to `--ink` on
+   `--paper` — the same contrast pair the rest of the page uses, ~6.3:1 on the 72%-opacity first line,
+   above the 4.5:1 floor — and the padding goes with the plate, because with no surface to sit in it
+   only pushed the block off the `--pad` line every other element aligns to. The orange rule stays.
+   Measured: the block is 129x50 where the plated version was 157x60, and the viewport lock is
+   unaffected at every width.
+
+3. **The boot sequence is completed (MC-31).** The owner asked for the effect he saw on the reference
+   on load. Verified first, because the served HTML does not show it: a CDP probe sampled the
+   reference's `.tagline` every 150ms for 2.6s and its text was **identical in all 18 samples** — the
+   reference has **no letter-scrambling anywhere**. What it has is three separate things, and only one
+   of them was missing here:
+
+   | reference effect | element | ours before |
+   |---|---|---|
+   | per-glyph `glyph-in` (each letter enters in sequence with an orange flash) | `.title__ch` | already implemented |
+   | `boot-flicker` opacity stutter, 0.9s, delay 0.7s | `.tagline` | **missing** |
+   | active-word rotation (`is-on` class moves between words) | `.motto__words` | already implemented |
+
+   §7.6 had asked for the stagger all along ("stagger element entrances with a `--d` custom property"),
+   and Stage 1 only ever wired the badge and the masthead glyphs — everything else appeared instantly.
+   The missing entrances were added in reading order with the reference's measured cadence: telemetry
+   200ms, motto 350ms, tagline 700ms, title rule 900ms, cards 950ms + 70ms per item, contact 1450ms,
+   panels 1500/1600ms. `both` fill mode is what makes the stagger visible rather than a flash of
+   pre-rendered content. Reduced motion needs nothing new: `base.css` already forces
+   `animation-duration: 1ms !important` and `animation-delay: 0s !important`, so every element lands on
+   its final keyframe.
+
+   Verified with the same probe against our own page: `.tagline` now reports
+   `anim=boot-flicker delay=0.7s` with opacity stepping 0 → 0.208 → 0.129. And a mid-boot capture at
+   1450ms shows the badge flickering and the telemetry in while the masthead, tagline and cards are
+   still dark — the stagger reads. The settled state is unchanged and complete, which is the check that
+   matters: an entrance with `both` fill that never completes would leave elements invisible forever.
+
 ---
 
 ## 8. Task checklist
@@ -700,12 +794,23 @@ Risk tier per the Delegated Verification Gate.
 
 ### Stage 2 — `/cv` full CV (next checkpoint, not started)
 
-- [ ] **MC-13** `/cv` shell: frame, telemetry, sticky mission-log nav, scroll-padding.
-- [ ] **MC-14** `/cv` Briefing (About) + Education.
-- [ ] **MC-15** `/cv` Experience as FIG.-numbered status rows.
-- [ ] **MC-16** `/cv` Skills panels + Projects cards.
-- [ ] **MC-17** `/cv` Contact + MissionFooter reuse.
-- [ ] **MC-18** Stage-2 verification + commit.
+- [x] **MC-29** Reword the tagline to the owner's wording (§7.14). Route: INLINE (1 data file). Risk:
+  passive. Evidence: 126 chars / 3 lines at 1440x900; `npm test` 25/25 (the tagline guards pass on the
+  new string); lock unaffected at 11 viewports.
+- [x] **MC-30** Delete the footer motto's dark plate (§7.14). Route: INLINE (1 CSS block + 1 component
+  comment). Risk: passive→medium (contrast). Evidence: block 129x50 where the plated version was
+  157x60; type inverted to `--ink` on `--paper`, ~6.3:1 on the 72%-opacity first line; lock unaffected.
+- [x] **MC-31** Complete the boot sequence (§7.14). Route: INLINE (2 CSS files, no markup change). Risk:
+  medium (a `both`-filled entrance that never completes would hide content). Evidence: the probe shows
+  `boot-flicker` running on `.tagline`; a mid-boot capture shows the stagger; the settled capture is
+  complete.
+- [ ] **MC-28** Vitest + data-layer contract tests. Owner-approved dev-only dependency, resolved at the
+  Stage-1 checkpoint. WRITER: parent (inline). Risk: low. **Landed**: 25 tests, RED observed by
+  breaking a tenure string (two guards fail), reverted green. Pinned to `vitest@3.2.7` because the
+  registry's `latest` (5.0.3) fails to install on npm 11 through an unresolvable optional-peer cycle.
+  Evidence: `npm test` 25/25; both tsconfigs clean; lint delta 0.
+- [ ] **MC-13…MC-17** Stage 2 `/cv` per §7.13. Two delegated rounds: MC-13+MC-14, then MC-15+MC-16+MC-17.
+- [ ] **MC-18** Stage-2 verification + commit. VERIFY + parent.
 
 ### Stage 3 — polish (not started)
 
@@ -851,5 +956,6 @@ Slice record (feature-branch-chain):
 | Stage 1 | MC-11 independent verification | A fresh read-only `gentle-ai-verify` re-ran every check against the writer's claims. It confirmed: typecheck clean; lint 3 errors / 7 warnings byte-identical to §9.1 (all 7 warnings in untouched `ui/*`); `pageScroll: false` at all 13 then-tested viewports; `/cv` 200 with a working back link and the six design-system files inlined before the first Tailwind utility with no leftover `@import`; zero `stage-stub`/`data-stub`/`TODO`/`console.log`/`eslint-disable` leftovers; the `FIG. 08` occlusion fixed **by geometric measurement**, not by reading. It also reported that it **could not read the screenshots** (its model has no image input), so the visual half of the review is the parent's and is not double-covered. | `odd/` + the parent's own 27-viewport matrix |
 | Stage 1 | MC-11 findings F1/F2 | The verifier found two things the parent and the writer had both missed, and both were real. **F1 (medium):** the MC-25b compression band was `max-height: 820px`, so the lock still failed at 1920x820 (+17), 1920x860 (+10), 2000x850 (+23) and 2560x950 (+20) — i.e. the ordinary 1920x1080 or 2560x1080 monitor with browser chrome. Root cause: the content floor rises with viewport WIDTH (1366→730, 1440→743, 1600→769, but 1920→880, 2000→889, 2560→990) because the objects scale from `vw` while the stage height does not. **F2 (low-medium):** the `/cv` placeholder title overflowed its own 62ch shell by 100px at 1440x900 and spilled the page, because `clamp(34px, 7vw, 72px)` in Hubot Sans expanded sets `COMPLETO` at ~8.95em in a 434px content box. Both fixed in the same correction: a second, width-scoped band (`min-width: 1720px`, `max-height: 1000px`) with a `--foot-h` ramp continuous with the base clamp at 1000px, and a `container-type: inline-size` + `min(<clamp>, 100cqw / 9.2)` cap on the placeholder title. | re-measured: 27/27 wide viewports lock, `/cv` spill `[]` at four viewports |
 | Stage 1 | teacher note | The verifier's report is a model of the form `gentle-ai-verify` should return: it did not restate the writer's claims as fact, it measured, it declined to judge what it could not observe (the screenshots) instead of guessing, and it separated candidate-caused findings from pre-existing ones. Its F1 was the highest-value finding of the whole slice — found by probing widths the parent's own matrix had never combined with short heights. | `odd/mission-control-cv.md` §11 |
+| Stage 1 | MC-29/30/31 | Three owner corrections after seeing Stage 1 rendered. **MC-29:** tagline reworded to the owner's text (his draft had a period after `datos`, shipped with a comma — the period left a verbless fragment and broke the list's parallelism). **MC-30:** the footer motto's dark plate deleted; the type inverted to `--ink` on `--paper` and the padding went with the plate, because with no surface to sit in it only pushed the block off the `--pad` line. **MC-31:** the boot sequence completed — and the investigation is the interesting part. The owner asked for the "letters changing" effect he saw on the reference. A CDP probe sampled the reference's tagline every 150ms for 2.6s: the text is **identical in all 18 samples**. There is no letter scramble; the reference has a per-glyph masthead entrance (already implemented), an active-word rotation in the motto (already implemented) and a `boot-flicker` opacity stutter on the tagline (missing here). §7.6 had asked for the stagger since Stage 0 and Stage 1 only wired the badge and the masthead. Measured, then implemented, then measured again. | probe transcripts; `/tmp/boot-mid.png` vs the settled capture |
 | Stage 1 | MC-12 delivery decision | Owner resolved the `ask-on-risk` chain strategy at the Stage-1 preview checkpoint: **`feature-branch-chain`** — all work-unit commits stay on `feat/mission-control-cv`, one pull request at the end, reviewed commit by commit. Owner also approved **Vitest as a dev-only dependency** (MC-28), which changes the Stage-2 verification policy for data and pure logic; layout and motion keep the measured path. | §10, §5, §9 |
 | Stage 1 | MC-12 | Stage 1 committed as two work units: `docs(odd)` for the feature contract and `feat(landing)` for the implementation. No push. `package-lock.json` deliberately left out — it carries a pre-existing unrelated `"peer": true` diff (§5). | `babe1ea`, `9a109e7` |
