@@ -19,16 +19,44 @@ export const telemetry: { rows: TelemetryRow[]; clockLabel: string } = {
 };
 
 export const mottoWords: string[] = [
-  "EXPLORAR",
-  "AUDITAR",
-  "CONSTRUIR",
-  "REPETIR",
+  "EXPLORE",
+  "AUDIT",
+  "BUILD",
+  "REPEAT",
 ];
 
 export const titleLines: string[] = ["PABLO", "MOSCARDO"];
 
+/**
+ * Site language is ENGLISH (owner correction, §7.15). This supersedes §7.8's
+ * "Spanish content, English micro-labels": the owner asked for everything in
+ * English. The Spanish strings still live in `src/data/cv.ts` and are translated
+ * with /cv (MC-32) — do not reintroduce Spanish here.
+ */
 export const tagline =
-  "Ingeniero en Sistemas | Full Stack Developer — +20 años de experiencia en software, datos, DevOps, IA, seguridad y algoritmos.";
+  "Information Systems Engineer | Full Stack Developer — 20+ years in software, data, DevOps, AI, security and algorithms.";
+
+/**
+ * The landing's contact line, in the reference's shape (§7.15). It replaced a
+ * Spanish invite line plus a raw email/phone dump: the owner asked to drop the
+ * phone and the "happy to meet" line, and to mirror the reference's short
+ * "Need to get in touch? DM me on X or Y." The phone deliberately stays in
+ * `src/data/cv.ts` for /cv, which is a document rather than a landing.
+ */
+export const contactLine = {
+  prompt: "Need to get in touch?",
+  lead: "DM me on",
+  links: [
+    {
+      label: "Email",
+      href: "mailto:pablo.ezequiel.moscardo@gmail.com",
+    },
+    {
+      label: "LinkedIn",
+      href: "https://linkedin.com/in/pablo-moscardo",
+    },
+  ],
+} as const;
 
 export const specLabels: string[] = [
   "Fig. 01",
@@ -44,7 +72,7 @@ export const panels = {
   logTitle: "MISSION LOG",
 } as const;
 
-export const footerMotto: string[] = ["PONIENDO", "IDEAS EN ÓRBITA"];
+export const footerMotto: string[] = ["LAUNCHING", "IDEAS INTO ORBIT"];
 
 /**
  * Landing cards (§7.8). Six external destinations, a filled 3x2 grid.
@@ -100,7 +128,7 @@ export const cards: MissionCard[] = [
  * contact row instead of as their peer card.
  */
 export const cvCta = {
-  label: "CV completo",
+  label: "FULL CV",
   href: "/cv",
 } as const;
 
@@ -113,11 +141,11 @@ export const cvCta = {
  * informática" for a full-stack developer, which is the defect this fixes.
  */
 export const orbitItems: string[] = [
-  "DESARROLLO FULL STACK",
-  "IA & AUTOMATIZACIÓN",
-  "SEGURIDAD & PEN TESTING",
-  "REDES & INFRAESTRUCTURA",
-  "DATOS & ALGORITMOS",
+  "FULL STACK DEVELOPMENT",
+  "AI & AUTOMATION",
+  "SECURITY & PEN TESTING",
+  "NETWORKS & INFRASTRUCTURE",
+  "DATA & ALGORITHMS",
 ];
 
 /**
@@ -130,10 +158,10 @@ export const orbitItems: string[] = [
  * dossier.
  */
 export const statusRows: StatusRow[] = [
-  { label: "DESARROLLO FULL STACK", filled: 14, total: 16 },
-  { label: "IA & AUTOMATIZACIÓN", filled: 13, total: 16 },
-  { label: "SEGURIDAD & PEN TESTING", filled: 14, total: 16 },
-  { label: "REDES & INFRAESTRUCTURA", filled: 12, total: 16 },
-  { label: "DATOS & ALGORITMOS", filled: 12, total: 16 },
-  { label: "PERITAJE & AUDITORÍA IT", filled: 11, total: 16 },
+  { label: "FULL STACK DEVELOPMENT", filled: 14, total: 16 },
+  { label: "AI & AUTOMATION", filled: 13, total: 16 },
+  { label: "SECURITY & PEN TESTING", filled: 14, total: 16 },
+  { label: "NETWORKS & INFRASTRUCTURE", filled: 12, total: 16 },
+  { label: "DATA & ALGORITHMS", filled: 12, total: 16 },
+  { label: "FORENSICS & IT AUDIT", filled: 11, total: 16 },
 ];

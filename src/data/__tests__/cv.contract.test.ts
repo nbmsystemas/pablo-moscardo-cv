@@ -28,27 +28,32 @@ describe("tenure claims", () => {
    * self-contradictory on a document whose whole point is credibility. The owner
    * then resolved the canonical figure to +20. This test fails if any other
    * tenure number is ever reintroduced, anywhere in the data layer.
+   *
+   * It scans BOTH languages on purpose: the landing was translated to English
+   * (§7.15) while `cv.ts` is still Spanish until MC-32, and a tenure figure is
+   * exactly the kind of string that drifts during a translation.
    */
   it("states exactly one tenure figure across the whole data layer, and it is 20", () => {
-    const claims: { file: string; raw: string }[] = [];
+    const claims: { file: string; raw: string; figure: number }[] = [];
 
     for (const { name, text } of dataSources) {
-      for (const match of text.matchAll(/([+-]?\d{1,2})\s*a[nñ]os/gi)) {
-        claims.push({ file: name, raw: match[0] });
+      for (const match of text.matchAll(/(\d{1,2})\+?\s*(a[nñ]os|years)/gi)) {
+        claims.push({ file: name, raw: match[0], figure: Number(match[1]) });
       }
     }
 
     expect(claims.length).toBeGreaterThan(0);
-    expect(claims.map((claim) => claim.raw)).toEqual(
-      claims.map(() => expect.stringMatching(/^\+?20\s*a[nñ]os$/i)),
-    );
+    expect(
+      claims.filter((claim) => claim.figure !== 20),
+      `non-canonical tenure figures: ${JSON.stringify(claims.filter((c) => c.figure !== 20))}`,
+    ).toEqual([]);
   });
 
-  it("does not carry the superseded figures", () => {
+  it("does not carry the superseded figures in either language", () => {
     const all = dataSources.map((source) => source.text).join("\n");
 
-    expect(all).not.toMatch(/15\s*a[nñ]os/i);
-    expect(all).not.toMatch(/\+?10\s*a[nñ]os/i);
+    expect(all).not.toMatch(/15\s*(a[nñ]os|years)/i);
+    expect(all).not.toMatch(/\+?10\s*(a[nñ]os|years)/i);
   });
 });
 

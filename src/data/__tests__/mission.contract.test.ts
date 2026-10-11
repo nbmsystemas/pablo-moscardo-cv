@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   badge,
   cards,
+  contactLine,
   cvCta,
   footerMotto,
   mottoWords,
@@ -17,18 +18,38 @@ import {
 
 describe("landing copy", () => {
   it("leads the tagline with the identity instead of a security tenure", () => {
-    expect(tagline).toMatch(/Ingeniero en Sistemas/i);
+    expect(tagline).toMatch(/Information Systems Engineer/i);
     expect(tagline).toMatch(/full stack/i);
   });
 
   /**
-   * The exact string that was wrong: the site claimed twenty years *of security*
+   * The exact framing that was wrong: the site claimed twenty years *of security*
    * for a full-stack developer. Security must appear as one area among several,
-   * never as the thing the twenty years belong to.
+   * never as the thing the twenty years belong to — in either language, because
+   * this string has already been through one translation.
    */
   it("never attributes the twenty years to security alone", () => {
+    expect(tagline).not.toMatch(/20\+?\s*years\s*(in|of)?\s*security/i);
     expect(tagline).not.toMatch(/\+?20\s*a[nñ]os\s*(en|de)\s*seguridad/i);
-    expect(tagline).toMatch(/seguridad/i);
+    expect(tagline).toMatch(/security/i);
+  });
+
+  /** §7.15: the whole landing is English. */
+  it("carries no Spanish left over from the pre-translation copy", () => {
+    const spanishMarkers = [
+      /a[nñ]os/i,
+      /seguridad/i,
+      /desarrollo/i,
+      /experiencia en/i,
+      /completo/i,
+    ];
+    for (const marker of spanishMarkers) {
+      expect(tagline).not.toMatch(marker);
+      expect(footerMotto.join(" ")).not.toMatch(marker);
+      expect(orbitItems.join(" ")).not.toMatch(marker);
+      expect(statusRows.map((row) => row.label).join(" ")).not.toMatch(marker);
+      expect(mottoWords.join(" ")).not.toMatch(marker);
+    }
   });
 
   it("keeps the masthead lines and micro-labels stable", () => {
@@ -39,6 +60,28 @@ describe("landing copy", () => {
     expect(telemetry.rows[0]?.label).toBe("LOCATION");
     expect(panels.statusTitle).toBe("SYSTEM STATUS");
     expect(panels.orbitTitle).toBe("CURRENT ORBIT");
+  });
+});
+
+describe("contact line", () => {
+  /**
+   * §7.15: the owner replaced a Spanish invite line plus a raw email/phone dump
+   * with the reference's short shape, and dropped the phone. The phone is a real
+   * regression risk here: it is the one detail that would quietly come back if
+   * someone re-rendered `contact.details` on the landing.
+   */
+  it("offers exactly two same-tab links and no phone number", () => {
+    expect(contactLine.links).toHaveLength(2);
+    for (const link of contactLine.links) {
+      expect(link.href).toMatch(/^(mailto:|https:)/);
+      expect(link.href).not.toMatch(/^tel:/);
+      expect(link.label.trim()).not.toBe("");
+    }
+  });
+
+  it("names the prompt and the lead in English", () => {
+    expect(contactLine.prompt).toBe("Need to get in touch?");
+    expect(contactLine.lead).toBe("DM me on");
   });
 });
 
@@ -111,7 +154,7 @@ describe("capability readouts", () => {
    */
   it("does not let security dominate the status rows", () => {
     const securityFlavoured = statusRows.filter((row) =>
-      /seguridad|pen testing|peritaje|auditor/i.test(row.label),
+      /security|pen testing|forensic|audit/i.test(row.label),
     );
 
     expect(statusRows).toHaveLength(6);
