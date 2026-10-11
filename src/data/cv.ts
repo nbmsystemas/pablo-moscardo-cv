@@ -2,18 +2,21 @@
    Mission Control CV — CV content (single source of truth)
    Owner: MC-03. Rebuilt in English and brought up to date by MC-32.
 
-   SOURCE OF TRUTH: the owner's own documents, kept in the local, gitignored
-   `cv/` folder next to this repo. As of 2026-10-11 that folder holds exactly the
-   two current PDFs and nothing else —
+   SOURCE OF TRUTH: the owner's own CV documents. The gitignored `cv/` folder that
+   used to stage them was deleted by the owner on 2026-10-11 (MC-50). Its two PDFs
+   were byte-identical to the copies published in `public/cv/` — verified by md5
+   while the folder still existed — so no content was lost, and those published
+   copies are now the only place in the repository where the documents exist.
 
-     - cv/CV-Pablo-Moscardo-EN.pdf  — authoritative English content (primary)
-     - cv/CV-Pablo-Moscardo-ES.pdf  — the same document in Spanish
+     - public/cv/pablo-moscardo-cv-en.pdf — authoritative English content
+     - public/cv/pablo-moscardo-cv-es.pdf — the same document in Spanish
 
-   Two documents MC-32 read are no longer there: the LinkedIn cover letter
-   (`Carta-Presentacion-LinkedIn-Pablo-Moscardo.docx`) and the OLD CV
-   (`PABLO EZEQUIEL MOSCARDO.pdf`, which was the source of the certifications
-   block). The strings this file took from them stay here, but their provenance
-   is now history rather than a live input. Neither is published: the OLD CV
+   Three documents MC-32 read are no longer available anywhere: the LinkedIn
+   cover letter (`Carta-Presentacion-LinkedIn-Pablo-Moscardo.docx`), the OLD CV
+   (`PABLO EZEQUIEL MOSCARDO.pdf`, the source of the certifications block) and
+   the staging folder itself. The strings this file took from them stay here;
+   their provenance is history, and the claims that cite them can no longer be
+   re-checked from the repository. The OLD CV is deliberately NOT published: it
    carried the full DNI, birth date and marital status, which this data layer
    masks.
 

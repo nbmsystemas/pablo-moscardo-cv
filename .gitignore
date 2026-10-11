@@ -23,6 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 
-# Personal source documents (CVs, cover letters). Kept local on purpose: one of
-# them carries a full DNI, and the publishable copies live in public/cv/ instead.
+# Personal source documents (CVs, cover letters), kept local on purpose: the
+# publishable copies live in public/cv/ instead, and one of the historical
+# documents carried a full DNI. The folder itself was deleted on 2026-10-11
+# (MC-50); this rule stays as a guard so that anything staged there again cannot
+# be committed by accident.
 /cv/

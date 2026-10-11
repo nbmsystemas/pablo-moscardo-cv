@@ -715,21 +715,28 @@ and `Section.subtitle` is gone from the type because nothing consumed it.
 
 ## 7.16 Authoritative content sources and the downloadable CVs
 
-The owner keeps his own CV material in a local, **gitignored** `cv/` folder at the repository root. As
-of 2026-10-11 it holds exactly two files, and nothing else:
+The owner keeps his own CV material locally. Until 2026-10-11 he staged it in a **gitignored** `cv/`
+folder at the repository root:
 
 | file | use |
 |---|---|
 | `CV-Pablo-Moscardo-EN.pdf` | **the authoritative English content** (MC-32's primary source; re-exported by the owner on 2026-10-11) |
 | `CV-Pablo-Moscardo-ES.pdf` | the same in Spanish |
 
-Two documents MC-32 read are **no longer in that folder**: the LinkedIn cover letter
-(`Carta-Presentacion-LinkedIn-Pablo-Moscardo.docx`) and the OLD CV (`PABLO EZEQUIEL MOSCARDO.pdf`), which
-carried a full DNI (`27.484.088`), birth date and marital status while the site masks the DNI to
-`27.484.---`. The strings taken from them stay in the data layer; their provenance is history, and the
-claims further down that cite them are no longer re-verifiable from the repository. Neither is published.
-The two PDFs are copied verbatim to `public/cv/` and offered as download chips (MC-33, re-copied by
-MC-46). `cv/` is gitignored so the personal documents cannot be committed by accident.
+**The owner deleted that folder on 2026-10-11 (MC-50).** Both PDFs were byte-identical to the copies
+already published in `public/cv/` — md5 `7284c77f…` and `d1d3a55b…`, verified while the folder still
+existed — so the repository lost no content and `public/cv/` is now the only place those documents exist.
+The folder was never tracked, which is exactly why the deletion cannot be reverted from git: the check has
+to be made while the files are still there, not afterwards.
+
+Three documents MC-32 read are now unavailable anywhere: the LinkedIn cover letter
+(`Carta-Presentacion-LinkedIn-Pablo-Moscardo.docx`), the OLD CV (`PABLO EZEQUIEL MOSCARDO.pdf`, which
+carried a full DNI `27.484.088`, birth date and marital status while the site masks the DNI to
+`27.484.---`), and the staging folder itself. The strings taken from them stay in the data layer; their
+provenance is history, and the claims further down that cite them can no longer be re-verified from the
+repository. Neither is published. The two PDFs are copied verbatim to `public/cv/` and offered as download
+chips (MC-33, re-copied by MC-46). The `/cv/` ignore rule is kept in `.gitignore` as a guard: if documents
+are ever staged there again, they stay uncommittable by accident.
 
 ### What the documents proved was wrong, and is now fixed (MC-32)
 
@@ -1159,6 +1166,14 @@ Risk tier per the Delegated Verification Gate.
   `-to-` so the review admission layer stops refusing the reviewer's payload over a `token:number` token.
   Route: INLINE (2 files, meta and prose). Risk: low, and the live 404 is verified by fetching both paths
   from production rather than by reading the diff.
+- [ ] **MC-50** **Record the removal of the `cv/` staging folder and correct every claim that cited it
+  (§7.16).** The owner asked for it once it stopped being necessary and **removed it himself**; it held
+  only the two CV PDFs, both byte-identical to the published copies in `public/cv/` (md5 `7284c77f…`,
+  `d1d3a55b…`, verified while the folder still existed). The work here was the record: the data-layer
+  header and §7.16 now say where the documents actually live instead of pointing at a folder that is gone,
+  and `.gitignore` keeps its `/cv/` rule as a guard. Route: INLINE (2 files, prose). Risk: passive. The
+  deletion itself was irreversible and untracked — but it was the owner's act, and the content survives in
+  git through `public/cv/`.
 - [ ] **MC-19** Responsive audit at 380 / 760 / 1180 / 2000 px.
 - [ ] **MC-20** A11y audit: `sr-only` text, focus order, reduced motion, contrast on `--ink-soft`.
 - [ ] **MC-21** Performance: font payload (expanded-only request), bundle size, dead shadcn audit report.
