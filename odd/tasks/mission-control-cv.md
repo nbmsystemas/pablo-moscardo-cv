@@ -715,23 +715,26 @@ and `Section.subtitle` is gone from the type because nothing consumed it.
 
 ## 7.16 Authoritative content sources and the downloadable CVs
 
-The owner keeps his own CV material in a local, **gitignored** `cv/` folder at the repository root:
+The owner keeps his own CV material in a local, **gitignored** `cv/` folder at the repository root. As
+of 2026-10-11 it holds exactly two files, and nothing else:
 
 | file | use |
 |---|---|
-| `CV-Pablo-Moscardo-EN.pdf` | **the authoritative English content** (MC-32's primary source) |
+| `CV-Pablo-Moscardo-EN.pdf` | **the authoritative English content** (MC-32's primary source; re-exported by the owner on 2026-10-11) |
 | `CV-Pablo-Moscardo-ES.pdf` | the same in Spanish |
-| `Carta-Presentacion-LinkedIn-Pablo-Moscardo.docx` | cover letters (ES + EN) — the most current prose |
-| `PABLO EZEQUIEL MOSCARDO.pdf` | the OLD CV — read for gaps only, **never published** |
 
-The last one carries a full DNI (`27.484.088`), birth date and marital status, while the site masks the
-DNI to `27.484.---`. The first two are copied verbatim to `public/cv/` and offered as download chips
-(MC-33). `cv/` is gitignored so the personal documents cannot be committed by accident.
+Two documents MC-32 read are **no longer in that folder**: the LinkedIn cover letter
+(`Carta-Presentacion-LinkedIn-Pablo-Moscardo.docx`) and the OLD CV (`PABLO EZEQUIEL MOSCARDO.pdf`), which
+carried a full DNI (`27.484.088`), birth date and marital status while the site masks the DNI to
+`27.484.---`. The strings taken from them stay in the data layer; their provenance is history, and the
+claims further down that cite them are no longer re-verifiable from the repository. Neither is published.
+The two PDFs are copied verbatim to `public/cv/` and offered as download chips (MC-33, re-copied by
+MC-46). `cv/` is gitignored so the personal documents cannot be committed by accident.
 
 ### What the documents proved was wrong, and is now fixed (MC-32)
 
 1. **The LinkedIn handle was wrong** — **this correction was itself wrong; see the MC-45 note below.**
-Both CVs and the cover letter say `linkedin.com/in/pablomoscardo`; the site said `pablo-moscardo` in
+Both CVs and the cover letter said `linkedin.com/in/pablomoscardo`; the site said `pablo-moscardo` in
 **three** data-layer places, and MC-32 sided with the documents. The owner afterwards confirmed the
 opposite: the hyphenated handle is the real one.
 2. **GitHub was missing** (`github.com/pabloezm`).
@@ -751,13 +754,14 @@ fake one. Status codes and unauthenticated fetches therefore prove nothing here,
 unavailable in this session (no provider keys), so there is no third-party index to consult either. The
 owner's direct statement is the only first-hand source, and it wins.
 
-**What the repository proved.** Both PDFs in `public/cv/` and the gitignored masters in `cv/` carry
-`linkedin.com/in/pablomoscardo` as a link annotation — read off the `/URI` entry of each annotation
-dictionary — and the cover letter repeats the same string three times. So MC-32 did exactly what its
-sources said, and the sources spell the handle without the hyphen. **The owner states those PDFs are fine
-and they stay untouched**, and this document does not claim otherwise: whether both spellings resolve to
-the same profile cannot be settled from here, because LinkedIn answers HTTP 200 with a reCAPTCHA browser
-check for a vanity that does not exist.
+**What the repository had proved, at the time.** Both PDFs in `public/cv/` and the gitignored masters in
+`cv/` carried `linkedin.com/in/pablomoscardo` as a link annotation — read off the `/URI` entry of each
+annotation dictionary — and the cover letter repeated the same string three times. So MC-32 did exactly
+what its sources said, and the sources spelled the handle without the hyphen. The owner then stated those
+PDFs were fine and they were left untouched. **That statement did not survive the session**: he went on to
+re-export both masters with the hyphenated handle and to cut `cv/` down to those two files, which is
+MC-46. Whether both spellings resolve to the same profile still cannot be settled from here: LinkedIn
+answers HTTP 200 with a reCAPTCHA browser check for a vanity that does not exist.
 
 **Decision.** The owner outranks his own documents, so `https://www.linkedin.com/in/pablo-moscardo` is
 canonical — with `www`, exactly as he wrote it. The pinned guards are **inverted, not deleted**: the same
@@ -765,10 +769,31 @@ drift is possible in the new direction, and a wrong URL is still a valid string,
 they exist.
 
 **Scope.** The site (data layer, `index.html`, the two legacy components), the tests and this document.
-The two published PDFs are **not** patched here: they are generated artefacts, `public/cv/` is a
-documented verbatim copy of the masters, and an in-place byte patch would break that invariant and be
-silently reverted by the next export. Regenerating the masters is a separate owner action, and the owner has
-confirmed the existing annotation is fine, so there is no open follow-up here.
+The published PDFs were **not** byte-patched: they are generated artefacts, `public/cv/` is a documented
+verbatim copy of the masters, and an in-place byte patch would break that invariant and be silently
+reverted by the next export. Regenerating the masters and re-copying them is MC-46.
+
+### MC-46 — the published CVs were stale, and `cv/` shrank to two files (owner, 2026-10-11)
+
+The owner re-exported both CVs (LibreOffice, 5 pages, 2026-10-11 12:45 and 12:46) with the hyphenated
+handle, and reported that `cv/` now holds only those two PDFs. Three consequences, each verified rather
+than assumed:
+
+1. **`public/cv/` was serving the old export.** Both published copies were still the 2026-08-22 files
+   (`md5 749dff34109e1bbc0b39b087384bdd24` and `90be6192ac32cb561e41aabd70b3bd45`, 79 KB each) carrying the
+   hyphenless handle, and `src/data/cv.ts` serves exactly those two paths as the download chips. **A master
+   that is fixed but not re-copied is not fixed for anyone who downloads it**, which is why the site's
+   download buttons were the last surface still publishing the wrong handle. MC-46 re-copied the pair.
+2. **The new masters are the same CV, re-exported.** 1,163 words against the old 1,159, and the token diff
+   is emoji, soft hyphens and export artefacts (`tick-level` → `ticklevel`). The data layer therefore does
+   **not** need another MC-32: the content is unchanged, only the link annotation and the pagination
+   (3 pages → 5) moved.
+3. **The new masters are safe to publish.** Neither carries the DNI, a birth date or a marital status —
+   only the email and the phone number the site already publishes. That check gates the copy, because the
+   folder used to also hold the OLD CV whose DNI is the reason it was never published.
+
+The folder also lost the LinkedIn cover letter and the OLD CV, so every comment and §7.16 claim that cited
+them was corrected rather than left pointing at a file that is not there.
 
 All four are now fixed and pinned by tests, with observed RED before each fix.
 
@@ -999,8 +1024,21 @@ Risk tier per the Delegated Verification Gate.
   delta 0 (3 errors / 7 warnings, all pre-existing). Two adjacent corrections: the README's own test
   count was stale at 42 while the suite runs 43 (unchanged by this diff — the writer added no test), and
   the `socials` doc comment still claimed the documents were authoritative for LinkedIn.
-  **No follow-up:** the owner confirmed the hyphenless annotation in those PDFs is fine, so the CV
-  masters and the two published copies in `public/cv/` stay exactly as they are.
+  **Superseded by MC-46:** the owner went on to re-export both masters with the hyphenated handle, so the
+  "no follow-up" that closed MC-45 was wrong and `public/cv/` stayed stale until MC-46 re-copied it.
+- [x] **MC-46** **Re-publish the regenerated CVs, and fix every reference to the files `cv/` no longer
+  holds.** The owner re-exported both CVs on 2026-10-11 with the hyphenated handle and cut `cv/` down to
+  those two PDFs, while `public/cv/` was still the 2026-08-22 export carrying the hyphenless handle at
+  exactly the paths the download chips serve. Copy the two masters verbatim, correct the `cv/` references
+  in the data layer and in this document, and record the two checks that gate publishing (same content —
+  1,163 words against 1,159; and no DNI, birth date or marital status in the new files). Assets plus
+  comments, no executable effect. Route: WRITER (2 comment files) + parent (assets and this document).
+  Risk: passive for the comments, and deliberately treated as **medium** for the publish gate, because a CV
+  that ships is unreviewable once someone downloads it. **Landed.** `public/cv/` now holds the owner's
+  2026-10-11 export, byte-identical to both masters (md5 verified) and with both published link
+  annotations reading `https://linkedin.com/in/pablo-moscardo`. RED is not applicable here and is not
+  claimed: the change is a byte-identical binary re-copy plus comments, so the evidence is md5 identity
+  and annotation extraction instead of a failing test.
 - [ ] **MC-19** Responsive audit at 380 / 760 / 1180 / 2000 px.
 - [ ] **MC-20** A11y audit: `sr-only` text, focus order, reduced motion, contrast on `--ink-soft`.
 - [ ] **MC-21** Performance: font payload (expanded-only request), bundle size, dead shadcn audit report.
@@ -1186,3 +1224,4 @@ Slice record (stacked-to-main, superseded from feature-branch-chain):
 | Stage 1 | MC-12 | Stage 1 committed as two work units: `docs(odd)` for the feature contract and `feat(landing)` for the implementation. No push. `package-lock.json` deliberately left out — it carries a pre-existing unrelated `"peer": true` diff (§5). | `babe1ea`, `9a109e7` |
 | Stage 3 | MC-45 | The owner's LinkedIn handle was wrong on the site, and MC-32 had made it wrong by trusting his own CV documents. The four pinned guards are **inverted, not deleted**, so the same drift is caught in the new direction; the README's stale 42-test claim is corrected to the 43 the suite actually runs. The published PDFs are deliberately NOT patched, and the owner confirms their hyphenless
 annotation is fine. | `2a2d1a7`; `npm test` 43/43 after a 4-failure RED on the guards alone; `tsc -p tsconfig.app.json --noEmit` exit 0; lint 3 errors / 7 warnings unchanged; `rg 'linkedin\.com/in/pablomoscardo' src/data` → 0 matches |
+| Stage 3 | MC-46 | The download chips were serving the 2026-08-22 CV export, whose link annotation still wrote the superseded hyphenless handle, while the owner's regenerated masters had already fixed it. Re-copied both masters verbatim and corrected the provenance comments that cited the cover letter and the OLD CV, neither of which is in `cv/` any more. The two new masters were cleared for publishing *before* the copy: no DNI, birth date or marital status, and the content is the same CV re-exported (1,163 words against 1,159), so the data layer needs no resync. | `9154f48`; md5 identical master↔published for both (EN `7284c77f…`, ES `d1d3a55b…`); `/URI` of both published files reads `pablo-moscardo`; `npm test` 43/43; `tsc` exit 0; lint 3 errors / 7 warnings unchanged; `rg 'linkedin\.com/in/pablomoscardo' src/data` → 0 matches |
