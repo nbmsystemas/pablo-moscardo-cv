@@ -177,8 +177,8 @@ describe("cards", () => {
   /**
    * §7.16, corrected by MC-45: the landing must carry the owner's real
    * hyphenated handle in BOTH of its LinkedIn links. The hyphenless handle the
-   * CV documents published was wrong, so MC-32's correction was itself a
-   * regression. Both links are pinned — fixing one and leaving the other is the
+   * CV documents print is not the one the owner uses, so MC-32 moved this the
+   * wrong way. Both links are pinned — fixing one and leaving the other is the
    * exact half-fix this asserts against.
    */
   it("points every LinkedIn link at the owner's canonical hyphenated handle", () => {

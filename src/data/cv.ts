@@ -17,10 +17,10 @@
    about. Nothing is invented — see §7.15/§7.16 of odd/tasks/mission-control-cv.md.
 
    §7.16's four corrections:
-     1. LinkedIn is `www.linkedin.com/in/pablo-moscardo`. MC-32 had set this
-        to the hyphenless `pablomoscardo` handle the CV documents carry, but
-        the owner's real profile is hyphenated, so MC-32's correction was
-        itself a regression; MC-45 reverses it here and in src/data/mission.ts.
+     1. LinkedIn is `www.linkedin.com/in/pablo-moscardo`. MC-32 had set this to
+        the hyphenless `pablomoscardo` handle the CV documents print, but that
+        is not the handle the owner uses, so MC-32 moved this the wrong way;
+        MC-45 reverses it here and in src/data/mission.ts.
      2. GitHub (`github.com/pabloezm`) was missing from `socials` — added.
      3. The portfolio (`pabloezmoscardo.nbmsystemas.com`) was missing — added.
      4. The profile is CURRENT: NBM Systemas, Wazyloop, Quantum Llama Terminal,
@@ -506,8 +506,8 @@ export const contact: Contact = {
 /**
  * §7.16, corrected by MC-45. GitHub and the portfolio were read off the CVs'
  * own link annotations; LinkedIn is the owner's hyphenated handle, which the
- * documents got wrong. Twitter and Behance are pre-existing and the documents
- * are silent on them, so they stay.
+ * documents print without the hyphen. Twitter and Behance are pre-existing and
+ * the documents are silent on them, so they stay.
  */
 export const socials: SocialLink[] = [
   { label: "LinkedIn", href: "https://www.linkedin.com/in/pablo-moscardo" },

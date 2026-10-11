@@ -220,15 +220,16 @@ describe("current profile", () => {
  * The canonical profile URLs, as corrected by MC-45 (§7.16).
  *
  * They are pinned here as literals ON PURPOSE. The defect this guards is a
- * silent drift of a handle: the CV documents carry a wrong handle, the site
- * inherited it in MC-32, and nothing failed, because a wrong URL is still a
- * valid string. Pinning the exact value is the only guard that can catch that.
+ * silent drift of a handle: the CV documents print the handle without its
+ * hyphen, the site inherited that spelling in MC-32, and nothing failed,
+ * because a wrong URL is still a valid string. Pinning the exact value is the
+ * only guard that can catch that.
  *
  * Sources: the owner's confirmation on 2026-10-11 that his real profile is
- * `https://www.linkedin.com/in/pablo-moscardo`, plus the correct GitHub and
- * portfolio URLs (`https://github.com/pabloezm`,
- * `https://pabloezmoscardo.nbmsystemas.com/`) from the CV link annotations and
- * the cover letter's signature block.
+ * `https://www.linkedin.com/in/pablo-moscardo`, plus the GitHub and portfolio
+ * URLs (`https://github.com/pabloezm`,
+ * `https://pabloezmoscardo.nbmsystemas.com/`) read off the CV link annotations
+ * and the cover letter's signature block.
  */
 const CANONICAL_LINKEDIN = "https://www.linkedin.com/in/pablo-moscardo";
 const CANONICAL_GITHUB = "https://github.com/pabloezm";

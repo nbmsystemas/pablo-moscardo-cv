@@ -754,9 +754,10 @@ owner's direct statement is the only first-hand source, and it wins.
 **What the repository proved.** Both PDFs in `public/cv/` and the gitignored masters in `cv/` carry
 `linkedin.com/in/pablomoscardo` as a link annotation — read off the `/URI` entry of each annotation
 dictionary — and the cover letter repeats the same string three times. So MC-32 did exactly what its
-sources said. The sources are what is wrong, and **they are the artefact that is still unfixed**: they are
-generated outside this repository, and `public/cv/` holds byte-identical copies of them (`md5` verified,
-MC-33), so a code-only fix leaves the download chips shipping the wrong handle.
+sources said, and the sources spell the handle without the hyphen. **The owner states those PDFs are fine
+and they stay untouched**, and this document does not claim otherwise: whether both spellings resolve to
+the same profile cannot be settled from here, because LinkedIn answers HTTP 200 with a reCAPTCHA browser
+check for a vanity that does not exist.
 
 **Decision.** The owner outranks his own documents, so `https://www.linkedin.com/in/pablo-moscardo` is
 canonical — with `www`, exactly as he wrote it. The pinned guards are **inverted, not deleted**: the same
@@ -766,7 +767,8 @@ they exist.
 **Scope.** The site (data layer, `index.html`, the two legacy components), the tests and this document.
 The two published PDFs are **not** patched here: they are generated artefacts, `public/cv/` is a
 documented verbatim copy of the masters, and an in-place byte patch would break that invariant and be
-silently reverted by the next export. Regenerating the masters is a separate owner action.
+silently reverted by the next export. Regenerating the masters is a separate owner action, and the owner has
+confirmed the existing annotation is fine, so there is no open follow-up here.
 
 All four are now fixed and pinned by tests, with observed RED before each fix.
 
@@ -997,8 +999,8 @@ Risk tier per the Delegated Verification Gate.
   delta 0 (3 errors / 7 warnings, all pre-existing). Two adjacent corrections: the README's own test
   count was stale at 42 while the suite runs 43 (unchanged by this diff — the writer added no test), and
   the `socials` doc comment still claimed the documents were authoritative for LinkedIn.
-  **Follow-up, not part of this task:** the CV masters and the two published copies in `public/cv/`
-  need regeneration from the corrected source.
+  **No follow-up:** the owner confirmed the hyphenless annotation in those PDFs is fine, so the CV
+  masters and the two published copies in `public/cv/` stay exactly as they are.
 - [ ] **MC-19** Responsive audit at 380 / 760 / 1180 / 2000 px.
 - [ ] **MC-20** A11y audit: `sr-only` text, focus order, reduced motion, contrast on `--ink-soft`.
 - [ ] **MC-21** Performance: font payload (expanded-only request), bundle size, dead shadcn audit report.
@@ -1182,4 +1184,5 @@ Slice record (stacked-to-main, superseded from feature-branch-chain):
 | Stage 1 | MC-29/30/31 | Three owner corrections after seeing Stage 1 rendered. **MC-29:** tagline reworded to the owner's text (his draft had a period after `datos`, shipped with a comma — the period left a verbless fragment and broke the list's parallelism). **MC-30:** the footer motto's dark plate deleted; the type inverted to `--ink` on `--paper` and the padding went with the plate, because with no surface to sit in it only pushed the block off the `--pad` line. **MC-31:** the boot sequence completed — and the investigation is the interesting part. The owner asked for the "letters changing" effect he saw on the reference. A CDP probe sampled the reference's tagline every 150ms for 2.6s: the text is **identical in all 18 samples**. There is no letter scramble; the reference has a per-glyph masthead entrance (already implemented), an active-word rotation in the motto (already implemented) and a `boot-flicker` opacity stutter on the tagline (missing here). §7.6 had asked for the stagger since Stage 0 and Stage 1 only wired the badge and the masthead. Measured, then implemented, then measured again. | probe transcripts; `/tmp/boot-mid.png` vs the settled capture |
 | Stage 1 | MC-12 delivery decision | Owner resolved the `ask-on-risk` chain strategy at the Stage-1 preview checkpoint: **`feature-branch-chain`** — all work-unit commits stay on `feat/mission-control-cv`, one pull request at the end, reviewed commit by commit. Owner also approved **Vitest as a dev-only dependency** (MC-28), which changes the Stage-2 verification policy for data and pure logic; layout and motion keep the measured path. | §10, §5, §9 |
 | Stage 1 | MC-12 | Stage 1 committed as two work units: `docs(odd)` for the feature contract and `feat(landing)` for the implementation. No push. `package-lock.json` deliberately left out — it carries a pre-existing unrelated `"peer": true` diff (§5). | `babe1ea`, `9a109e7` |
-| Stage 3 | MC-45 | The owner's LinkedIn handle was wrong on the site, and MC-32 had made it wrong by trusting his own CV documents. The four pinned guards are **inverted, not deleted**, so the same drift is caught in the new direction; the README's stale 42-test claim is corrected to the 43 the suite actually runs. The published PDFs are deliberately NOT patched: they are byte-identical copies of the gitignored masters and must be regenerated at the source. | `2a2d1a7`; `npm test` 43/43 after a 4-failure RED on the guards alone; `tsc -p tsconfig.app.json --noEmit` exit 0; lint 3 errors / 7 warnings unchanged; `rg 'linkedin\.com/in/pablomoscardo' src/data` → 0 matches |
+| Stage 3 | MC-45 | The owner's LinkedIn handle was wrong on the site, and MC-32 had made it wrong by trusting his own CV documents. The four pinned guards are **inverted, not deleted**, so the same drift is caught in the new direction; the README's stale 42-test claim is corrected to the 43 the suite actually runs. The published PDFs are deliberately NOT patched, and the owner confirms their hyphenless
+annotation is fine. | `2a2d1a7`; `npm test` 43/43 after a 4-failure RED on the guards alone; `tsc -p tsconfig.app.json --noEmit` exit 0; lint 3 errors / 7 warnings unchanged; `rg 'linkedin\.com/in/pablomoscardo' src/data` → 0 matches |

@@ -60,7 +60,7 @@ That harness found bugs no amount of reading would have:
 **Data and pure logic get real tests.** `npm test` runs 43 Vitest assertions over the data layer, including guards that exist because those exact things regressed:
 
 - Exactly one tenure figure across the whole data layer, and it is `20`. The site once shipped "Más de 15 años", "+10 años" and "+20 años" on three sections of the same document.
-- The canonical LinkedIn handle. All three of my own CV documents carried the wrong hyphenless handle, and the site inherited it — a wrong URL is still a valid string, so the pin is the guard.
+- The canonical LinkedIn handle. The site had inherited the hyphenless spelling from my own CV documents; the pin is the guard, because a wrong URL is still a valid string.
 - The landing carries no leftover Spanish, with an explicit exemption list for proper nouns like a street named "Jose Ingenieros".
 - The contact line has two same-tab links and no phone number.
 
