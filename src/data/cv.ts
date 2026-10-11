@@ -3,14 +3,19 @@
    Owner: MC-03. Rebuilt in English and brought up to date by MC-32.
 
    SOURCE OF TRUTH: the owner's own documents, kept in the local, gitignored
-   `cv/` folder next to this repo —
+   `cv/` folder next to this repo. As of 2026-10-11 that folder holds exactly the
+   two current PDFs and nothing else —
 
      - cv/CV-Pablo-Moscardo-EN.pdf  — authoritative English content (primary)
      - cv/CV-Pablo-Moscardo-ES.pdf  — the same document in Spanish
-     - cv/Carta-Presentacion-LinkedIn-Pablo-Moscardo.docx — cover letters
-     - cv/PABLO EZEQUIEL MOSCARDO.pdf — the OLD CV, read for career gaps only.
-       Deliberately NOT published and NOT referenced: it carries the full DNI,
-       birth date and marital status, which this data layer masks.
+
+   Two documents MC-32 read are no longer there: the LinkedIn cover letter
+   (`Carta-Presentacion-LinkedIn-Pablo-Moscardo.docx`) and the OLD CV
+   (`PABLO EZEQUIEL MOSCARDO.pdf`, which was the source of the certifications
+   block). The strings this file took from them stay here, but their provenance
+   is now history rather than a live input. Neither is published: the OLD CV
+   carried the full DNI, birth date and marital status, which this data layer
+   masks.
 
    Every string below is either a document string, a translation of the string
    this file already carried, or an existing value the documents are silent
@@ -543,10 +548,16 @@ export const sections: Section[] = [
  * Downloadable CVs (§7.16), served from `public/cv/`.
  *
  * Both are the owner's own files, copied verbatim — the site does not generate
- * them. The third source document in the local `cv/` folder
- * (`PABLO EZEQUIEL MOSCARDO.pdf`) is deliberately NOT published: it carries the
- * owner's full DNI, birth date and marital status, and the site's own data layer
- * masks the DNI to `27.484.---`. Publishing it would undo that.
+ * them. MC-46 replaced the pair on 2026-10-11 with the owner's regenerated
+ * export: the copies served until then were still the 2026-08-22 export and
+ * still carried the superseded hyphenless LinkedIn handle in their link
+ * annotation. The site serves whatever sits here, so a master that is fixed but
+ * not re-copied is not fixed for anyone downloading it.
+ *
+ * The OLD CV (`PABLO EZEQUIEL MOSCARDO.pdf`) is deliberately NOT published: it
+ * carries the owner's full DNI, birth date and marital status, and the site's
+ * own data layer masks the DNI to `27.484.---`. Publishing it would undo that.
+ * It is no longer in `cv/` either.
  */
 export const documents: CvDocument[] = [
   { lang: "EN", label: "CV — English", href: "/cv/pablo-moscardo-cv-en.pdf" },
@@ -556,12 +567,13 @@ export const documents: CvDocument[] = [
 /**
  * Certifications and continuous training (§7.16).
  *
- * Source: `cv/PABLO EZEQUIEL MOSCARDO.pdf`, the owner's OLD CV. The two current
- * CVs omit this block entirely and the data model had no field for it, so it was
- * reported as a gap and then filled from the only source that has it — the
- * owner asked for everything missing to be completed. These are career facts,
- * not personal data, which is what makes them safe to take from a document whose
- * DNI is deliberately unpublished.
+ * Source: `cv/PABLO EZEQUIEL MOSCARDO.pdf`, the owner's OLD CV, which he has
+ * since removed from the local `cv/` folder. The two current CVs omit this
+ * block entirely and the data model had no field for it, so it was reported as
+ * a gap and then filled from the only source that has it — the owner asked for
+ * everything missing to be completed. These are career facts, not personal
+ * data, which is what makes them safe to take from a document whose DNI is
+ * deliberately unpublished.
  */
 export const certifications: Certification[] = [
   { name: "CISSP", note: "In progress" },

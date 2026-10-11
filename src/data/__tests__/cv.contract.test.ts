@@ -229,7 +229,7 @@ describe("current profile", () => {
  * `https://www.linkedin.com/in/pablo-moscardo`, plus the GitHub and portfolio
  * URLs (`https://github.com/pabloezm`,
  * `https://pabloezmoscardo.nbmsystemas.com/`) read off the CV link annotations
- * and the cover letter's signature block.
+ * and the cover letter's signature block, as MC-32 recorded them at the time.
  */
 const CANONICAL_LINKEDIN = "https://www.linkedin.com/in/pablo-moscardo";
 const CANONICAL_GITHUB = "https://github.com/pabloezm";
