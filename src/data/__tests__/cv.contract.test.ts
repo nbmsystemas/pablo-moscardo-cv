@@ -217,25 +217,26 @@ describe("current profile", () => {
 });
 
 /**
- * The canonical profile URLs, read off the authoritative documents (§7.16).
+ * The canonical profile URLs, as corrected by MC-45 (§7.16).
  *
  * They are pinned here as literals ON PURPOSE. The defect this guards is a
- * silent drift of a handle: the site shipped `linkedin.com/in/pablo-moscardo`
- * while both CVs and the cover letter say `linkedin.com/in/pablomoscardo`, and
- * nothing failed, because a wrong URL is still a valid string. Pinning the
- * exact value is the only guard that can catch that.
+ * silent drift of a handle: the CV documents print the handle without its
+ * hyphen, the site inherited that spelling in MC-32, and nothing failed,
+ * because a wrong URL is still a valid string. Pinning the exact value is the
+ * only guard that can catch that.
  *
- * Sources: CV-Pablo-Moscardo-EN.pdf / -ES.pdf link annotations
- * (`https://linkedin.com/in/pablomoscardo`, `https://github.com/pabloezm`,
- * `https://pabloezmoscardo.nbmsystemas.com/`) and the cover letter, which
- * repeats the LinkedIn and portfolio URLs in its signature block.
+ * Sources: the owner's confirmation on 2026-10-11 that his real profile is
+ * `https://www.linkedin.com/in/pablo-moscardo`, plus the GitHub and portfolio
+ * URLs (`https://github.com/pabloezm`,
+ * `https://pabloezmoscardo.nbmsystemas.com/`) read off the CV link annotations
+ * and the cover letter's signature block.
  */
-const CANONICAL_LINKEDIN = "https://linkedin.com/in/pablomoscardo";
+const CANONICAL_LINKEDIN = "https://www.linkedin.com/in/pablo-moscardo";
 const CANONICAL_GITHUB = "https://github.com/pabloezm";
 const CANONICAL_PORTFOLIO = "https://pabloezmoscardo.nbmsystemas.com/";
 
 describe("canonical profile links", () => {
-  it("lists the LinkedIn handle the documents publish, not the hyphenated one", () => {
+  it("lists the owner's real hyphenated handle, not the superseded hyphenless one", () => {
     expect(socials.map((social) => social.href)).toContain(CANONICAL_LINKEDIN);
   });
 
@@ -258,10 +259,13 @@ describe("canonical profile links", () => {
    * The scan covers the WHOLE data layer, so the landing's own copy of the
    * handle (`cards` and `contactLine` in src/data/mission.ts) cannot keep the
    * superseded spelling while this file is fixed.
+   *
+   * MC-45 inverted this pin: the hyphenless handle is now the forbidden one,
+   * because the same drift is possible in the other direction.
    */
-  it("never reintroduces the superseded LinkedIn handle anywhere in the data layer", () => {
+  it("never reintroduces the superseded hyphenless LinkedIn handle anywhere in the data layer", () => {
     const offenders = dataSources.filter((source) =>
-      /linkedin\.com\/in\/pablo-moscardo/i.test(source.text),
+      /linkedin\.com\/in\/pablomoscardo/i.test(source.text),
     );
 
     expect(

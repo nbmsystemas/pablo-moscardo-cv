@@ -82,7 +82,7 @@ const Hero = () => {
               {/* Social Links */}
               <div className="animate-fade-in delay-800 flex justify-center md:justify-start gap-4 sm:gap-6">
             <a 
-              href="https://linkedin.com/in/pablo-moscardo" 
+              href="https://www.linkedin.com/in/pablo-moscardo" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-primary transition-colors transform hover:scale-110 duration-300"

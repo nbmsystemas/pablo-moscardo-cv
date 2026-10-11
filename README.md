@@ -57,10 +57,10 @@ That harness found bugs no amount of reading would have:
 
 **And it could not see hover at all, until it was fixed.** Headless Chrome has no input device, so it reports `(hover: none)` and `(pointer: coarse)` — which means every `@media (hover: hover)` rule is invisible to it. The first attempt to verify the footer's dish animation read `animation-name: none` on hover and looked like a broken feature; the element *did* match `:hover`, the gated rule simply never applied. `Emulation.setEmulatedMedia` does not help, because hover and pointer come from the device rather than from the media-emulation API. The fix is two blink settings at launch (`primaryPointerType=4,availablePointerTypes=4,primaryHoverType=2,availableHoverTypes=2`), after which a dispatched `mouseMoved` produces a real hover state and the gated rules apply. **Every hover state in this project was unverifiable before that flag, including the cards'.**
 
-**Data and pure logic get real tests.** `npm test` runs 42 Vitest assertions over the data layer, including guards that exist because those exact things regressed:
+**Data and pure logic get real tests.** `npm test` runs 43 Vitest assertions over the data layer, including guards that exist because those exact things regressed:
 
 - Exactly one tenure figure across the whole data layer, and it is `20`. The site once shipped "Más de 15 años", "+10 años" and "+20 años" on three sections of the same document.
-- The canonical LinkedIn handle. The site had it wrong in three places while all three of my own CV documents said otherwise.
+- The canonical LinkedIn handle. The site had inherited the hyphenless spelling from my own CV documents; the pin is the guard, because a wrong URL is still a valid string.
 - The landing carries no leftover Spanish, with an explicit exemption list for proper nouns like a street named "Jose Ingenieros".
 - The contact line has two same-tab links and no phone number.
 

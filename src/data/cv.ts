@@ -17,8 +17,10 @@
    about. Nothing is invented — see §7.15/§7.16 of odd/tasks/mission-control-cv.md.
 
    §7.16's four corrections:
-     1. LinkedIn is `linkedin.com/in/pablomoscardo` (the site said
-        `/in/pablo-moscardo`). Fixed here and in src/data/mission.ts.
+     1. LinkedIn is `www.linkedin.com/in/pablo-moscardo`. MC-32 had set this to
+        the hyphenless `pablomoscardo` handle the CV documents print, but that
+        is not the handle the owner uses, so MC-32 moved this the wrong way;
+        MC-45 reverses it here and in src/data/mission.ts.
      2. GitHub (`github.com/pabloezm`) was missing from `socials` — added.
      3. The portfolio (`pabloezmoscardo.nbmsystemas.com`) was missing — added.
      4. The profile is CURRENT: NBM Systemas, Wazyloop, Quantum Llama Terminal,
@@ -502,12 +504,13 @@ export const contact: Contact = {
 };
 
 /**
- * §7.16. The first three are the profiles the documents publish and were read
- * off the CVs' own link annotations; Twitter and Behance are pre-existing and
+ * §7.16, corrected by MC-45. GitHub and the portfolio were read off the CVs'
+ * own link annotations; LinkedIn is the owner's hyphenated handle, which the
+ * documents print without the hyphen. Twitter and Behance are pre-existing and
  * the documents are silent on them, so they stay.
  */
 export const socials: SocialLink[] = [
-  { label: "LinkedIn", href: "https://linkedin.com/in/pablomoscardo" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/pablo-moscardo" },
   { label: "GitHub · QuantLlama", href: "https://github.com/QuantLlama" },
   { label: "GitHub · nbmsystemas", href: "https://github.com/nbmsystemas" },
   { label: "YouTube", href: "https://www.youtube.com/@QuantumLlamaOficial" },
