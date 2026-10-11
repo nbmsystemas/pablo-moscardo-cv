@@ -857,6 +857,44 @@ the only place in the repository where that URL is published, which is worth kno
 
 ---
 
+## 7.20 The social share image (owner correction, 2026-10-11)
+
+The owner reported that sharing the link shows "una foto mía" and asked for it to be replaced with his own
+card design (`Portafolio Full Stack en Órbita.png`), with two constraints: **his face must not be
+cropped**, and the shared preview must not be oversized.
+
+**The defect was the aspect ratio, not the photo.** `twitter:card` has been `summary_large_image` since
+MC-22, and that card shows a landscape frame and centre-crops anything else. The image behind it was
+`pablo-profile.png`, a **428x583 portrait** (0.73:1). Every platform therefore centre-cropped a portrait
+into a landscape frame, which is exactly how a face gets cut and a preview ends up dominated by one tall
+image.
+
+**The card is 1200x628 (1.911:1).** The source is a 1254x1254 square, so a 1.91:1 window has to be chosen
+rather than scaled into. Two measurements decided it: the beige `STACK TECNOLÓGICO` panel starts at
+`y=763` and the `Ideas, código` line starts at `y=645`. A window of 1254x658 — the exact 1.91:1 crop —
+would slice that text line in half, so the window is **1200x628 from `x=54`**, which needs no resampling
+at all and lands 17px above the text. The 54px come off the left margin, which the `PM` mark does not use.
+
+**Format: JPEG q92, 4:4:4, progressive, 239 KB.** PNG-24 of the same crop is 1.07 MB, which is absurd for
+a share card. PNG-8 reaches 314 KB but its worst error lands in the planet's gradient (max 27/255) where
+banding shows, and JPEG q92 measured better on every axis while being smaller — PSNR 40.5 dB against 38.8.
+`og:image:width` and `og:image:height` must follow the real file or the meta lies.
+
+**Ratios, precisely (review finding R3-001).** The first wording in this section and in `index.html` said
+the card "crops to 2:1", which made a 1.911:1 file look inconsistent with its own stated premise. The
+platforms document **1.91:1** for a large share card, and 1200x628 is exactly that; 2:1 is the looser
+ceiling some of them accept. The distinction is worth keeping because the numbers were checked rather than
+argued: a literal 2:1 crop of 1200x628 would take 14px off the top and 14px off the bottom, and **both
+bands are background** — the hair starts about 50px down and the `Ideas, código` line sits 17px below the
+bottom edge. The framing survives either reading, so only the claim needed fixing.
+
+**`Person.image` deliberately keeps the portrait.** The banner carries text and logos and is a share
+card, not a depiction of a person: scaled to a knowledge-panel thumbnail its text is illegible and its
+face is tiny. A schema.org `Person.image` should be a photo, so it stays `pablo-profile.png`, and the
+asset is not orphaned either.
+
+---
+
 ## 8. Task checklist
 
 Route legend: `INLINE` = parent · `WRITER` = `gentle-ai-worker` · `VERIFY` = `gentle-ai-verify`.
@@ -1081,6 +1119,19 @@ Risk tier per the Delegated Verification Gate.
   decorating the test. GREEN at 43/43, `tsc` exit 0, lint delta 0. `Ingenieros` now has zero occurrences
   under `src/` and in the README, and `github.com/pabloezm` survives only in the inverted guard and on
   `index.html:113`.
+- [x] **MC-48** **Replace the social share image with a real Open Graph card (§7.20).** The owner supplied
+  `Portafolio Full Stack en Órbita.png` (1254x1254) and asked for his face to be framed rather than
+  cropped, and for the shared preview not to be oversized. The existing `og:image` is a 428x583 portrait
+  under `twitter:card: summary_large_image`, which centre-crops anything that is not landscape — that is
+  the actual defect. Crop to 1200x628 (1.911:1), the ratio the platforms document, ship JPEG q92 4:4:4 at
+  239 KB against 1.07 MB of PNG-24, and
+  point `og:image` and `twitter:image` at it while `Person.image` keeps the portrait. Asset plus meta, no
+  executable effect. Route: INLINE (the asset and one meta file) + parent (this document). Risk: low, but
+  the framing is a visual judgement and gets verified by looking at the crop, not by reading a number.
+  **Landed.** The shipped JPEG is byte-identical to the crop that was reviewed visually — face, beard and
+  both shoulders inside the frame, with the `Ideas, código` line 17px below the bottom edge. `npm test`
+  43/43 unchanged, `og:image:width`/`height` match the real file exactly, and `Person.image` still
+  resolves to `pablo-profile.png`.
 - [ ] **MC-19** Responsive audit at 380 / 760 / 1180 / 2000 px.
 - [ ] **MC-20** A11y audit: `sr-only` text, focus order, reduced motion, contrast on `--ink-soft`.
 - [ ] **MC-21** Performance: font payload (expanded-only request), bundle size, dead shadcn audit report.
@@ -1268,3 +1319,4 @@ Slice record (stacked-to-main, superseded from feature-branch-chain):
 annotation is fine. | `2a2d1a7`; `npm test` 43/43 after a 4-failure RED on the guards alone; `tsc -p tsconfig.app.json --noEmit` exit 0; lint 3 errors / 7 warnings unchanged; `rg 'linkedin\.com/in/pablomoscardo' src/data` → 0 matches |
 | Stage 3 | MC-46 | The download chips were serving the 2026-08-22 CV export, whose link annotation still wrote the superseded hyphenless handle, while the owner's regenerated masters had already fixed it. Re-copied both masters verbatim and corrected the provenance comments that cited the cover letter and the OLD CV, neither of which is in `cv/` any more. The two new masters were cleared for publishing *before* the copy: no DNI, birth date or marital status, and the content is the same CV re-exported (1,163 words against 1,159), so the data layer needs no resync. | `9154f48`; md5 identical master↔published for both (EN `7284c77f…`, ES `d1d3a55b…`); `/URI` of both published files reads `pablo-moscardo`; `npm test` 43/43; `tsc` exit 0; lint 3 errors / 7 warnings unchanged; `rg 'linkedin\.com/in/pablomoscardo' src/data` → 0 matches |
 | Stage 3 | MC-47 | The contact surface published a street address in four places (the visible `Location` row on /cv, an `Address` row no view renders, and two legacy components no route mounts) plus a personal `GitHub · pabloezm` chip. Both narrowed on the owner's instruction. The street's Spanish exemption turned out to be load-bearing for the English-only guard and became dead once the street was gone, so it was removed; the GitHub pin was inverted rather than deleted, because MC-32 had *added* that URL and a deleted pin cannot catch the chip coming back. That URL stays in the JSON-LD `sameAs` by owner decision, which is now the only place in the repository where it is published. | `3b93b34`; RED on exactly both guards (the language scan reporting `profile: Ingeniero` and `contact: Ingeniero`; the inverted pin finding the chip) then `npm test` 43/43; `tsc` exit 0; lint delta 0; `rg -ni ingenieros src README.md` → 0 matches; `github.com/pabloezm` only in the inverted guard and `index.html:113` |
+| Stage 3 | MC-48 | Sharing the link showed a portrait centre-cropped into a landscape frame, because `twitter:card` is `summary_large_image` and that card crops to 2:1 while the `og:image` was a 428x583 portrait. The defect was the aspect ratio, not the photo. Replaced with a 1200x628 card cropped from the owner's 1254x1254 design, its window chosen from two measurements so nothing important is sliced, and shipped as JPEG q92 because PNG-24 of the same crop would be 1.07 MB. `Person.image` deliberately keeps the portrait. | `b840927`; `public/og-image.jpg` 1200x628 at 239,156 bytes, md5 `10252e153722ecd56da01775745627b9` identical to the visually reviewed crop; `og:image:width`/`height` 1200/628; `npm test` 43/43 |
