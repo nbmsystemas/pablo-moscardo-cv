@@ -13,6 +13,7 @@
  */
 export { default as Badge } from "./Badge";
 export { default as BlueprintFrame } from "./BlueprintFrame";
+export { default as BrandIcon } from "./BrandIcon";
 export { default as ContactBlock } from "./ContactBlock";
 export { default as CvBriefing } from "./CvBriefing";
 export { default as CvContact } from "./CvContact";

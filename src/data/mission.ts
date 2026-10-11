@@ -75,12 +75,25 @@ export const panels = {
 export const footerMotto: string[] = ["LAUNCHING", "IDEAS INTO ORBIT"];
 
 /**
- * Landing cards (§7.8). Six external destinations, a filled 3x2 grid.
+ * The `/cv` destination (§7.8). It is the data source for the internal Full CV
+ * card (name + href) and must stay exported: the card consumes it rather than
+ * re-declaring the route string.
+ */
+export const cvCta = {
+  label: "FULL CV",
+  href: "/cv",
+} as const;
+
+/**
+ * Landing cards (§7.8). Six destinations in order, a filled 3x2 grid.
  *
- * `FIG. 08` ("CV completo") was retired from the grid by MC-25 and moved to
- * `cvCta` below. The reason is arithmetic, not taste: a seventh card forces a
- * third grid row (+92px at 1440x900), which cannot fit the left column inside
- * the >=1180px viewport lock once the title is back at the reference scale.
+ * MC-36 rebuilt the strip with the owner's new set: LinkedIn, the two GitHub
+ * profiles, YouTube, NBMSystemas and the internal Full CV card. WhatsApp,
+ * Behance, Email and X/Twitter were retired. `FIG. 08` (Full CV) left the grid
+ * in MC-25 and returns here in Behance's slot — still six cards, because the
+ * arithmetic is the constraint: a seventh card forces a third grid row (+92px
+ * at 1440x900), which cannot fit the left column inside the >=1180px viewport
+ * lock once the title is back at the reference scale.
  */
 export const cards: MissionCard[] = [
   {
@@ -91,46 +104,36 @@ export const cards: MissionCard[] = [
   },
   {
     fig: "FIG. 03",
-    name: "X / Twitter",
-    href: "https://twitter.com/pabloezm",
+    name: "GitHub · QuantLlama",
+    href: "https://github.com/QuantLlama",
     external: true,
   },
   {
     fig: "FIG. 04",
-    name: "Behance",
-    href: "https://behance.net/pabloezm",
+    name: "GitHub · nbmsystemas",
+    href: "https://github.com/nbmsystemas",
     external: true,
   },
   {
     fig: "FIG. 05",
+    name: "YouTube",
+    href: "https://www.youtube.com/@QuantumLlamaOficial",
+    external: true,
+  },
+  {
+    fig: "FIG. 06",
     name: "NBMSystemas",
     href: "https://nbmsystemas.com",
     external: true,
   },
   {
-    fig: "FIG. 06",
-    name: "Email",
-    href: "mailto:pablo.ezequiel.moscardo@gmail.com",
-    external: false,
-  },
-  {
     fig: "FIG. 07",
-    name: "WhatsApp",
-    href: "https://wa.me/5493492640293",
-    external: true,
+    name: cvCta.label,
+    href: cvCta.href,
+    external: false,
+    internal: true,
   },
 ];
-
-/**
- * The `/cv` call to action (§7.8). Acceptance criterion 4 requires `/cv` to stay
- * reachable from the landing, but it is a different KIND of destination from the
- * six external profiles, so it renders as a bordered internal <Link> in the
- * contact row instead of as their peer card.
- */
-export const cvCta = {
-  label: "FULL CV",
-  href: "/cv",
-} as const;
 
 /**
  * CURRENT ORBIT items, derived from `skillGroups` (§7.9). Order follows the

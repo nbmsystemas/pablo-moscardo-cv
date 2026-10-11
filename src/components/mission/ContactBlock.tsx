@@ -1,6 +1,4 @@
-import { Link } from "react-router-dom";
-
-import { contactLine, cvCta } from "@/data/mission";
+import { contactLine } from "@/data/mission";
 
 /**
  * ContactBlock — the short contact line under the tagline (§7.15).
@@ -14,10 +12,9 @@ import { contactLine, cvCta } from "@/data/mission";
  * The phone still exists in `src/data/cv.ts` for /cv, which is a document rather
  * than a landing; only the landing drops it.
  *
- * The `/cv` CTA rides on the same line as a bordered internal <Link>. It is
- * deliberately NOT one of the six external cards: the card grid has to stay a
- * filled 3x2 to keep the viewport lock, and a route is not the same kind of
- * object as a social profile.
+ * MC-36: the `/cv` CTA left this row and became the internal Full CV card in the
+ * grid, so the row is back to exactly the question plus the two links. `cvCta`
+ * still lives in the data layer as that card's label and href source.
  *
  * Everything here is English, like the rest of the landing.
  */
@@ -34,13 +31,7 @@ const ContactBlock = () => (
           </a>
         </span>
       ))}
-      <span aria-hidden="true">. </span>
-      <Link className="contact__cta" to={cvCta.href}>
-        {cvCta.label}
-        <span className="contact__cta-arrow" aria-hidden="true">
-          →
-        </span>
-      </Link>
+      <span aria-hidden="true">.</span>
     </p>
   </div>
 );

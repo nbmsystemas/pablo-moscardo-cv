@@ -783,38 +783,6 @@
   margin-top: 2px;
 }
 
-/* `/cv` as a CTA, never a peer card (§7.8): a bordered internal <Link>, visually
-   distinct from the six external cards — ink border on paper, inverting on hover
-   and focus exactly like a card does. `vertical-align: 1px` rides the chip on the
-   links line, so the contact block stays two rows tall. */
-.contact__cta {
-  display: inline-block;
-  margin-left: 12px;
-  padding: 3px 10px 2px;
-  border: 1px solid var(--ink);
-  background: var(--paper-hi);
-  font-size: 10px;
-  line-height: 1.5;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink);
-  vertical-align: 1px;
-  transition:
-    background-color 0.3s var(--ease-out),
-    color 0.3s var(--ease-out);
-}
-
-.contact__cta-arrow {
-  margin-left: 7px;
-  color: var(--orange);
-}
-
-.contact__cta:hover,
-.contact__cta:focus-visible {
-  background: var(--ink);
-  color: var(--paper-hi);
-}
-
 .contact::before {
   content: "";
   position: absolute;
@@ -870,7 +838,14 @@
   --card-shadow: 0 16px 30px -18px rgb(22 22 26 / 70%);
 
   position: relative;
-  display: block;
+  /* Grid, not block: the brand glyph owns a fixed first column and the text
+     block (`card__fig` + `card__name`) stacks in the second. The icon spans both
+     text rows so the mark reads level with the name. Decorations (arrow, hatch,
+     corner, tri, scan) are absolutely positioned and do not take a cell. */
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 10px;
+  align-content: start;
   min-height: clamp(58px, 6.4vh, 76px);
   padding: 9px 20px 16px 20px;
   background: var(--paper-hi);
@@ -898,6 +873,15 @@
   .card__hatch {
     left: 16px;
   }
+}
+
+.card__icon {
+  grid-row: 1 / span 2;
+  align-self: center;
+  width: 18px;
+  height: 18px;
+  color: var(--orange);
+  transition: color 0.32s var(--ease-out);
 }
 
 .card__fig {
