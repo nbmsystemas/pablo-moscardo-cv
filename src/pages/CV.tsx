@@ -1,21 +1,24 @@
 import { useLayoutEffect } from "react";
-import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
 
 import {
   Badge,
   BlueprintFrame,
   CvBriefing,
+  CvContact,
   CvDownloads,
   CvEducation,
+  CvExperience,
   CvNav,
+  CvProjects,
+  CvSkills,
+  MissionFooter,
   Motto,
   Telemetry,
 } from "@/components/mission";
-import { sections } from "@/data/cv";
 
 /**
- * CV — the full mission log (MC-13 shell of §7.13).
+ * CV — the full mission log (MC-13 shell, MC-15/16/17 sections of §7.13).
  *
  * `/cv` is the SAME visual system as the landing at long scroll, not a second
  * design: the header reuses <Badge />, <Telemetry /> and <Motto /> unchanged,
@@ -31,21 +34,30 @@ import { sections } from "@/data/cv";
  *     band, which is the defect the site being replaced ships (§7.10).
  *
  * THE SIX ANCHOR IDS ARE FROZEN (§7.10): sobre-mi, experiencia, habilidades,
- * proyectos, educacion, contacto. MC-14 implements two of them; the other four
- * are rendered EMPTY but correctly anchored, because the nav links to all six
- * today and MC-15/16/17 fill them. Their headings are the data layer's own
- * `sections[].title` — no placeholder copy is authored, and no content is built
- * ahead of its task.
+ * proyectos, educacion, contacto. All six now render a real section — MC-14 built
+ * the briefing and education, MC-15/16/17 the experience, skills, projects and
+ * contact — and the heading-only `EmptyLogSection` helper MC-13 used to mark the
+ * four pending ones is deleted with them.
  *
- * Deliberately absent: <MissionFooter />. §7.13 assigns it to MC-17 (the footer
- * is a landing artefact and must not be duplicated before that task decides how
- * it is reused). The route is coherent without it: the last anchored section
- * carries the page's bottom padding.
+ * Every string comes from the data layer; a section title is `sections[].title`,
+ * the `FIG.` ordinals are structural (the types carry no `fig`), and no field is
+ * invented.
+ *
+ * <MissionFooter /> IS reused here, unmodified (§7.13). It is a landing artefact
+ * and the check before dropping it in is its two couplings:
+ *
+ *   - `--foot-h` (tokens.css) is global, so `.foot`'s height, negative side
+ *     margins and stacking (landing.css) work unchanged inside `.stage--cv`, which
+ *     keeps the landing's `padding: var(--pad) var(--pad) 0`. No /cv-specific rule
+ *     was needed in landing.css or panels.css.
+ *   - The status panel's clearance lift (panels.css) is a `.status-aside` concern
+ *     and /cv renders no <StatusPanel />, so nothing on this route reads
+ *     `--status-h` / `--status-lift-gap`. The only panels that survive here are
+ *     <CvDownloads /> and the sections, none of them absolutely positioned against
+ *     the footer band.
+ *
+ * The route therefore reuses the footer as-is instead of forking it.
  */
-
-/** A section's heading text, straight from the data layer. */
-const sectionTitle = (id: string) =>
-  sections.find((section) => section.id === id)?.title ?? id;
 
 /**
  * Resolve a direct load of `/cv#<id>` after the sections exist.
@@ -62,6 +74,14 @@ const sectionTitle = (id: string) =>
  * <CvNav />'s own layout effect has written `--cv-nav-h`, and once more when the
  * web fonts swap in, because a font swap changes every section's height and a
  * scroll taken at mount can end up above or below the target.
+ *
+ * This is ALSO why no section uses a transform-based entrance (`boot-up`).
+ * `boot-up` translates a section 14px down while it runs, which moves every
+ * section below it and made a direct load of `/cv#experiencia` settle 4px under
+ * the sticky band (measured target y 56px at the scroll, 42px once the transforms
+ * settled). Every section here uses the opacity-only `boot-in-flicker` helper with
+ * a `--d` stagger in reading order, which has no layout effect, and `base.css`
+ * neutralises both under `prefers-reduced-motion: reduce`.
  */
 const useAnchorScroll = () => {
   useLayoutEffect(() => {
@@ -84,34 +104,6 @@ const useAnchorScroll = () => {
     };
   }, []);
 };
-
-/**
- * An anchored but empty section: heading only, dashed separator and an --ink-soft
- * title (cv.css `.cv-section--empty`). The `--d` keeps the section entrances in
- * reading order — the same §7.6 `boot-in-flicker` helper and stagger the landing
- * uses, which base.css neutralises under `prefers-reduced-motion: reduce`.
- *
- * The entrance is the OPACITY helper, not `boot-up`: `boot-up` translates the
- * section 14px down while it runs, which moves every section below it and made a
- * direct load of `/cv#experiencia` settle 4px under the sticky band (measured
- * target y 56px at the scroll, 42px once the transforms settled). Flicker has no
- * layout effect, so the anchor offset stays exact.
- */
-const EmptyLogSection = ({ id, delay }: { id: string; delay: number }) => (
-  <section
-    className="cv-section cv-section--empty boot-in-flicker"
-    id={id}
-    aria-labelledby={`cv-${id}-title`}
-    style={{ "--d": `${delay}s` } as CSSProperties}
-  >
-    <header className="cv-section__head">
-      <span className="cv-section__mark" aria-hidden="true" />
-      <h2 className="cv-section__title" id={`cv-${id}-title`}>
-        {sectionTitle(id)}
-      </h2>
-    </header>
-  </section>
-);
 
 const CV = () => {
   useAnchorScroll();
@@ -146,17 +138,24 @@ const CV = () => {
 
       <CvDownloads />
 
+      {/* Reading order is the §7.10 anchor order, so the `--d` stagger walks the
+          page the same way: briefing 0.20, experience 0.28, skills 0.36,
+          projects 0.44, education 0.52, contact 0.60. */}
       <main className="main main--cv">
         <CvBriefing />
 
-        <EmptyLogSection id="experiencia" delay={0.28} />
-        <EmptyLogSection id="habilidades" delay={0.36} />
-        <EmptyLogSection id="proyectos" delay={0.44} />
+        <CvExperience />
+
+        <CvSkills />
+
+        <CvProjects />
 
         <CvEducation />
 
-        <EmptyLogSection id="contacto" delay={0.6} />
+        <CvContact />
       </main>
+
+      <MissionFooter />
     </div>
   );
 };

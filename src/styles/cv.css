@@ -18,7 +18,15 @@
      5. briefing         — the presentation letter, its areas and notable areas
      6. education        — rows carrying the surfaced `type` micro-label
      7. header           — the back-link chip
-     8. empty sections   — the four MC-15/16/17 anchors
+     8. experience       — FIG.-numbered status rows, `current` flagged in orange
+     9. skills           — one plate per group, skills as chips, NO levels
+    10. projects         — the card idiom, `highlight` in orange, `link` external
+    11. contact          — the contact-block idiom, closed by `cta`
+    12. footer           — reused unchanged; nothing /cv-specific to declare
+
+   MC-13's `.cv-section--empty` (the dashed placeholder for the four anchors
+   MC-15/16/17 had not built) is DELETED with the helper that used it: all six
+   frozen ids now render a real section.
    ========================================================================== */
 
 /* ---------------------------------------------------------------------------
@@ -432,20 +440,554 @@ html:has(.stage--cv) {
 }
 
 /* ---------------------------------------------------------------------------
-   8. Empty sections (MC-15/16/17)
+   8. Experience rows (MC-15)
 
-   The six ids are frozen (§7.10) and the sticky nav links to all six today, so
-   all six exist now. These four carry only their data-layer `sections[].title`:
-   a dashed hairline and an --ink-soft title mark them as pending without a
-   single invented word.
+   `FIG.`-numbered rows in the status-row idiom: the PERIOD is the left key, the
+   title/company pair is the value, and the description is the value's second
+   line. The plate reuses the `.cv-edu` construction (1px --rule-strong on
+   --paper-hi, 1px rules between rows) so experience and education read as the
+   same kind of readout.
+
+   The row grid is TWO columns at base and THREE from 760px, because the status
+   idiom's `max-content` key has no room on a phone: at 390px the label column
+   plus 18px of gutter plus the period would leave the value column ~0px and its
+   long description would spill. Below 760px the figure and the period share row
+   1 and the value spans both columns under them.
+
+   52px is the figure column: `FIG. 01` at 9px mono with .2em tracking measures
+   ~46px, and the +6px keeps the widest ordinal off the period.
    --------------------------------------------------------------------------- */
-.cv-section--empty {
-  border-top-style: dashed;
+.cv-exp {
+  margin-top: clamp(18px, 2.2vw, 28px);
+  border: 1px solid var(--rule-strong);
+  background: var(--paper-hi);
 }
 
-.cv-section--empty .cv-section__title {
+.cv-exp__row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 4px 14px;
+  padding: 15px 18px;
+}
+
+.cv-exp__row + .cv-exp__row {
+  border-top: 1px solid var(--rule);
+}
+
+.cv-exp__fig {
+  grid-column: 1;
+  grid-row: 1;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-faint);
+}
+
+.cv-exp__period {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
   color: var(--ink-soft);
 }
+
+/* The 5px orange cell is the whole `current` flag. The period already says
+   "Present" / "Ongoing" in the data layer, so the flag is a device and not a
+   second label — the same treatment §7.9 gives the landing's status cells. */
+.cv-exp__flag {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-right: 7px;
+  background: var(--orange);
+  vertical-align: 0.16em;
+}
+
+.cv-exp__row--current .cv-exp__period {
+  font-weight: 700;
+  color: var(--orange-ink);
+}
+
+.cv-exp__body {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  min-width: 0;
+  margin-top: 5px;
+}
+
+.cv-exp__title {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.cv-exp__company {
+  margin-top: 2px;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  color: var(--ink-soft);
+}
+
+.cv-exp__desc {
+  margin-top: 9px;
+  font-size: 13px;
+  line-height: 1.62;
+  color: var(--ink-2);
+  /* Safety net only: the longest unbreakable token in `experience[]` is a
+     domain name (~31 characters), which fits the narrowest column. */
+  overflow-wrap: break-word;
+}
+
+.cv-exp__ref {
+  margin-top: 8px;
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+  color: var(--ink-faint);
+}
+
+@media (min-width: 760px) {
+  .cv-exp__row {
+    grid-template-columns: 52px minmax(0, max-content) minmax(0, 1fr);
+    gap: 8px 18px;
+  }
+
+  .cv-exp__fig {
+    grid-column: 1;
+  }
+
+  .cv-exp__period {
+    grid-column: 2;
+  }
+
+  /* Row 1 and column 3: the status idiom's value cell. */
+  .cv-exp__body {
+    grid-column: 3;
+    grid-row: 1;
+    margin-top: 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   9. Skills (MC-16)
+
+   One plate per `skillGroups[]` group — eleven of them — with the group title as
+   a `.panel-title` micro-label and the skills as chips. **NO NUMERIC LEVELS**
+   (§7.9): the landing's 16-cell bars are a visual device and `/cv` presents
+   skills as text only.
+
+   The `auto-fill` track floor is 320px, which gives THREE plates per row inside
+   the 1100px reading column at 1440x900 (1100 = 3 x 356 + 2 x 14), two at
+   760x900 (728 = 2 x 357 + 14) and one at 390px. The 7x2 orange dash is
+   the same mark `.cv-areas__item` uses, so the accent stays a hairline-scale
+   device rather than eleven thick bars of orange.
+   --------------------------------------------------------------------------- */
+.cv-skills {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 14px;
+  margin-top: clamp(18px, 2.2vw, 28px);
+}
+
+.cv-skill {
+  padding: 14px 16px 16px;
+  border: 1px solid var(--rule-strong);
+  background: var(--paper-hi);
+}
+
+.cv-skill__title::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 2px;
+  margin-right: 9px;
+  background: var(--orange);
+  vertical-align: 0.3em;
+}
+
+.cv-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 11px;
+}
+
+/* `min-width: 0` is load-bearing: a chip is a flex item, so its default
+   `min-width: auto` refuses to shrink below its content and the longest item in
+   `skillGroups[]` (“RAG architectures (retrieval, chunking, embeddings,
+   re-ranking)”) would spill the plate horizontally. With 0 it wraps at its
+   spaces, and `overflow-wrap` only breaks mid-word if a single token cannot fit. */
+.cv-chip {
+  min-width: 0;
+  max-width: 100%;
+  padding: 3px 8px 2px;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  font-size: 11.5px;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: var(--ink-2);
+  overflow-wrap: break-word;
+}
+
+/* ---------------------------------------------------------------------------
+   10. Projects (MC-16)
+
+   The card idiom (§7.5): a --paper-hi plate in a 1px --rule-strong border, a
+   14px corner bracket, a `FIG.` micro-label, the bottom-right triangle, and the
+   contract's single permitted shadow on interactive hover.
+
+   `highlight` IS THE ORANGE TREATMENT: a 3px orange left rule, the ordinal in
+   --orange-ink. The extra 2px of rule is paid back out of `padding-left` so the
+   five featured cards keep the same text axis as the four historical ones.
+
+   Only a LINKED card interacts (`.cv-project--linked`): it inverts to ink and
+   lifts 3px, exactly like `.card`. A card with no destination stays flat, because
+   the affordance would be a lie. The inline anchor is the project TITLE and not
+   the whole card: the description runs to ~1100 characters and a whole-card
+   anchor would make that entire text the link's accessible name.
+   --------------------------------------------------------------------------- */
+.cv-projects {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  margin-top: clamp(18px, 2.2vw, 28px);
+}
+
+@media (min-width: 900px) {
+  .cv-projects {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Every `<li>` is a stretched grid item, so `height: 100%` makes the cards in a
+   row share their height and `margin-top: auto` on the tag row keeps the tags on
+   the cards' bottom edge. */
+.cv-projects > li {
+  min-width: 0;
+}
+
+.cv-project {
+  --card-shadow: 0 16px 30px -18px rgb(22 22 26 / 70%);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px 20px 20px;
+  border: 1px solid var(--rule-strong);
+  background: var(--paper-hi);
+  color: var(--ink);
+  isolation: isolate;
+  transition:
+    transform 0.32s var(--ease-out),
+    background-color 0.32s var(--ease-out),
+    color 0.32s var(--ease-out),
+    border-color 0.32s var(--ease-out),
+    box-shadow 0.32s var(--ease-out);
+}
+
+.cv-project--highlight {
+  border-left: 3px solid var(--orange);
+  padding-left: 18px;
+}
+
+.cv-project__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  /* Clears the top-right corner bracket. */
+  padding-right: 18px;
+}
+
+.cv-project__fig {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-faint);
+  transition: color 0.32s var(--ease-out);
+}
+
+.cv-project--highlight .cv-project__fig {
+  color: var(--orange-ink);
+}
+
+.cv-project__period {
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: inherit;
+  opacity: 0.55;
+}
+
+.cv-project__title {
+  margin-top: 7px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  color: inherit;
+}
+
+.cv-project__link {
+  color: inherit;
+}
+
+.cv-project__arrow {
+  margin-left: 8px;
+  font-size: 12px;
+  color: var(--orange);
+}
+
+.cv-project__subtitle {
+  margin-top: 3px;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: inherit;
+  opacity: 0.72;
+}
+
+.cv-project__desc {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.62;
+  color: inherit;
+  opacity: 0.86;
+  overflow-wrap: break-word;
+}
+
+.cv-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  /* Pins the tag row to the card's bottom edge; the card is a flex column. */
+  margin-top: auto;
+  padding-top: 14px;
+}
+
+.cv-tag {
+  min-width: 0;
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: inherit;
+  opacity: 0.6;
+  overflow-wrap: break-word;
+}
+
+.cv-project__corner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 14px;
+  height: 14px;
+  border-top: 1px solid var(--ink);
+  border-right: 1px solid var(--ink);
+  transition: border-color 0.32s var(--ease-out);
+}
+
+.cv-project__tri {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-bottom: 12px solid var(--rule-strong);
+}
+
+/* Interaction state, duplicated under :focus-within so the keyboard reaches the
+   same affordance the pointer does. Only linked cards are interactive. */
+@media (hover: hover) {
+  .cv-project--linked:hover,
+  .cv-project--linked:focus-within {
+    background: var(--ink);
+    color: var(--paper-hi);
+    border-color: var(--ink);
+    transform: translateY(-3px);
+    box-shadow: var(--card-shadow);
+  }
+
+  .cv-project--linked:hover .cv-project__fig,
+  .cv-project--linked:focus-within .cv-project__fig {
+    color: var(--orange-soft);
+  }
+
+  .cv-project--linked:hover .cv-project__arrow,
+  .cv-project--linked:focus-within .cv-project__arrow {
+    color: var(--orange-soft);
+  }
+
+  .cv-project--linked:hover .cv-project__corner,
+  .cv-project--linked:focus-within .cv-project__corner {
+    border-color: var(--orange);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   11. Contact (MC-17)
+
+   The contact-block idiom (§7.8): a 26x6 orange bar, a 30px inset left edge.
+   The four `contact.details` pairs are a `.cv-edu`-style plate (1px
+   --rule-strong on --paper-hi), the five `socials` reuse the `.cv-back` /
+   `.cv-download` chip, and `invite` + `cta` close the section as the letter's
+   last two lines. `href: null` (the postal address) renders as plain text, so
+   there is no dead link.
+
+   The prose is capped at 74ch, the same reading measure as `.cv-brief`; the
+   detail plate is not, because two columns of label/value pairs want the whole
+   reading column.
+   --------------------------------------------------------------------------- */
+.cv-contact {
+  position: relative;
+  margin-top: clamp(18px, 2.2vw, 28px);
+  padding-left: 30px;
+}
+
+.cv-contact::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 26px;
+  height: 6px;
+  background: var(--orange);
+}
+
+.cv-contact__details {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px 28px;
+  padding: 15px 18px;
+  border: 1px solid var(--rule-strong);
+  background: var(--paper-hi);
+}
+
+@media (min-width: 760px) {
+  .cv-contact__details {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.cv-contact__detail {
+  min-width: 0;
+}
+
+.cv-contact__label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.cv-contact__value {
+  margin-top: 3px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink);
+  /* The email address is 34 characters; at the narrowest column it must wrap
+     rather than spill the plate. */
+  overflow-wrap: break-word;
+}
+
+/* The same orange-underline-on-hover the landing's `.contact__link` uses. */
+.cv-contact__link {
+  color: var(--ink);
+  background-image: linear-gradient(var(--orange), var(--orange));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0 2px;
+  transition: background-size 0.3s var(--ease-out);
+}
+
+.cv-contact__link:hover,
+.cv-contact__link:focus-visible {
+  background-size: 100% 2px;
+}
+
+.cv-contact__socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.cv-social {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 11px 4px;
+  border: 1px solid var(--rule-strong);
+  background: var(--paper-hi);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+  transition:
+    background-color 0.3s var(--ease-out),
+    color 0.3s var(--ease-out),
+    border-color 0.3s var(--ease-out);
+}
+
+.cv-social__arrow {
+  font-size: 11px;
+  color: var(--orange);
+}
+
+@media (hover: hover) {
+  .cv-social:hover,
+  .cv-social:focus-visible {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper-hi);
+  }
+
+  .cv-social:hover .cv-social__arrow,
+  .cv-social:focus-visible .cv-social__arrow {
+    color: var(--orange-soft);
+  }
+}
+
+.cv-contact__invite,
+.cv-contact__cta {
+  max-width: 74ch;
+  margin-top: 16px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ink-2);
+}
+
+.cv-contact__cta {
+  margin-top: 8px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ---------------------------------------------------------------------------
+   12. Footer
+
+   <MissionFooter /> is reused VERBATIM (MC-17, §7.13). Two couplings were
+   checked before dropping it in, and neither needed a /cv rule:
+
+     - `--foot-h` is declared on `:root` (tokens.css) and its short-viewport ramp
+       on `:root` too (landing.css), so `.foot`'s height, negative side margins
+       and stacking (landing.css) resolve unchanged inside `.stage--cv`, which
+       keeps the landing's `padding: var(--pad) var(--pad) 0`.
+     - panels.css lifts the orbit panel out of the status plate's overhang with
+       `--status-h` / `--status-lift-gap`. Both are `.status-aside` concerns, and
+       /cv renders no <StatusPanel /> and no absolutely positioned panel, so
+       there is no clearance arithmetic to adjust on this route.
+
+   The footer therefore has no declaration of its own here. Do not fork it.
+   --------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------
    Download strip (§7.16)
