@@ -8,7 +8,7 @@
      2. status panel     — chrome, head, rows
      3. status bars      — the 16-cell segmented charge
      4. orbit panel      — chrome, pips, items
-     5. footer landscape — the scene, its line art and the beacon
+     5. footer landscape — the scene, its line art, the beacon and the MC-38 slew
      6. footer motto     — the ink plate and the orange rule
      7. narrow bands     — sub-760px trims
 
@@ -91,6 +91,12 @@
        `stage_bottom - (--status-h + --status-lift-gap)` at every --foot-h below
        that sum, so the gap is the only knob that moves it. */
     --status-lift-gap: 12px;
+
+    /* Breathing room under the plate, so it does not sit flush with the viewport
+       edge. It is added to the orbit panel's formula below as well, which is what
+       keeps the plate/orbit gap at --status-lift-gap instead of letting the lift
+       eat it. */
+    --status-bottom: var(--pad);
   }
 
   .status {
@@ -115,7 +121,10 @@
     right: 0;
     bottom: max(
       0px,
-      calc(var(--status-h) + var(--status-lift-gap) - var(--foot-h))
+      calc(
+        var(--status-h) + var(--status-lift-gap) + var(--status-bottom) -
+          var(--foot-h)
+      )
     );
     width: clamp(250px, 17vw, 300px);
     margin-top: 0;
@@ -421,6 +430,45 @@
   fill: var(--orange);
   opacity: 0.22;
   animation: visor 1.8s step-end infinite;
+}
+
+/* MC-38 — the dish array answers the band's hover.
+
+   THE HOVER TARGET IS THE FOOTER, NOT THE DISH. Every part of a reflector is a 1px
+   `--ink-soft` stroke, so a hover on the drawing itself would be a hover on a
+   hairline; `.foot` is the real box and the whole landscape is the target, which is
+   also what the owner asked for ("si lo pasás por el dibujo").
+
+   ONE dish moves: `.foot__dish--slew` is the array's main 80-unit reflector (see
+   DISHES in MissionFooter.tsx for why that one and not the small one under the
+   `4.0 M` cota). What rotates is the `.foot__slew` group — rim, feed tripod and
+   feed horn — while the mast, the neck and the counterweight stay bolted to the
+   pad. `transform-box: fill-box` makes 50% 100% the rim's own bottom point, which
+   is where the reflector meets its mount; that is geometry, so it lives here,
+   while the motion itself is the `dish-slew` keyframe in motion.css.
+
+   WHY HOVER-ONLY APPLICATION. The keyframe leaves and returns to the authored
+   pose, so a dish nobody is hovering is pixel-identical to the one that was drawn:
+   the settled screenshot and every measured box stay as they were, and the
+   animation is not even present in `document.getAnimations()` at rest (which is
+   also what keeps the harness's own settle step from fast-forwarding a paused
+   animation to a mid-slew angle). Leaving mid-slew returns the dish in one frame;
+   at ±7deg on a 40-unit reflector that is under 2px of rim travel, i.e. less than
+   the stroke it replaces.
+
+   `@media (hover: hover)` for the same reason the card rules use it: a touch
+   device must never latch it. Reduced motion needs nothing — base.css forces
+   `animation-duration: 1ms` and `animation-iteration-count: 1`, which lands the
+   slew on its final keyframe (the authored pose). */
+.foot__dish--slew .foot__slew {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+@media (hover: hover) {
+  .foot:hover .foot__dish--slew .foot__slew {
+    animation: dish-slew 2.8s var(--ease-out) both;
+  }
 }
 
 /* --- annotation ---------------------------------------------------------- */

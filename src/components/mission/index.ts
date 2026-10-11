@@ -3,18 +3,22 @@
  *
  * Two groups:
  *   - the landing (MC-01…MC-10b): Badge, BlueprintFrame, ContactBlock,
- *     LinkCards, Masthead, MissionFooter, Motto, OrbitPanel, OrbitSystem,
- *     SpecPanel, StatusPanel, Tagline, Telemetry
+ *     CursorGuides, LinkCards, Masthead, MissionFooter, Motto, OrbitPanel,
+ *     OrbitSystem, SpecPanel, StatusPanel, Tagline, Telemetry
  *   - the `/cv` mission log (MC-13/MC-14, plus the download strip of §7.16 and
  *     the MC-15/16/17 sections): CvNav, CvBriefing, CvEducation, CvDownloads,
  *     CvExperience, CvSkills, CvProjects, CvContact. MC-17 also drops the
  *     heading-only placeholder helper from pages/CV.tsx, so every one of the six
  *     frozen anchor ids now renders a real section.
+ *
+ * <CursorGuides /> (MC-37) is page chrome rather than a landing feature and is
+ * mounted by BOTH routes: it belongs to neither group.
  */
 export { default as Badge } from "./Badge";
 export { default as BlueprintFrame } from "./BlueprintFrame";
 export { default as BrandIcon } from "./BrandIcon";
 export { default as ContactBlock } from "./ContactBlock";
+export { default as CursorGuides } from "./CursorGuides";
 export { default as CvBriefing } from "./CvBriefing";
 export { default as CvContact } from "./CvContact";
 export { default as CvDownloads } from "./CvDownloads";

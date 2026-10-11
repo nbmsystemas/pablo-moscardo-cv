@@ -216,6 +216,27 @@
   }
 }
 
+/* MC-38: one reflector of the footer's dish array re-aims while the band is
+   hovered. A slew, not a wobble — it leaves and returns to the AUTHORED pose, so
+   a dish nobody has hovered is exactly the dish that was drawn and the settled
+   render/screenshot is unchanged, and it aims twice in between. The angles are
+   small on purpose: the array is a background instrument, and the annotation
+   group's leader line and cotas sit a few degrees away. */
+@keyframes dish-slew {
+  0% {
+    transform: rotate(0deg);
+  }
+  28% {
+    transform: rotate(-7deg);
+  }
+  62% {
+    transform: rotate(5.5deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
 /* --- helpers -------------------------------------------------------------- */
 
 .boot-in {

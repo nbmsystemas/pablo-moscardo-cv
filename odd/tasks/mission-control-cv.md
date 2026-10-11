@@ -925,6 +925,32 @@ Risk tier per the Delegated Verification Gate.
 - [ ] **MC-44** Remote block, executed in this order and only after explicit confirmation of the exact
   commands: rename the repository, repoint the local remote, push the slice branches, open the stacked
   pull requests, and merge them in order so `main` (production) receives the work.
+- [x] **MC-37** Crosshair cursor with a coordinate readout. **Landed and verified.** The reference's own
+  overlay was measured and, notably, **never activates**: three dispatched `mouseMoved` events left it at
+  `data-active="false"`, `opacity: 0`. Ours does activate, and the probe reports `data-active="true"`,
+  the horizontal rule tracking `y=400` then `y=620`, and a tag reading `X 0400 · Y 0250` on `--paper-hi`
+  with `--ink-soft` text at 10px / 1.6px tracking. Rules at 8% ink (our value; the reference uses 7%).
+  Gated off on coarse pointers. The component never re-renders: it writes `--gx`/`--gy` and the `data-*`
+  states directly.
+- [x] **MC-38** Footer dish-array hover animation. **Landed and verified.** One 80-unit reflector slews
+  (rim, feed tripod and feed horn; the mast, neck and counterweight stay bolted). The keyframe leaves and
+  returns to the authored pose, so a dish nobody hovers is pixel-identical to the one drawn and the
+  settled render is unchanged. Hover target is `.foot`, not the 1px strokes. Measured with hover
+  emulation: `animation-name: dish-slew` on footer hover, back to `none` on leave, and unchanged when
+  hovering a card.
+- [x] **MC-39** Nav hover motion. **Landed and verified visually**: hovering a MISSION LOG entry takes it
+  to ink with an orange underline while its siblings stay `--ink-soft`. The sticky band's height does
+  not change, so `--cv-nav-h` — which is the scroll-padding for every anchor — is unaffected.
+- [x] **MC-22** SEO/meta + JSON-LD `Person`. **Landed.** Canonical, `og:url`, `og:site_name`,
+  `og:locale`, `og:type=profile`, image dimensions and `alt`, `twitter:title`/`description`/`creator`,
+  a full JSON-LD `Person` graph whose values are copied from `src/data/cv.ts`, a `robots.txt` with the
+  `Sitemap:` line and a two-route `sitemap.xml` with no invented `lastmod`. All from §7.18's single URL.
+- [x] **MC-42** Lovable artefacts removed. The template README, `lovable-tagger` (which was wired into
+  `vite.config.ts` and injecting `data-lov-id` into production markup) and the orphan
+  `public/placeholder.svg` are gone.
+- [x] **MC-43** A professional README, written for a reviewer: what it is, the stack, how to run it, and
+  how it is verified — the CDP harness, the 42 guards with their demonstrated RED, the constraints found
+  by measuring, and an honest "what is deliberately not here" section.
 - [ ] **MC-18** Stage-2 verification + commit. VERIFY + parent.
 
 ### Stage 3 — polish (not started)

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import {
   Badge,
   BlueprintFrame,
+  CursorGuides,
   CvBriefing,
   CvContact,
   CvDownloads,
@@ -57,6 +58,9 @@ import {
  *     the footer band.
  *
  * The route therefore reuses the footer as-is instead of forking it.
+ *
+ * <CursorGuides /> (MC-37) is page chrome and lives on this route too: the
+ * crosshair is a property of the site, not of the landing.
  */
 
 /**
@@ -110,6 +114,8 @@ const CV = () => {
 
   return (
     <div className="stage stage--cv">
+      <CursorGuides />
+
       <BlueprintFrame />
 
       <header className="top top--cv">

@@ -55,6 +55,8 @@ That harness found bugs no amount of reading would have:
 
 **It also caught its own false positive.** The harness reported the blueprint panel as empty. It was not: the panel's 18 paths draw on with a staggered animation, and the capture landed mid-draw. The harness now fast-forwards every animation to its settled state before measuring *and* before screenshotting. An instrument without a settle step will manufacture defects, and it will manufacture them in whichever direction the animation happens to be running.
 
+**And it could not see hover at all, until it was fixed.** Headless Chrome has no input device, so it reports `(hover: none)` and `(pointer: coarse)` — which means every `@media (hover: hover)` rule is invisible to it. The first attempt to verify the footer's dish animation read `animation-name: none` on hover and looked like a broken feature; the element *did* match `:hover`, the gated rule simply never applied. `Emulation.setEmulatedMedia` does not help, because hover and pointer come from the device rather than from the media-emulation API. The fix is two blink settings at launch (`primaryPointerType=4,availablePointerTypes=4,primaryHoverType=2,availableHoverTypes=2`), after which a dispatched `mouseMoved` produces a real hover state and the gated rules apply. **Every hover state in this project was unverifiable before that flag, including the cards'.**
+
 **Data and pure logic get real tests.** `npm test` runs 42 Vitest assertions over the data layer, including guards that exist because those exact things regressed:
 
 - Exactly one tenure figure across the whole data layer, and it is `20`. The site once shipped "Más de 15 años", "+10 años" and "+20 años" on three sections of the same document.
