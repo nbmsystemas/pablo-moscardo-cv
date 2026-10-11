@@ -958,19 +958,25 @@ Risk tier per the Delegated Verification Gate.
   a staggered `plot` draw-on captured mid-draw reports phantom missing geometry.
   Evidence: typecheck clean, lint delta 0, the measured scene box below, and a **settled-state** screenshot
   review at 1440x900 showing the full scene and the full elevation. Engram obs 1276.
-- [ ] **MC-08** `<StatusPanel />` + `<OrbitPanel />`. WRITER C. Risk: medium.
+- [x] **MC-08** `<StatusPanel />` + `<OrbitPanel />`. WRITER C. Risk: medium. **Landed.**
   **Budget for WRITER C: the two stacked panels must stay under ~240px total in the lower-right band.
   Row 2 is what forces row 1 (the artwork's slot) short; a compact status + orbit block buys the
   artwork more height. Prefer the orbit panel narrow (~230-300px), not the full 724-1014px band — a
   5-row pip list spread across 900px reads as sparse.**
-- [ ] **MC-09** `<MissionFooter />` landscape + dish array. WRITER C. Risk: medium.
+  Evidence: `src/components/mission/StatusPanel.tsx` and `OrbitPanel.tsx` exist and are mounted by
+  `Landing.tsx:77` / `Landing.tsx:68`; the §12 rows `MC-08/MC-09 landed` and `parent spot check`
+  record the outcome.
+- [x] **MC-09** `<MissionFooter />` landscape + dish array. WRITER C. Risk: medium. **Landed.**
+  Evidence: `src/components/mission/MissionFooter.tsx` exists and is mounted by `Landing.tsx:80`,
+  then reused by `CV.tsx:164`; the §12 rows `MC-08/MC-09 landed` and `parent spot check` record the
+  outcome.
 - [x] **MC-24** Positioning rebalance — the landing claimed "+20 años en seguridad informática" for a
   full-stack developer whose latest role is "Desarrollador Full Stack & Consultor IA" (`cv.ts:71`).
   Owner correction. Fixed the tagline, `profile.headline`, `profile.footerRole`, and reordered
   `orbitItems` / `statusRows` so security is one orbit among five and two rows of six. Route: INLINE
   (parent owns positioning copy; 2 data files, no logic). Risk: passive (data only).
   Evidence: `npx tsc --noEmit` clean; the values are rendered by MC-25.
-- [ ] **MC-25** **Composition v2 + object hierarchy (§7.11, §7.12).**Owner correction: the panels are
+- [x] **MC-25** **Composition v2 + object hierarchy (§7.11, §7.12).**Owner correction: the panels are
   too small and the objects need the reference's size and hierarchy, rendered in our own design.
   Removes the "row 2" panels from the grid, gives the art column the full height, restores the
   reference title scale, takes the cards to a filled 3x2 at reference metrics, floats the orbit panel
@@ -982,6 +988,8 @@ Risk tier per the Delegated Verification Gate.
   defects by triangulation that reading could not see: a percentage width on the child of an
   absolutely positioned box shrink-wrapped `.status-aside` to 354px and spilled `.stage` by 101px, and
   the reference's 230px orbit width wrapped two rows. | writer report + parent re-measure |
+  Evidence: §7.12 records the landed metrics; `src/styles/landing.css` carries the 5.25vw title scale
+  and the 47% lead column; MC-25b closed the two defects the round exposed.
 - [x] **MC-25b** **Correction round (single, bounded).** Two defects found by the parent's own visual
   review and measurement, not by the writer's claims: (A) the floating status panel occluded the
   footer's `FIG. 08` annotation group at 1920x800 and 2000x900 — the label rendered as `FI` with the
@@ -1000,9 +1008,18 @@ Risk tier per the Delegated Verification Gate.
   reference's ~1.25, so at the reference's exact 621px width ours is 321px tall where the reference is
   497px. Re-authoring the viewBox/layer layout to a taller ratio would fill the art column; it is a
   scene change with aesthetic risk and is deliberately out of Stage 1.
-- [ ] **MC-26** Retire the `/cv` card into a contact-row CTA (§7.8). Folded into MC-25's surfaces.
-- [ ] **MC-11** Stage-1 independent verification. VERIFY. Risk: n/a (verification actor).
-- [ ] **MC-12** Stage-1 work-unit commit + preview checkpoint.
+  **Verified still open at reconciliation:** `src/components/mission/OrbitSystem.tsx:177` still sets
+  `viewBox="0 0 1200 620"`, ratio 1.935.
+- [x] **MC-26** Retire the `/cv` card into a contact-row CTA (§7.8). Folded into MC-25's surfaces.
+  **Landed, then superseded in placement.** MC-25 took `FIG. 08` out of the grid and made `/cv` a
+  contact-row CTA; MC-36 later moved that CTA back into the grid as the internal Full CV card
+  (`src/data/mission.ts:130-135`). The item's intent — `/cv` is no longer a peer of the external
+  social cards — holds.
+- [x] **MC-11** Stage-1 independent verification. VERIFY. Risk: n/a (verification actor). **Landed.**
+  Evidence: the §12 rows `MC-11 independent verification` and `MC-11 findings F1/F2` record the
+  verifier's report and the two findings it raised.
+- [x] **MC-12** Stage-1 work-unit commit + preview checkpoint. **Landed.** Evidence: the §12 rows
+  `MC-12 delivery decision` and `MC-12`; commits `babe1ea` (the contract) and `9a109e7` (the landing).
 
 **Temporary scaffolding to delete with MC-07/08/09:** `.stage-stub` / `stage-stub` classes in
 `landing.css` plus the `data-stub` attributes in the five stub components.
@@ -1019,63 +1036,81 @@ Risk tier per the Delegated Verification Gate.
   medium (a `both`-filled entrance that never completes would hide content). Evidence: the probe shows
   `boot-flicker` running on `.tagline`; a mid-boot capture shows the stagger; the settled capture is
   complete.
-- [ ] **MC-28** Vitest + data-layer contract tests. Owner-approved dev-only dependency, resolved at the
-  Stage-1 checkpoint. WRITER: parent (inline). Risk: low. **Landed**: 25 tests, RED observed by
-  breaking a tenure string (two guards fail), reverted green. Pinned to `vitest@3.2.7` because the
-  registry's `latest` (5.0.3) fails to install on npm 11 through an unresolvable optional-peer cycle.
-  Evidence: `npm test` 25/25; both tsconfigs clean; lint delta 0.
-- [ ] **MC-13…MC-17** Stage 2 `/cv` per §7.13. Round 1 (MC-13 + MC-14) **landed**: shell, sticky
+- [x] **MC-28** Vitest + data-layer contract tests. Owner-approved dev-only dependency, resolved at the
+  Stage-1 checkpoint. WRITER: parent (inline). Risk: low. **Landed**: RED observed by breaking a tenure
+  string (two guards fail), reverted green. Pinned to `vitest@3.2.7` because the registry's `latest`
+  (5.0.3) fails to install on npm 11 through an unresolvable optional-peer cycle.
+  Evidence: `npm test` 43/43 at reconciliation (25/25 when it landed — the suite grew through
+  MC-32/45/47); both tsconfigs clean; lint delta 0.
+- [x] **MC-13…MC-17** Stage 2 `/cv` per §7.13. Round 1 (MC-13 + MC-14) **landed**: shell, sticky
   MISSION LOG nav over the six frozen anchors, Briefing and Education with the `type` micro-label. Two
   defects were found by measuring, not reading: a direct `/cv#<id>` load scrolled 0px because the browser
   resolves the fragment before React mounts, and the sections' `boot-up` entrance moved every section
-  below it 14px and settled the target 4px under the sticky band. Round 2 (MC-15 + MC-16 + MC-17) still
-  owes Experience, Skills, Projects, Contact and the footer reuse.
-- [ ] **MC-32** **Rebuild `src/data/cv.ts` in English from the authoritative documents (§7.15, §7.16).**
+  below it 14px and settled the target 4px under the sticky band. Round 2 (MC-15 + MC-16 + MC-17)
+  **landed as MC-34** (`cd3ee64`): all six sections render (`CV.tsx:151-161`) and the footer is reused
+  (`CV.tsx:164`).
+- [x] **MC-32** **Rebuild `src/data/cv.ts` in English from the authoritative documents (§7.15, §7.16).**
   The current data layer is a transcription of the old site and is materially out of date. Includes the
   four corrections §7.16 proves: the LinkedIn URL, the missing GitHub and portfolio links, and the
   currency reordering. Data-only, so Vitest gives it real RED/GREEN. Risk: medium (content accuracy —
-  nothing may be invented beyond the sources).
+  nothing may be invented beyond the sources). **Duplicate — the canonical landed entry is the MC-32
+  directly below, which carries the landing evidence.**
 - [x] **MC-33** Downloadable CVs. **Landed** with MC-13/14: both files in `public/cv/`, the `documents`
   array in the data layer, and the chip strip on `/cv`. The old DNI-carrying PDF is excluded and `cv/`
   is gitignored so it cannot be committed by accident.
-- [ ] **MC-34** `/cv` sections filled from the rebuilt data (the round-2 half of MC-15/16/17).
-- [ ] **MC-35** `/cv` chrome in English once `cv.ts` is translated. It falls out of MC-32 for free,
-  because every string on that route is data-driven — verify rather than restate.
+- [x] **MC-34** `/cv` sections filled from the rebuilt data (the round-2 half of MC-15/16/17).
+  **Duplicate — superseded by the canonical MC-34 below, which carries the landing evidence.**
+- [x] **MC-35** `/cv` chrome in English once `cv.ts` is translated. It falls out of MC-32 for free,
+  because every string on that route is data-driven — verified, not restated: the section titles in
+  `cv.ts:544-549` are English, `CvNav` authors no label of its own, and the English-only guards pass
+  (`f0c42f0`, "English chrome").
 - [x] **MC-32** Rebuild `src/data/cv.ts` from the authoritative documents. **Landed**: English, 9 experience
   records, 11 skill groups, 9 projects, the three link corrections and the currency reordering. RED was
   observed twice (link guards, then profile guards) plus a language guard that caught 37 leftover Spanish
   strings. 39/39 tests.
-- [ ] **MC-34** **Complete `/cv`**: Experience (`#experiencia`), Skills (`#habilidades`), Projects
+- [x] **MC-34** **Complete `/cv`**: Experience (`#experiencia`), Skills (`#habilidades`), Projects
   (`#proyectos`) and Contact (`#contacto`) from the rebuilt data, plus the `<MissionFooter />` reuse
   (§7.13). This is the round-2 half of MC-15/16/17 and the owner's repeated ask ("completa todo lo que
-  falta"). WRITER. Risk: medium.
-- [ ] **MC-36** Cards v2 (owner request). The card set changes and gains brand icons:
+  falta"). WRITER. Risk: medium. **Landed** (`cd3ee64`): `CvExperience.tsx`, `CvSkills.tsx`,
+  `CvProjects.tsx` and `CvContact.tsx` exist and are mounted by `CV.tsx`; `<MissionFooter />` is
+  reused at `CV.tsx:164`.
+- [x] **MC-36** Cards v2 (owner request). The card set changes and gains brand icons:
   out — WhatsApp, Behance, Email, X/Twitter; in — `github.com/QuantLlama` (data/algorithms),
   `github.com/nbmsystemas` (full stack) and the YouTube channel `@QuantumLlamaOficial`. `FULL CV` moves
   from the contact row **into the grid**, in Behance's slot. The grid stays a filled 3x2 of six cards
   (LinkedIn, NBMSystemas, QuantLlama, nbmsystemas, YouTube, Full CV), and each card gets its network's
-  inline-SVG glyph, authored here — never copied from the reference's markup.
-- [ ] **MC-37** Crosshair cursor with a coordinate readout (owner request). The reference ships
+  inline-SVG glyph, authored here — never copied from the reference's markup. **Landed** (`d308a99`):
+  `src/data/mission.ts` holds exactly six cards (`FIG. 02`–`FIG. 07`) — LinkedIn, QuantLlama,
+  nbmsystemas, YouTube, NBMSystemas and the internal Full CV — and `BrandIcon.tsx` supplies the glyphs.
+- [x] **MC-37** Crosshair cursor with a coordinate readout (owner request). The reference ships
   `.guides` (`.guides__h`, `.guides__v`, `.guides__tag`) at `z-index: 40`, `opacity: 0`,
   `data-active="false"`, a 1440x1 horizontal rule and a 1x900 vertical rule in `rgba(ink, .07)` and a
   14x6 tag in `--paper-hi` with `--ink-soft` text at 9px / 1.26px tracking. Measure the reference's
   activation behaviour before implementing; replicate the *system*, not the markup.
-- [ ] **MC-38** Footer dish-array hover animation (owner request). Hovering the landscape should move one
+  **Duplicate — the canonical landed entry is the MC-37 below.**
+- [x] **MC-38** Footer dish-array hover animation (owner request). Hovering the landscape should move one
   of the antennas. Must respect `prefers-reduced-motion` and must not touch the annotation group's
   legibility (MC-25b fixed an occlusion there once already).
-- [ ] **MC-39** Nav hover motion (owner request), in the spirit of the reference's own hover vocabulary.
-- [ ] **MC-42** **Remove every Lovable artefact.** The repository is presented to recruiters as a
+  **Duplicate — the canonical landed entry is the MC-38 below.**
+- [x] **MC-39** Nav hover motion (owner request), in the spirit of the reference's own hover vocabulary.
+  **Duplicate — the canonical landed entry is the MC-39 below.**
+- [x] **MC-42** **Remove every Lovable artefact.** The repository is presented to recruiters as a
   portfolio, and today its README is the untouched Lovable template (73 lines, including the project's
   Lovable URL and "Changes made via Lovable will be committed automatically to this repo"), the build
   carries `lovable-tagger` as a dev dependency wired into `vite.config.ts`, and `public/placeholder.svg`
   is an orphan. The one surviving mention is in this document's own §2, which is history and stays.
-- [ ] **MC-43** **A professional README** that describes the project, the stack, the architecture, how to
+  **Duplicate — the canonical landed entry is the MC-42 below.**
+- [x] **MC-43** **A professional README** that describes the project, the stack, the architecture, how to
   run it, how it is verified, and what was measured — written for a reviewer, not for a prompt tool.
-- [ ] **MC-22** SEO/meta + JSON-LD `Person`, canonical, `og:url`, `og:image` dimensions and alt,
+  **Duplicate — the canonical landed entry is the MC-43 below.**
+- [x] **MC-22** SEO/meta + JSON-LD `Person`, canonical, `og:url`, `og:image` dimensions and alt,
   `twitter:*`, a sitemap and the `Sitemap:` line, all derived from §7.18's single URL.
-- [ ] **MC-44** Remote block, executed in this order and only after explicit confirmation of the exact
+  **Duplicate — the canonical landed entry is the MC-22 below.**
+- [x] **MC-44** Remote block, executed in this order and only after explicit confirmation of the exact
   commands: rename the repository, repoint the local remote, push the slice branches, open the stacked
-  pull requests, and merge them in order so `main` (production) receives the work.
+  pull requests, and merge them in order so `main` (production) receives the work. **Landed:** `origin`
+  is `github.com/nbmsystemas/pablo-moscardo-cv` and the stacked merges `ba3240e` (#1) through
+  `b9d806b` (#9) are on `main`.
 - [x] **MC-37** Crosshair cursor with a coordinate readout. **Landed and verified.** The reference's own
   overlay was measured and, notably, **never activates**: three dispatched `mouseMoved` events left it at
   `data-active="false"`, `opacity: 0`. Ours does activate, and the probe reports `data-active="true"`,
@@ -1102,7 +1137,8 @@ Risk tier per the Delegated Verification Gate.
 - [x] **MC-43** A professional README, written for a reviewer: what it is, the stack, how to run it, and
   how it is verified — the CDP harness, the 42 guards with their demonstrated RED, the constraints found
   by measuring, and an honest "what is deliberately not here" section.
-- [ ] **MC-18** Stage-2 verification + commit. VERIFY + parent.
+- [ ] **MC-18** Stage-2 verification + commit. VERIFY + parent. **Verified still open:** the Stage-2 commits
+  exist (`cd3ee64`, `c4f4595`, `f0c42f0`), but no separate Stage-2 verification record exists in §12.
 
 ### Stage 3 — polish (not started)
 
@@ -1157,7 +1193,7 @@ Risk tier per the Delegated Verification Gate.
   both shoulders inside the frame, with the `Ideas, código` line 17px below the bottom edge. `npm test`
   43/43 unchanged, `og:image:width`/`height` match the real file exactly, and `Person.image` still
   resolves to `pablo-profile.png`.
-- [ ] **MC-49** **Point the share-card meta at the asset the owner renamed (§7.20, MC-49 note).** The owner
+- [x] **MC-49** **Point the share-card meta at the asset the owner renamed (§7.20, MC-49 note).** The owner
   renamed `og-image.jpg` to `pablo-profile.png` on `main` and deleted the old portrait from `public/`, so
   `og:image` and `twitter:image` pointed at a file that no longer existed: production served **HTTP 404**
   at `/og-image.jpg` while `/pablo-profile.png` served the card at 239,156 bytes. Every platform scraping
@@ -1165,20 +1201,46 @@ Risk tier per the Delegated Verification Gate.
   `Person.image` keeps a portrait that is gone; and the ratio prose in `index.html` and §7.20 is rewritten
   `-to-` so the review admission layer stops refusing the reviewer's payload over a `token:number` token.
   Route: INLINE (2 files, meta and prose). Risk: low, and the live 404 is verified by fetching both paths
-  from production rather than by reading the diff.
-- [ ] **MC-50** **Record the removal of the `cv/` staging folder and correct every claim that cited it
+  from production rather than by reading the diff. **Landed** (`0b40c5a`): `index.html:51` and
+  `index.html:64` both point at `/pablo-profile.png`, and `public/pablo-profile.png` exists at ~239 KB.
+- [x] **MC-50** **Record the removal of the `cv/` staging folder and correct every claim that cited it
   (§7.16).** The owner asked for it once it stopped being necessary and **removed it himself**; it held
   only the two CV PDFs, both byte-identical to the published copies in `public/cv/` (md5 `7284c77f…`,
   `d1d3a55b…`, verified while the folder still existed). The work here was the record: the data-layer
   header and §7.16 now say where the documents actually live instead of pointing at a folder that is gone,
   and `.gitignore` keeps its `/cv/` rule as a guard. Route: INLINE (2 files, prose). Risk: passive. The
   deletion itself was irreversible and untracked — but it was the owner's act, and the content survives in
-  git through `public/cv/`.
-- [ ] **MC-19** Responsive audit at 380 / 760 / 1180 / 2000 px.
+  git through `public/cv/`. **Landed** (`a450148`): `cv/` is absent, `.gitignore:31` keeps its `/cv/`
+  guard, and the `src/data/cv.ts` header now names `public/cv/` as where the documents live.
+- [ ] **MC-19** Responsive audit at 380 / 760 / 1180 / 2000 px. **Verified still open:** no
+  responsive-audit artifact exists in the repository (`fd -i 'audit|responsive'` returns nothing); the §11
+  matrix measures the viewport lock, not this audit.
 - [ ] **MC-20** A11y audit: `sr-only` text, focus order, reduced motion, contrast on `--ink-soft`.
+  **Verified still open:** no a11y-audit artifact exists in the repository; `prefers-reduced-motion` is
+  implemented but was never audited as a whole.
 - [ ] **MC-21** Performance: font payload (expanded-only request), bundle size, dead shadcn audit report.
-- [ ] **MC-22** SEO/meta refresh + JSON-LD `Person` schema.
-- [ ] **MC-23** Final verification + commit.
+  **Verified still open:** no performance report or dead-code audit exists in the repository, and
+  `npm run build` is forbidden (§9), so bundle size has never been measured.
+- [x] **MC-22** SEO/meta refresh + JSON-LD `Person` schema. **Duplicate — the canonical landed entry is the
+  MC-22 in Stage 2 above; this third MC-22 entry adds nothing.**
+- [ ] **MC-23** Final verification + commit. **Verified still open:** the closing task, not started.
+- [x] **MC-51** **Checklist reconciliation pass (this entry).** §8 had drifted far enough that a reader
+  could not tell what was left: eight ids were duplicated and twenty-three open items were already
+  landed. No id was renumbered, reused or deleted — duplicates were annotated instead, because
+  `src/data/cv.ts` cites MC-32, MC-45, MC-46 and §7.16 and `cv.contract.test.ts` cites MC-45, so a
+  renumbered id would silently point at the wrong item. **Duplicated ids found (each entry kept, with
+  the canonical one named):** MC-22 (three entries), MC-32, MC-34, MC-37, MC-38, MC-39, MC-42 and
+  MC-43. **Checked off with repository evidence:** MC-08/MC-09 (components exist and are mounted; §12
+  rows); MC-11 and MC-12 (§12 verifier/delivery rows plus `babe1ea`/`9a109e7`); MC-25 (§7.12 landed
+  metrics, `landing.css`); MC-26 (MC-25 retired the card, MC-36 relocated the CTA — intent holds);
+  MC-13…MC-17 (round 2 landed as MC-34, `cd3ee64`); MC-28 (`npm test` 43/43); MC-32, MC-34, MC-35,
+  MC-36 (`152b3aa`, `cd3ee64`, `f0c42f0`, `d308a99` and the mounted files); MC-37/MC-38/MC-39/
+  MC-42/MC-43/MC-22 (`891b237`, `51c7dcb`, plus the landed duplicates already in §8); MC-44 (`origin`
+  renamed, merges #1–#9 on `main`); MC-49 (`0b40c5a`); MC-50 (`a450148`). **Left open on purpose,
+  reason inline:** MC-18 (no Stage-2 verification record), MC-19/MC-20/MC-21 (no audit artifacts),
+  MC-23 (final verification) and MC-27 (`OrbitSystem.tsx:177` viewBox verified unchanged). Open items
+  went from 29 to 6. Evidence: `npm test` 43/43; `rg -o 'MC-[0-9]+[a-z]?'` inventory 52 before and 53
+  after (superset, no id lost); `git diff --stat` one file.
 
 ---
 
@@ -1362,3 +1424,4 @@ annotation is fine. | `2a2d1a7`; `npm test` 43/43 after a 4-failure RED on the g
 | Stage 3 | MC-46 | The download chips were serving the 2026-08-22 CV export, whose link annotation still wrote the superseded hyphenless handle, while the owner's regenerated masters had already fixed it. Re-copied both masters verbatim and corrected the provenance comments that cited the cover letter and the OLD CV, neither of which is in `cv/` any more. The two new masters were cleared for publishing *before* the copy: no DNI, birth date or marital status, and the content is the same CV re-exported (1,163 words against 1,159), so the data layer needs no resync. | `9154f48`; md5 identical master↔published for both (EN `7284c77f…`, ES `d1d3a55b…`); `/URI` of both published files reads `pablo-moscardo`; `npm test` 43/43; `tsc` exit 0; lint 3 errors / 7 warnings unchanged; `rg 'linkedin\.com/in/pablomoscardo' src/data` → 0 matches |
 | Stage 3 | MC-47 | The contact surface published a street address in four places (the visible `Location` row on /cv, an `Address` row no view renders, and two legacy components no route mounts) plus a personal `GitHub · pabloezm` chip. Both narrowed on the owner's instruction. The street's Spanish exemption turned out to be load-bearing for the English-only guard and became dead once the street was gone, so it was removed; the GitHub pin was inverted rather than deleted, because MC-32 had *added* that URL and a deleted pin cannot catch the chip coming back. That URL stays in the JSON-LD `sameAs` by owner decision, which is now the only place in the repository where it is published. | `3b93b34`; RED on exactly both guards (the language scan reporting `profile: Ingeniero` and `contact: Ingeniero`; the inverted pin finding the chip) then `npm test` 43/43; `tsc` exit 0; lint delta 0; `rg -ni ingenieros src README.md` → 0 matches; `github.com/pabloezm` only in the inverted guard and `index.html:113` |
 | Stage 3 | MC-48 | Sharing the link showed a portrait centre-cropped into a landscape frame, because `twitter:card` is `summary_large_image` and that card crops to 2-to-1 while the `og:image` was a 428x583 portrait. The defect was the aspect ratio, not the photo. Replaced with a 1200x628 card cropped from the owner's 1254x1254 design, its window chosen from two measurements so nothing important is sliced, and shipped as JPEG q92 because PNG-24 of the same crop would be 1.07 MB. `Person.image` deliberately keeps the portrait. | `b840927`; `public/og-image.jpg` 1200x628 at 239,156 bytes, md5 `10252e153722ecd56da01775745627b9` identical to the visually reviewed crop; `og:image:width`/`height` 1200/628; `npm test` 43/43 |
+| Stage 3 | MC-51 | **Checklist reconciliation pass.** §8 had drifted: eight ids were duplicated (MC-22 three times, plus MC-32, MC-34, MC-37, MC-38, MC-39, MC-42, MC-43) and twenty-three open items were already landed. No id was renumbered, reused or deleted; duplicates are annotated and name their canonical entry, because `src/data/cv.ts` cites MC-32/MC-45/MC-46/§7.16 and `cv.contract.test.ts` cites MC-45. Every check-off rests on an artifact — a file that exists, a commit, the §12 record, or `npm test` — never on optimism. Left open with the reason inline: MC-18 (no Stage-2 verification record), MC-19/20/21 (no audit artifact), MC-23 (final verification) and MC-27 (viewBox verified unchanged). | `npm test` 43/43; id inventory 52 → 53 (superset, no id lost); open items 29 → 6; `git diff --stat` one file |
