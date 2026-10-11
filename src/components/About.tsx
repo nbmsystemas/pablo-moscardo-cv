@@ -85,7 +85,7 @@ const About = () => {
             { label: "DNI", value: "27.484.---" },
             { label: "Fecha de Nacimiento", value: "17 de Julio 1979" },
             { label: "Estado Civil", value: "Soltero" },
-            { label: "Domicilio", value: "Jose Ingenieros 1-- 2-, Rafaela" }
+            { label: "Domicilio", value: "Argentina - Rafaela" }
           ].map((info, index) => (
             <Card key={index} className="border-border/30 bg-card/30 hover:border-primary/50 transition-all duration-300 animate-fade-in-left" style={{ animationDelay: `${index * 100}ms` }}>
               <CardContent className="p-4 text-center">

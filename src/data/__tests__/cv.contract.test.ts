@@ -227,12 +227,14 @@ describe("current profile", () => {
  *
  * Sources: the owner's confirmation on 2026-10-11 that his real profile is
  * `https://www.linkedin.com/in/pablo-moscardo`, plus the GitHub and portfolio
- * URLs (`https://github.com/pabloezm`,
- * `https://pabloezmoscardo.nbmsystemas.com/`) read off the CV link annotations
- * and the cover letter's signature block, as MC-32 recorded them at the time.
+ * URLs read off the CV link annotations and the cover letter's signature block,
+ * as MC-32 recorded them at the time. The GitHub pin now covers the two
+ * organisation profiles (`https://github.com/QuantLlama`,
+ * `https://github.com/nbmsystemas`); the owner's personal `pabloezm` GitHub URL
+ * survives only in the JSON-LD `sameAs` in `index.html`, by owner decision, and
+ * is deliberately no longer published as a `socials` chip.
  */
 const CANONICAL_LINKEDIN = "https://www.linkedin.com/in/pablo-moscardo";
-const CANONICAL_GITHUB = "https://github.com/pabloezm";
 const CANONICAL_PORTFOLIO = "https://pabloezmoscardo.nbmsystemas.com/";
 
 describe("canonical profile links", () => {
@@ -240,8 +242,20 @@ describe("canonical profile links", () => {
     expect(socials.map((social) => social.href)).toContain(CANONICAL_LINKEDIN);
   });
 
-  it("carries the GitHub profile the documents publish", () => {
-    expect(socials.map((social) => social.href)).toContain(CANONICAL_GITHUB);
+  /**
+   * MC-32 added the owner's personal GitHub profile to `socials` and pinned it
+   * here. The owner has since asked for the visible chip to go, so the pin is
+   * INVERTED rather than deleted: a wrong URL is still a valid string, which is
+   * exactly why the pin exists, and a removed pin cannot catch the chip coming
+   * back. The two organisation profiles stay, and the personal URL survives only
+   * in the JSON-LD `sameAs` in `index.html`, by owner decision.
+   */
+  it("publishes only the organisation GitHub profiles, never the personal chip", () => {
+    const hrefs = socials.map((social) => social.href);
+
+    expect(hrefs).not.toContain("https://github.com/pabloezm");
+    expect(hrefs).toContain("https://github.com/QuantLlama");
+    expect(hrefs).toContain("https://github.com/nbmsystemas");
   });
 
   it("carries the portfolio the documents publish", () => {
@@ -311,11 +325,12 @@ describe("language", () => {
   ];
 
   /**
-   * Names are not copy. This street and this company keep their Spanish
-   * spelling (a proper noun is not translated), so they are stripped before the
-   * scan instead of forcing two otherwise-useful markers out of the guard.
+   * Names are not copy. `MG Seguridad` keeps its Spanish spelling: it is a
+   * proper noun that must not be translated while containing "Seguridad", which
+   * trips the marker of the same name. It is stripped before the scan instead of
+   * forcing an otherwise-useful marker out of the guard.
    */
-  const PROPER_NOUNS = ["Jose Ingenieros", "MG Seguridad"];
+  const PROPER_NOUNS = ["MG Seguridad"];
 
   const stripped = (value: unknown) => {
     let text = JSON.stringify(value);
