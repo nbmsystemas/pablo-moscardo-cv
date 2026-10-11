@@ -502,10 +502,12 @@ export const contact: Contact = {
  */
 export const socials: SocialLink[] = [
   { label: "LinkedIn", href: "https://linkedin.com/in/pablomoscardo" },
-  { label: "GitHub", href: "https://github.com/pabloezm" },
+  { label: "GitHub · QuantLlama", href: "https://github.com/QuantLlama" },
+  { label: "GitHub · nbmsystemas", href: "https://github.com/nbmsystemas" },
+  { label: "YouTube", href: "https://www.youtube.com/@QuantumLlamaOficial" },
+  { label: "NBMSystemas", href: "https://nbmsystemas.com" },
   { label: "Portfolio", href: "https://pabloezmoscardo.nbmsystemas.com/" },
-  { label: "Twitter", href: "https://twitter.com/pabloezm" },
-  { label: "Behance", href: "https://behance.net/pabloezm" },
+  { label: "GitHub · pabloezm", href: "https://github.com/pabloezm" },
 ];
 
 /** Empty on purpose: no association content exists in the inventory or the documents. */

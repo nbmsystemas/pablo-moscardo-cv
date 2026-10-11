@@ -30,7 +30,7 @@ const brandForHref = (href: string): BrandKey => {
  * navigates in place.
  */
 const LinkCards = () => (
-  <nav className="cards" aria-label="Encontrame en otros lados">
+  <nav className="cards" aria-label="Find me elsewhere">
     <ul className="cards__list">
       {cards.map((card) => {
         const body = (
@@ -39,7 +39,7 @@ const LinkCards = () => (
             <span className="card__fig">{card.fig}</span>
             <span className="card__name">{card.name}</span>
             {card.external && (
-              <span className="sr-only"> (abre en una nueva pestaña)</span>
+              <span className="sr-only"> (opens in a new tab)</span>
             )}
             <span className="card__arrow" aria-hidden="true">
               ↗

@@ -705,6 +705,50 @@ touch; neither is a defect report.
 
 ---
 
+## 7.15 Site language is ENGLISH (owner correction)
+
+Supersedes §7.8's "Spanish content, English micro-labels" and §4's D3. The owner asked for everything in
+English. Consequences: `index.html` is `lang="en"` with English title/description/keywords/`og:*`;
+`src/data/mission.ts` and `src/data/cv.ts` are English; the decorative `sections[].subtitle` strings were
+**dropped rather than translated** (they were old decoration and two of them restated the tenure figure),
+and `Section.subtitle` is gone from the type because nothing consumed it.
+
+## 7.16 Authoritative content sources and the downloadable CVs
+
+The owner keeps his own CV material in a local, **gitignored** `cv/` folder at the repository root:
+
+| file | use |
+|---|---|
+| `CV-Pablo-Moscardo-EN.pdf` | **the authoritative English content** (MC-32's primary source) |
+| `CV-Pablo-Moscardo-ES.pdf` | the same in Spanish |
+| `Carta-Presentacion-LinkedIn-Pablo-Moscardo.docx` | cover letters (ES + EN) — the most current prose |
+| `PABLO EZEQUIEL MOSCARDO.pdf` | the OLD CV — read for gaps only, **never published** |
+
+The last one carries a full DNI (`27.484.088`), birth date and marital status, while the site masks the
+DNI to `27.484.---`. The first two are copied verbatim to `public/cv/` and offered as download chips
+(MC-33). `cv/` is gitignored so the personal documents cannot be committed by accident.
+
+### What the documents proved was wrong, and is now fixed (MC-32)
+
+1. **The LinkedIn handle was wrong.** Both CVs and the cover letter say `linkedin.com/in/pablomoscardo`;
+the site said `pablo-moscardo` in **three** data-layer places. Three sources against one.
+2. **GitHub was missing** (`github.com/pabloezm`).
+3. **The portfolio was missing** (`pabloezmoscardo.nbmsystemas.com`).
+4. **The profile was a whole career behind**: it led with the security/forensics era and did not contain
+NBM Systemas as founder, Wazyloop live in production, Quantum Llama Terminal, AguaGestión or JLF.
+
+All four are now fixed and pinned by tests, with observed RED before each fix.
+
+## 7.17 The presentation letter is generic, not addressed (owner decision)
+
+The owner reviewed the letter and said: *"si te parece que la de ahora es correcta dejala"*. It stays as
+MC-32 rebuilt it from the documents — the briefing renders `profile.presentation`. What it must **not**
+become is the targeted version from his cover-letter file, which is addressed to one company and one role
+and carries `[Company Name]` / `[Job Title]` placeholders. A published page has no reader to fill those
+in, so the addressed variant stays in the local `cv/` folder and the site keeps the unaddressed one.
+
+---
+
 ## 8. Task checklist
 
 Route legend: `INLINE` = parent · `WRITER` = `gentle-ai-worker` · `VERIFY` = `gentle-ai-verify`.
@@ -826,6 +870,29 @@ Risk tier per the Delegated Verification Gate.
 - [ ] **MC-34** `/cv` sections filled from the rebuilt data (the round-2 half of MC-15/16/17).
 - [ ] **MC-35** `/cv` chrome in English once `cv.ts` is translated. It falls out of MC-32 for free,
   because every string on that route is data-driven — verify rather than restate.
+- [x] **MC-32** Rebuild `src/data/cv.ts` from the authoritative documents. **Landed**: English, 9 experience
+  records, 11 skill groups, 9 projects, the three link corrections and the currency reordering. RED was
+  observed twice (link guards, then profile guards) plus a language guard that caught 37 leftover Spanish
+  strings. 39/39 tests.
+- [ ] **MC-34** **Complete `/cv`**: Experience (`#experiencia`), Skills (`#habilidades`), Projects
+  (`#proyectos`) and Contact (`#contacto`) from the rebuilt data, plus the `<MissionFooter />` reuse
+  (§7.13). This is the round-2 half of MC-15/16/17 and the owner's repeated ask ("completa todo lo que
+  falta"). WRITER. Risk: medium.
+- [ ] **MC-36** Cards v2 (owner request). The card set changes and gains brand icons:
+  out — WhatsApp, Behance, Email, X/Twitter; in — `github.com/QuantLlama` (data/algorithms),
+  `github.com/nbmsystemas` (full stack) and the YouTube channel `@QuantumLlamaOficial`. `FULL CV` moves
+  from the contact row **into the grid**, in Behance's slot. The grid stays a filled 3x2 of six cards
+  (LinkedIn, NBMSystemas, QuantLlama, nbmsystemas, YouTube, Full CV), and each card gets its network's
+  inline-SVG glyph, authored here — never copied from the reference's markup.
+- [ ] **MC-37** Crosshair cursor with a coordinate readout (owner request). The reference ships
+  `.guides` (`.guides__h`, `.guides__v`, `.guides__tag`) at `z-index: 40`, `opacity: 0`,
+  `data-active="false"`, a 1440x1 horizontal rule and a 1x900 vertical rule in `rgba(ink, .07)` and a
+  14x6 tag in `--paper-hi` with `--ink-soft` text at 9px / 1.26px tracking. Measure the reference's
+  activation behaviour before implementing; replicate the *system*, not the markup.
+- [ ] **MC-38** Footer dish-array hover animation (owner request). Hovering the landscape should move one
+  of the antennas. Must respect `prefers-reduced-motion` and must not touch the annotation group's
+  legibility (MC-25b fixed an occlusion there once already).
+- [ ] **MC-39** Nav hover motion (owner request), in the spirit of the reference's own hover vocabulary.
 - [ ] **MC-18** Stage-2 verification + commit. VERIFY + parent.
 
 ### Stage 3 — polish (not started)
@@ -897,21 +964,59 @@ Forecast authored changed lines (additions + deletions, generated files excluded
 
 This is far above the ~400-line heuristic, so the `ask-on-risk` strategy must resolve a chain
 strategy before the next commit after each slice crosses ~400 lines. **RESOLVED by the owner at the
-Stage-1 preview checkpoint: `feature-branch-chain`.** All work-unit commits stay on
-`feat/mission-control-cv` and a single pull request is opened at the end; the review is per commit,
-not per diff total. Slice boundaries are the commit list itself. Push / PR / merge remain user
-decisions and no push has been performed.
+Stage-1 preview checkpoint: `feature-branch-chain`** — all work-unit commits stay on
+`feat/mission-control-cv` and a single pull request is opened at the end.
 
-Slice record (feature-branch-chain):
+**SUPERSEDED at the owner's request: the strategy is now `stacked-to-main`.** The reason is not taste.
+The native review authority rejected the accumulated branch with `lens_context_budget_exceeded`:
+*"the candidate's complete reviewer evidence exceeds the native context budget, so no review authority
+was created; review this change as smaller candidates that each fit under it"*. One PR holding the whole
+branch is therefore **unreviewable by the provider**, whatever a human reviewer could do with it. The
+`chained-pr` skill was resolved by registry name and its decision gate applies: PR > 400 lines with
+slices that can land in sequence → Stacked PRs to main.
+
+### Measured slice plan (one honest slicing pass)
+
+Measured with `git diff --numstat` over `main..HEAD`: **45 files, 8,239 changed lines (+8,131 / −108)**
+across 11 work-unit commits.
+
+| PR | branch | commits | changed lines |
+|---|---|---|---|
+| 1 | `feat/landing` | the feature doc + `9a109e7` + `b8d7815` + `95af5a8` + `2dd6dc8` + `a694fb4` + `74270dd` | **6,285** |
+| 2 | `feat/cv` | `152b3aa` + `6ec95af` + `c4f4595` + MC-34 | ~2,900 |
+| 3 | `feat/interactions` | MC-36…MC-39, MC-41, MC-19…MC-23 | not yet written |
+
+**`size:exception` recommended, and here is why the split cannot shrink further.** The slicing pass was
+made once, as the skill requires. The only candidate for a fourth slice inside PR 1 — design system
+(`tokens`/`base`/`motion`/`landing.css`, ~2,500 lines) versus components + data + routing (~2,400) —
+**fails the independence gate**: CSS alone renders nothing and cannot land independently, and the
+components alone reference classes that do not exist yet. Splitting the landing any further produces
+dead halves, not reviewable units. PR 1 is therefore the smallest *cohesive* slice that can land, and it
+is 15x the 400-line budget.
+
+The honest conclusion is that this feature is a full site redesign of ~8,000+ lines and the 400-line
+budget cannot be met without producing slices that do not build. The owner accepted the strategy; the
+`size:exception` itself is the owner's call, recorded here so it is visible rather than silent.
+
+**Reviewability is verified empirically per slice, not assumed.** `lens_context_budget_exceeded` is the
+provider's limit, not a human one, and its threshold is unknown. Each slice's committed range is tested
+with a real START attempt once the slice is complete; if the provider rejects it, that slice splits
+further before any PR is opened. Push / PR / merge remain user decisions and no push has been performed.
+
+Slice record (stacked-to-main, superseded from feature-branch-chain):
 
 | Slice | Commit | Holds |
 |---|---|---|
 | Stage 1 | `docs(odd)` | the feature contract + progress log |
 | Stage 1 | `feat(landing)` | MC-01…MC-10b, MC-24, MC-25, MC-25b — design system, data layer, artwork, panels, footer, composition v2 |
-| Stage 1 | `test`/`chore` | MC-28 Vitest harness + data-layer contract tests |
-| Stage 2 | `feat(cv)` | MC-13…MC-17 |
-| Stage 2 | `docs`/`test` | MC-18 verification + Stage-2 tests |
-| Stage 3 | `feat`/`fix`/`docs` | MC-19…MC-23, MC-27 |
+| Stage 1 | `fix(landing)` | the lock fix F1/F2 |
+| Stage 1 | `test(data)` | MC-28 Vitest harness + data-layer contract tests |
+| Stage 1 | `feat(landing)` | MC-29/30/31 — tagline, footer motto plate, boot sequence |
+| Stage 1 | `feat(i18n)` | the English switch + the new contact line |
+| Stage 2 | `feat(data)` | MC-32 the data rebuild |
+| Stage 2 | `feat(cv)` | MC-13/MC-14 + MC-33 — shell, nav, briefing, education, downloads |
+| Stage 2 | `feat(cv)` | MC-34 — the four remaining sections + footer reuse |
+| Stage 3 | `feat`/`fix`/`docs` | MC-36…MC-39, MC-41, MC-19…MC-23, MC-27 |
 
 ## 11. Acceptance criteria
 
