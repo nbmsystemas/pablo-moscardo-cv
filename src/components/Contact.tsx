@@ -34,7 +34,7 @@ const Contact = () => {
     {
       icon: Linkedin,
       label: "LinkedIn",
-      href: "https://linkedin.com/in/pablo-moscardo"
+      href: "https://www.linkedin.com/in/pablo-moscardo"
     },
     {
       icon: Twitter,

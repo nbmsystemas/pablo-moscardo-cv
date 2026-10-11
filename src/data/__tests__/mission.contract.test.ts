@@ -140,7 +140,7 @@ describe("cards", () => {
   /** The owner's exact new six destinations, in order. */
   it("points the strip at the owner's six new destinations", () => {
     expect(cards.map((card) => card.href)).toEqual([
-      "https://linkedin.com/in/pablomoscardo",
+      "https://www.linkedin.com/in/pablo-moscardo",
       "https://github.com/QuantLlama",
       "https://github.com/nbmsystemas",
       "https://www.youtube.com/@QuantumLlamaOficial",
@@ -175,13 +175,14 @@ describe("cards", () => {
   });
 
   /**
-   * §7.16: the landing shipped `linkedin.com/in/pablo-moscardo` in BOTH of its
-   * LinkedIn links while the documents say `linkedin.com/in/pablomoscardo`.
-   * Both are pinned to the canonical value — fixing one and leaving the other is
-   * the exact half-fix this asserts against.
+   * §7.16, corrected by MC-45: the landing must carry the owner's real
+   * hyphenated handle in BOTH of its LinkedIn links. The hyphenless handle the
+   * CV documents published was wrong, so MC-32's correction was itself a
+   * regression. Both links are pinned — fixing one and leaving the other is the
+   * exact half-fix this asserts against.
    */
-  it("points every LinkedIn link at the canonical handle the documents publish", () => {
-    const CANONICAL = "https://linkedin.com/in/pablomoscardo";
+  it("points every LinkedIn link at the owner's canonical hyphenated handle", () => {
+    const CANONICAL = "https://www.linkedin.com/in/pablo-moscardo";
     const linkedIn = [
       ...cards.filter((card) => /linkedin\.com/i.test(card.href)).map((card) => card.href),
       ...contactLine.links

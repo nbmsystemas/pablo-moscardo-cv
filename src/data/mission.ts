@@ -53,7 +53,7 @@ export const contactLine = {
     },
     {
       label: "LinkedIn",
-      href: "https://linkedin.com/in/pablomoscardo",
+      href: "https://www.linkedin.com/in/pablo-moscardo",
     },
   ],
 } as const;
@@ -99,7 +99,7 @@ export const cards: MissionCard[] = [
   {
     fig: "FIG. 02",
     name: "LinkedIn",
-    href: "https://linkedin.com/in/pablomoscardo",
+    href: "https://www.linkedin.com/in/pablo-moscardo",
     external: true,
   },
   {
