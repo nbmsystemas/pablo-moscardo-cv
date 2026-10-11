@@ -920,6 +920,27 @@ knowledge-panel thumbnail size. That tradeoff is now the owner's accepted cost, 
 
 ---
 
+## 7.21 `/cv` 404s in production: there was no SPA rewrite (MC-52)
+
+The release check found `/cv` returning **HTTP 404** in production while `public/sitemap.xml` advertises it
+as canonical. The cause was not the code: the repository had **no hosting config at all**, so Vercel had no
+rewrite and any path matching no file 404s. `/` worked only because `index.html` exists there, and the
+landing's CTA worked only because it is client-side navigation. A shared link, a refresh or a crawler got a
+404.
+
+`vercel.json` now rewrites to `index.html`, but **only for paths without a dot**: `"/((?!.*\\.).*)"`. A
+blanket `/(.*)` would also swallow genuinely missing assets and answer them with `index.html` and a 200,
+which turns every broken asset reference into a silent lie. The dotless pattern keeps `/cv` working and
+keeps `/pablo-profile.png` honest.
+
+**The finding that matters more than the bug.** The progress log records `/cv` returning **200** in MC-11's
+independent verification. That measurement was taken against the **dev server**, where Vite's SPA fallback
+serves `/cv` from `index.html`. Every verification in this project's history measured the dev server rather
+than the deployed static build, so **any defect that exists only in the static deploy was structurally
+invisible to it**. A routing change must be verified on a deployed URL, never on `npm run dev`.
+
+---
+
 ## 8. Task checklist
 
 Route legend: `INLINE` = parent · `WRITER` = `gentle-ai-worker` · `VERIFY` = `gentle-ai-verify`.
