@@ -82,7 +82,7 @@ html:has(.stage--cv) {
 }
 
 /* ---------------------------------------------------------------------------
-   3. Sticky mission-log nav
+   3. Sticky mission-log nav (the MC-39 link treatment lives inside it)
 
    Full-bleed by negative side margin, so no content can slide past it in the
    --pad gutters. `position: sticky` is >=760px only: below that the six titles
@@ -131,12 +131,29 @@ html:has(.stage--cv) {
 }
 
 .cv-nav__link {
+  /* `position: relative` is only a hook for the scan sweep below: it is out of
+     flow, so the link's box — and therefore the band's wrap and height, which a
+     ResizeObserver turns into `--cv-nav-h` — cannot move. */
+  position: relative;
   display: inline-block;
   font-size: 10px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--ink-soft);
   border-bottom: 1px solid transparent;
+  /* MC-39 hover motion: the card strip's own sweep, in the accent at low alpha
+     because this surface is paper, not ink. At rest the gradient is parked
+     entirely outside the link's box (`background-position: 200% 0` on a 200%-wide
+     image), so nothing about the resting band changes. */
+  background-image: linear-gradient(
+    100deg,
+    transparent 35%,
+    rgb(227 93 21 / 26%) 50%,
+    transparent 65%
+  );
+  background-repeat: no-repeat;
+  background-size: 200% 100%;
+  background-position: 200% 0;
   transition:
     color 0.3s var(--ease-out),
     border-color 0.3s var(--ease-out);
@@ -146,6 +163,22 @@ html:has(.stage--cv) {
 .cv-nav__link:focus-visible {
   color: var(--ink);
   border-bottom-color: var(--orange);
+}
+
+/* The motion half of the same treatment, kept in the shape the card rules use:
+   hover only where a pointer can hover, `:focus-visible` for the keyboard. The
+   sweep is one run per entry — `card-scan` is the card strip's own keyframe, and
+   it reverts to the parked position when it ends, so the link is never left
+   mid-scan. Reduced motion needs nothing: base.css forces the duration to 1ms and
+   the iteration count to 1, which lands it on its final frame. */
+@media (hover: hover) {
+  .cv-nav__link:hover {
+    animation: card-scan 0.9s var(--ease-out);
+  }
+}
+
+.cv-nav__link:focus-visible {
+  animation: card-scan 0.9s var(--ease-out);
 }
 
 /* ---------------------------------------------------------------------------

@@ -31,6 +31,13 @@ import { footerMotto } from "@/data/mission";
  *
  * The landscape is decorative: the scene is aria-hidden, and only the motto
  * block is real content.
+ *
+ * The array reacts to the band's hover (MC-38): exactly ONE reflector slews,
+ * driven by `.foot:hover` in panels.css rather than by a hover on a 1px stroke.
+ * Only the reflector assembly moves — the mast, the neck and the counterweight
+ * stay on the pad — and the annotation group is not part of the motion, because
+ * MC-25b already had to move that group out from under the stage-level status
+ * plate once. See the `.foot__slew` comment on <Dish /> below.
  */
 
 /* --- scene frame --------------------------------------------------------- */
@@ -118,6 +125,8 @@ interface DishProps {
   ry: number;
   /** Boresight elevation: a negative tilt faces the dish to the left. */
   tilt: number;
+  /** Marks the ONE dish that slews while the band is hovered (MC-38). */
+  slew?: boolean;
 }
 
 /**
@@ -128,8 +137,18 @@ interface DishProps {
  * rotated reflector (`0, ry + 5`), so the attach point is pushed through the
  * same rotation instead of being guessed — otherwise the mast detaches from the
  * dish by a few units at every tilt.
+ *
+ * The reflector assembly is its own `.foot__slew` group (MC-38). It holds the
+ * rim, the inner rim, the feed tripod and the feed horn, and NOT the mast, the
+ * neck or the counterweight — a slew is the dish turning on its mount, so
+ * everything that is bolted to the pad has to stay put. The group's fill-box is
+ * the assembly's own bounding box, which centres exactly on the rim's bottom
+ * point (`0, ry`) — five units up the neck from the pivot — so the CSS can rotate
+ * it with `transform-origin: 50% 100%` and no coordinate arithmetic. Because
+ * `fill-box` follows the drawing, that origin stays correct for every reflector
+ * size in the array.
  */
-const Dish = ({ x, y, rx, ry, tilt }: DishProps) => {
+const Dish = ({ x, y, rx, ry, tilt, slew = false }: DishProps) => {
   const radians = (tilt * Math.PI) / 180;
   const neck = ry + 5;
   const ax = x - neck * Math.sin(radians);
@@ -138,7 +157,7 @@ const Dish = ({ x, y, rx, ry, tilt }: DishProps) => {
   const guyY = PAD_Y + (ay - PAD_Y) * 0.62;
 
   return (
-    <g className="foot__dish">
+    <g className={slew ? "foot__dish foot__dish--slew" : "foot__dish"}>
       <path
         className="foot__strut"
         d={`M ${x - 30} ${PAD_Y} L ${guyX} ${guyY} L ${x + 30} ${PAD_Y}`}
@@ -146,18 +165,20 @@ const Dish = ({ x, y, rx, ry, tilt }: DishProps) => {
       <path className="foot__strut" d={`M ${x} ${PAD_Y} L ${ax} ${ay}`} />
 
       <g transform={`translate(${x} ${y}) rotate(${tilt})`}>
-        <ellipse className="foot__rim" rx={rx} ry={ry} />
-        <ellipse className="foot__rim-inner" rx={rx * 0.62} ry={ry * 0.56} />
+        <g className="foot__slew">
+          <ellipse className="foot__rim" rx={rx} ry={ry} />
+          <ellipse className="foot__rim-inner" rx={rx * 0.62} ry={ry * 0.56} />
 
-        <path
-          className="foot__strut"
-          d={`M ${-rx * 0.62} ${ry * 0.3} L 0 ${-ry - 13}`}
-        />
-        <path
-          className="foot__strut"
-          d={`M ${rx * 0.62} ${ry * 0.3} L 0 ${-ry - 13}`}
-        />
-        <circle className="foot__feed" cx="0" cy={-ry - 13} r="2.6" />
+          <path
+            className="foot__strut"
+            d={`M ${-rx * 0.62} ${ry * 0.3} L 0 ${-ry - 13}`}
+          />
+          <path
+            className="foot__strut"
+            d={`M ${rx * 0.62} ${ry * 0.3} L 0 ${-ry - 13}`}
+          />
+          <circle className="foot__feed" cx="0" cy={-ry - 13} r="2.6" />
+        </g>
 
         <path className="foot__strut" d={`M 0 ${ry} L 0 ${ry + 5}`} />
         <rect
@@ -172,10 +193,18 @@ const Dish = ({ x, y, rx, ry, tilt }: DishProps) => {
   );
 };
 
-/** The array: three reflectors of different sizes, each on its own mast. */
+/**
+ * The array: three reflectors of different sizes, each on its own mast.
+ *
+ * ONE of them slews on the band's hover (MC-38) — the 80-unit main reflector, the
+ * array's largest and the only one whose movement reads at the band's 0.45x-0.98x
+ * render scale. Not the small one at x 1380: its own diameter cota (`4.0 M`) is
+ * drawn 44 units directly above it, and it is that dimension the cota's witness
+ * lines drop onto. The main reflector has open sky above and to its right.
+ */
 const DISHES: DishProps[] = [
   { x: 1380, y: 296, rx: 16, ry: 5.5, tilt: -40 },
-  { x: 1508, y: 252, rx: 40, ry: 14, tilt: -22 },
+  { x: 1508, y: 252, rx: 40, ry: 14, tilt: -22, slew: true },
   { x: 1596, y: 280, rx: 26, ry: 9, tilt: -6 },
 ];
 
@@ -287,6 +316,7 @@ const MissionFooter = () => (
           {DISHES.map((dish) => (
             <Dish
               key={dish.x}
+              slew={dish.slew}
               tilt={dish.tilt}
               rx={dish.rx}
               ry={dish.ry}

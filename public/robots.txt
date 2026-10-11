@@ -1,14 +1,13 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
+# https://pabloezmoscardo.nbmsystemas.com
+#
+# Everything is public: this is a CV and portfolio, and its whole purpose is to
+# be found. There is no private route and nothing to disallow.
+#
+# The Sitemap line is the part that matters — without it a crawler has to
+# discover /cv by following a link, and a route nobody links to from the outside
+# can go unindexed for a long time.
 
 User-agent: *
 Allow: /
+
+Sitemap: https://pabloezmoscardo.nbmsystemas.com/sitemap.xml

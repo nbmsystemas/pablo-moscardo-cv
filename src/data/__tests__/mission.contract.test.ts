@@ -91,25 +91,62 @@ describe("cards", () => {
    * A seventh card forces a third grid row (+92px at 1440x900) and breaks the
    * viewport lock, which is why this is a contract and not a style preference.
    */
-  it("holds exactly six cards, none of them the internal /cv route", () => {
+  it("holds exactly six cards, five external plus one internal", () => {
     expect(cards).toHaveLength(6);
-    for (const card of cards) {
-      expect(card.internal).toBeUndefined();
-      expect(card.href).not.toBe("/cv");
-    }
+    const internal = cards.filter((card) => card.internal);
+    expect(internal).toHaveLength(1);
+    expect(cards.filter((card) => !card.internal)).toHaveLength(5);
+  });
+
+  /**
+   * MC-36: `/cv` moved back INTO the grid as the internal card (the owner asked
+   * for Full CV to replace the Behance card). It renders through the router, so
+   * it must be the only `internal` card and must not carry `external` — or the
+   * component would attach `target="_blank"` and the "opens in a new tab" hint
+   * to a route.
+   */
+  it("keeps exactly one internal card, and it is the /cv route", () => {
+    const internal = cards.filter((card) => card.internal);
+    expect(internal).toHaveLength(1);
+    expect(internal[0]?.href).toBe("/cv");
+    expect(internal[0]?.href).toBe(cvCta.href);
+    expect(internal[0]?.external).toBe(false);
   });
 
   /**
    * `external` drives `target="_blank"` plus an assistive hint. It means "opens
-   * in a new tab", NOT "is off-site": a `mailto:` target must stay in the same
-   * tab, so Email is correctly `external: false` while the five web profiles are
-   * `true`. The flag has to agree with the href, or the hint lies to screen
-   * readers.
+   * in a new tab", NOT "is off-site": every external card is an http(s) target
+   * and the internal `/cv` card is not. The flag has to agree with the href, or
+   * the hint lies to screen readers.
    */
   it("keeps the new-tab flag in agreement with the href it decorates", () => {
     for (const card of cards) {
       expect(card.external).toBe(card.href.startsWith("http"));
     }
+  });
+
+  /**
+   * MC-36 removed five destinations from the strip: WhatsApp, Behance, Email
+   * and X/Twitter (Behance's slot reused for the Full CV card). A regression
+   * would silently re-add one of them through a stale data row.
+   */
+  it("no longer carries any of the five removed destinations", () => {
+    for (const card of cards) {
+      expect(card.name).not.toMatch(/whatsapp|behance|twitter|^email$/i);
+      expect(card.href).not.toMatch(/whatsapp|behance|twitter|wa\.me|mailto:/i);
+    }
+  });
+
+  /** The owner's exact new six destinations, in order. */
+  it("points the strip at the owner's six new destinations", () => {
+    expect(cards.map((card) => card.href)).toEqual([
+      "https://linkedin.com/in/pablomoscardo",
+      "https://github.com/QuantLlama",
+      "https://github.com/nbmsystemas",
+      "https://www.youtube.com/@QuantumLlamaOficial",
+      "https://nbmsystemas.com",
+      "/cv",
+    ]);
   });
 
   it("numbers the figures FIG. 02 through FIG. 07 without gaps", () => {
@@ -126,15 +163,15 @@ describe("cards", () => {
   it("has a reachable target and a name for every card", () => {
     for (const card of cards) {
       expect(card.name.trim()).not.toBe("");
-      expect(card.href).toMatch(/^(https?:|mailto:|tel:)/);
+      expect(card.href).toMatch(/^(https?:|mailto:|tel:|\/)/);
     }
     expect(new Set(cards.map((card) => card.href)).size).toBe(cards.length);
   });
 
-  /** /cv stays reachable from the landing as its own CTA, not as a card. */
-  it("keeps /cv reachable through the contact-row CTA", () => {
+  /** `cvCta` survives as the data source for the internal /cv card's label. */
+  it("keeps cvCta as the /cv data source the card consumes", () => {
     expect(cvCta.href).toBe("/cv");
-    expect(cards.some((card) => card.href === "/cv")).toBe(false);
+    expect(cards.some((card) => card.internal)).toBe(true);
   });
 
   /**

@@ -2,6 +2,7 @@ import {
   Badge,
   BlueprintFrame,
   ContactBlock,
+  CursorGuides,
   LinkCards,
   Masthead,
   MissionFooter,
@@ -31,9 +32,15 @@ import {
  * band (as in the reference) instead of competing with the artwork for the
  * column's height. Below 1180px the same element is an ordinary block between
  * <main> and the footer.
+ *
+ * <CursorGuides /> (MC-37) is the crosshair cursor overlay. It is fixed-position
+ * page chrome rather than part of the composition — it takes no space in any
+ * grid, and it is mounted on both routes, not just here.
  */
 const Landing = () => (
   <div className="stage">
+    <CursorGuides />
+
     <BlueprintFrame />
 
     <header className="top">

@@ -9,7 +9,7 @@
      3. top              — badge / telemetry / motto header grid
      4. badge            — orange clipped slab
      5. telemetry        — location + live UTC mission clock
-     6. motto            — EXPLORAR / AUDITAR / CONSTRUIR / REPETIR
+     6. motto            — EXPLORAR / AUDITAR / CONSTRUIR / REPETIR (+ MC-39 hover)
      7. main             — responsive composition grid (v2: no second row)
      8. lead             — masthead, tagline, contact, cards CTA
      9. cards            — link cards
@@ -17,6 +17,7 @@
     11. cv shell        — the /cv placeholder slot, now DELETED (MC-13); the real
                           mission-log styles live in src/styles/cv.css
     12. short viewports  — the >=1180px packing for <=817px tall viewports (MC-25b)
+    13. cursor guides    — the MC-37 crosshair overlay (page chrome, both routes)
    ========================================================================== */
 
 /* ---------------------------------------------------------------------------
@@ -314,6 +315,17 @@
   flex: none;
   width: 56cqw;
   height: auto;
+  /* White monogram, per the owner (it was the slab's ink). The glyphs use
+     `fill="currentColor"`, so this is the whole change — the pixel motif keeps
+     its own explicit --ink / --on-orange cells and is unaffected.
+
+     Contrast, measured rather than eyeballed: --paper-hi on --orange is 3.37:1.
+     That clears the 3:1 floor for large text, which is what these 160-unit
+     stencil glyphs are, but it would NOT clear 4.5:1 for the small `PERSONAL
+     INDEX` label — which is why the label stays ink and only the monogram
+     inverts. If the label should invert too, it is one declaration and a
+     deliberate a11y trade, not an oversight. */
+  color: var(--paper-hi);
 }
 
 .badge__pixels {
@@ -522,6 +534,35 @@
   }
 }
 
+/* Interaction state (MC-39), in the same shape as the card rules: the hover part
+   is inside `@media (hover: hover)` so a touch device never latches it, and the
+   same treatment is duplicated for the keyboard.
+
+   WHAT MOVES, AND WHAT MUST NOT. The word under the pointer takes `--orange`
+   (a colour transition only — a weight change would re-wrap the row and the row
+   is inside the >=1180px viewport lock), and the `+` mark hops once with the
+   card strip's own `arrow-hop` (a transform, so the row's box is untouched).
+
+   `:focus-within` rather than `:focus-visible` because the row has no focusable
+   descendant today — a slogan is not a control and giving it a tab stop would be
+   worse than the missing keyboard state. It is here so the row's treatment stays
+   symmetric with the card rules if one is ever added; the landing's genuinely
+   focusable navigation is <LinkCards />, which already ships the full card
+   vocabulary for both hover and `:focus-visible`. */
+@media (hover: hover) {
+  .motto:hover .motto__word:hover {
+    color: var(--orange);
+  }
+
+  .motto:hover .motto__plus {
+    animation: arrow-hop 0.5s var(--ease-out);
+  }
+}
+
+.motto:focus-within .motto__plus {
+  animation: arrow-hop 0.5s var(--ease-out);
+}
+
 /* ---------------------------------------------------------------------------
    7. Main composition (MC-25 / §7.12)
    base:    lead -> art (+ its orbit panel) -> spec, one column
@@ -608,7 +649,16 @@
     grid-template-areas: "lead art";
     column-gap: 0;
     align-items: stretch;
-    margin-top: 0;
+    /* A line of air under the badge. Measured before this rule: `.top` ended at
+       y 159 and `.title` began at y 159 — zero gap, so the name sat flush against
+       the badge slab (owner report). The reference leaves 7px; this leaves more,
+       deliberately, because the badge is a solid orange mass and the title is the
+       heaviest type on the page.
+
+       The cost is real and bounded: `.main` is `flex: 1`, so this comes out of the
+       lead column's budget. Re-verified at eight viewports in the same round,
+       including the tightest lock case (1180x784). */
+    margin-top: clamp(16px, 2.2vh, 30px);
   }
 
   /* `container-type` is what makes the title's width cap possible: the longest
@@ -645,7 +695,12 @@
   .status-aside {
     position: absolute;
     right: var(--pad);
-    bottom: 0;
+    /* Not flush with the viewport edge: the owner reported the plate as "muy
+       pegado al final sin espacio". `--status-bottom` is that breathing room, and
+       the orbit panel's own formula adds it too, so the 12px plate/orbit gap is
+       preserved instead of being eaten by the lift. Both boxes are absolutely
+       positioned, so this costs the viewport lock nothing. */
+    bottom: var(--status-bottom);
     z-index: 3;
     width: clamp(480px, 35%, 680px);
     margin-top: 0;
@@ -783,38 +838,6 @@
   margin-top: 2px;
 }
 
-/* `/cv` as a CTA, never a peer card (§7.8): a bordered internal <Link>, visually
-   distinct from the six external cards — ink border on paper, inverting on hover
-   and focus exactly like a card does. `vertical-align: 1px` rides the chip on the
-   links line, so the contact block stays two rows tall. */
-.contact__cta {
-  display: inline-block;
-  margin-left: 12px;
-  padding: 3px 10px 2px;
-  border: 1px solid var(--ink);
-  background: var(--paper-hi);
-  font-size: 10px;
-  line-height: 1.5;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink);
-  vertical-align: 1px;
-  transition:
-    background-color 0.3s var(--ease-out),
-    color 0.3s var(--ease-out);
-}
-
-.contact__cta-arrow {
-  margin-left: 7px;
-  color: var(--orange);
-}
-
-.contact__cta:hover,
-.contact__cta:focus-visible {
-  background: var(--ink);
-  color: var(--paper-hi);
-}
-
 .contact::before {
   content: "";
   position: absolute;
@@ -870,7 +893,14 @@
   --card-shadow: 0 16px 30px -18px rgb(22 22 26 / 70%);
 
   position: relative;
-  display: block;
+  /* Grid, not block: the brand glyph owns a fixed first column and the text
+     block (`card__fig` + `card__name`) stacks in the second. The icon spans both
+     text rows so the mark reads level with the name. Decorations (arrow, hatch,
+     corner, tri, scan) are absolutely positioned and do not take a cell. */
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 10px;
+  align-content: start;
   min-height: clamp(58px, 6.4vh, 76px);
   padding: 9px 20px 16px 20px;
   background: var(--paper-hi);
@@ -898,6 +928,15 @@
   .card__hatch {
     left: 16px;
   }
+}
+
+.card__icon {
+  grid-row: 1 / span 2;
+  align-self: center;
+  width: 18px;
+  height: 18px;
+  color: var(--orange);
+  transition: color 0.32s var(--ease-out);
 }
 
 .card__fig {
@@ -1306,4 +1345,132 @@ tall `62vh - 400px` is exactly 220px, the same value the base
 .contact {
   animation: boot-up 0.8s var(--ease-out) both;
   animation-delay: var(--d, 1.45s);
+}
+
+/* ---------------------------------------------------------------------------
+   13. Cursor guides — the crosshair cursor with a coordinate readout (MC-37)
+
+   PAGE CHROME, NOT A LANDING FEATURE: <CursorGuides /> is mounted on both `/` and
+   `/cv`, so these rules live in the shell file rather than in cv.css.
+
+   The overlay is a fixed layer of three parts — a 1px horizontal rule, a 1px
+   vertical rule and a micro-label readout of the pointer's viewport coordinates.
+   That is the reference's SYSTEM (`.guides__h` / `.guides__v` / `.guides__tag`,
+   the same fade, the same `data-active` / `data-locked` states, the same
+   coarse-pointer gate); the tokens, the type scale and the readout format are
+   ours.
+
+   Nothing here can reach layout. `position: fixed; inset: 0` takes the overlay out
+   of flow, `pointer-events: none` keeps it from eating clicks, and
+   `overflow: hidden` guarantees it can never contribute scrollWidth even if a
+   future flip bug let the tag escape — the harness's spill probe counts
+   `overflow: hidden` containers, so a flip that broke would still be caught by the
+   tag's own measured rect. `z-index: 40` puts it over every panel (max 6) and
+   under the base.css noise overlay (60), which is also where the reference keeps
+   it.
+
+   COLOUR. The reference draws both rules in `#15151512` — its ink at 7%. Ours is
+   `--ink` (#16161a) at 8%: our ink is cool-shifted and our paper (#f3efe5) is a
+   step darker than the reference's #f5f1e8, so 7% of ours lands a hair lighter and
+   cooler on the page than 7% of theirs. 8% restores the same perceived weight
+   without reaching the ~10% where a guide starts reading as a drawn line. The tag
+   is the system's own micro-label: `--paper-hi` plate, 1px `--rule-strong` frame,
+   `--ink-soft` text, 10px at .16em tracking, tabular numerals.
+
+   `--gx` / `--gy` are written by the component (never through React state — a
+   pointermove must not re-render) and drive transforms, not `top`/`left`, so
+   tracking the pointer stays a composite instead of a layout flush.
+
+   `data-flip-x` / `data-flip-y` move the tag to the other side of the rules near
+   the right/bottom edge. `calc(-100% - 8px)` is the tag's OWN width plus the same
+   8px gap, so the flip needs no measured constant in the CSS and can never run off
+   the viewport by construction.
+
+   `data-locked` is the primary button held down: the readout locks onto the target
+   and takes the accent — the same ink-on-orange pairing as the SYSTEM STATUS title
+   chip.
+
+   Coarse pointers get `display: none`; that is the pointer-type gate, and the
+   component's own `(pointer: coarse)` bail-out only avoids the arithmetic.
+   Reduced motion needs nothing: base.css already forces the fade's
+   `transition-duration` to 1ms, so the overlay appears and disappears without
+   fading rather than fighting a media query of our own.
+   --------------------------------------------------------------------------- */
+.guides {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out);
+}
+
+.guides[data-active="true"] {
+  opacity: 1;
+}
+
+.guides__h {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgb(22 22 26 / 8%);
+  transform: translateY(var(--gy, 0px));
+}
+
+.guides__v {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  background: rgb(22 22 26 / 8%);
+  transform: translateX(var(--gx, 0px));
+}
+
+.guides__tag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* Pointer position, then the 8px gap — which the flip reverses. */
+  transform: translate(var(--gx, 0px), var(--gy, 0px))
+    translate(var(--tag-dx, 8px), var(--tag-dy, 8px));
+  padding: 2px 6px;
+  border: 1px solid var(--rule-strong);
+  background: var(--paper-hi);
+  color: var(--ink-soft);
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  /* Decoration: the readout must not be selectable text sitting over the page. */
+  user-select: none;
+  transition:
+    border-color 0.3s var(--ease-out),
+    background-color 0.3s var(--ease-out),
+    color 0.3s var(--ease-out);
+}
+
+.guides[data-flip-x="true"] {
+  --tag-dx: calc(-100% - 8px);
+}
+
+.guides[data-flip-y="true"] {
+  --tag-dy: calc(-100% - 8px);
+}
+
+.guides[data-locked="true"] .guides__tag {
+  border-color: var(--orange);
+  background: var(--orange);
+  color: var(--ink);
+}
+
+@media (pointer: coarse) {
+  .guides {
+    display: none;
+  }
 }
