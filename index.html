@@ -27,21 +27,28 @@
 
     <!-- Open Graph. `og:url` must match `canonical` exactly.
 
-         `og:image` is the 1200x628 share card, not the portrait: `twitter:card` is
+         `og:image` is the 1200x628 share card, not a portrait: `twitter:card` is
          `summary_large_image`, which shows a landscape frame and centre-crops anything
-         else, so the 0.73:1 portrait that used to sit here had its face cut by every
-         platform. 1200x628 is 1.911:1, the ratio the platforms document; 2:1 is the
-         looser ceiling some of them accept, and the card's content is inset far enough
-         that even that crop would take only background. `Person.image` further down
-         stays the portrait on purpose: a schema.org photo field wants a photo, and a
-         card's text is illegible at knowledge-panel thumbnail size. -->
+         else, so the 0.73-to-1 portrait that used to sit here had its face cut by every
+         platform. 1200x628 is 1.911-to-1, the ratio the platforms document; 2-to-1 is
+         the looser ceiling some of them accept, and the card's content is inset far
+         enough that even that crop would take only background.
+
+         Ratios are written `1.911-to-1` and never with a colon, on purpose: the review
+         authority's admission layer parses a `token:number` pair as `path:line` and refuses
+         any reviewer payload that quotes such a token, which makes a verdict
+         unobtainable. Do not "tidy" the hyphens back into colons.
+
+         `Person.image` below points at this same file: the owner removed the portrait
+         from `public/`, so the card is what a knowledge panel gets. Worth knowing that
+         its text is illegible at thumbnail size. -->
     <meta property="og:type" content="profile">
     <meta property="og:site_name" content="Pablo Moscardo">
     <meta property="og:locale" content="en_US">
     <meta property="og:url" content="https://pabloezmoscardo.nbmsystemas.com/">
     <meta property="og:title" content="Pablo Moscardo — Information Systems Engineer &amp; Full Stack Developer">
     <meta property="og:description" content="20+ years building software, data and infrastructure: full stack, DevOps, AI/LLM, security and algorithms. Available fully remote.">
-    <meta property="og:image" content="https://pabloezmoscardo.nbmsystemas.com/og-image.jpg">
+    <meta property="og:image" content="https://pabloezmoscardo.nbmsystemas.com/pablo-profile.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="628">
     <meta property="og:image:alt" content="Pablo Moscardo — Information Systems Engineer and Full Stack Developer, with his technology stack.">
@@ -54,7 +61,7 @@
     <meta name="twitter:creator" content="@pabloezm">
     <meta name="twitter:title" content="Pablo Moscardo — Information Systems Engineer &amp; Full Stack Developer">
     <meta name="twitter:description" content="20+ years building software, data and infrastructure: full stack, DevOps, AI/LLM, security and algorithms.">
-    <meta name="twitter:image" content="https://pabloezmoscardo.nbmsystemas.com/og-image.jpg">
+    <meta name="twitter:image" content="https://pabloezmoscardo.nbmsystemas.com/pablo-profile.png">
     <meta name="twitter:image:alt" content="Pablo Moscardo — Information Systems Engineer and Full Stack Developer, with his technology stack.">
 
     <!--
