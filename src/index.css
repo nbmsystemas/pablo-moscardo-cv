@@ -2,14 +2,14 @@
 
    Tailwind stays in the pipeline only for the untouched shadcn layer that still
    compiles (src/components/ui/**). The Mission Control CV system itself is plain
-   CSS with custom properties: see the six imports below.
+   CSS with custom properties: see the seven imports below.
 
    IMPORT ORDER IS LOAD-BEARING (measured, not assumed): Vite resolves CSS
    @import with postcss-import, which refuses to inline an @import that follows
    any other statement — it emits
    "@import must precede all other statements (besides @charset or empty @layer)"
    and the imported file never reaches the bundle (the whole design system would
-   silently ship as Tailwind output only). So the six imports come first and the
+   silently ship as Tailwind output only). So the seven imports come first and the
    Tailwind directives follow them.
 
    Cascade consequence of that order: preflight lands AFTER our reset. Every
@@ -17,14 +17,17 @@
    wins over preflight's element-level resets; the only overlapped utility is
    `.sr-only`, whose two definitions are equivalent.
 
-   Stage note: `artwork.css` (MC-07) and `panels.css` (MC-08 / MC-09) have both
-   landed; Stage-2 (`/cv`) reuses this same import list. */
+   Stage note: `artwork.css` (MC-07), `panels.css` (MC-08 / MC-09) and `cv.css`
+   (MC-13 / MC-14, the `/cv` mission log) have all landed. Order matters beyond
+   `postcss-import` too: `cv.css` resets the tracks `.main` inherits from
+   `landing.css`, so it is imported last of the seven. */
 @import "./styles/tokens.css";
 @import "./styles/base.css";
 @import "./styles/motion.css";
 @import "./styles/landing.css";
 @import "./styles/artwork.css";
 @import "./styles/panels.css";
+@import "./styles/cv.css";
 
 @tailwind base;
 @tailwind components;

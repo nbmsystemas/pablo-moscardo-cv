@@ -1,0 +1,521 @@
+/* ==========================================================================
+   Mission Control CV — /cv, the full mission log
+   Owners: MC-13 (route shell + sticky mission-log nav),
+           MC-14 (briefing + education).
+
+   /cv is the SAME visual system at long scroll (§7.13), not a second design:
+   it reuses the tokens, the mono micro-label scale, the single --orange accent,
+   the 1px hairlines and the established primitives (.panel-title, the
+   .status__row grid idiom, the paper/ink palette, the .contact__cta chip).
+   MC-13 also DELETES the Stage-1 `.cv-shell` placeholder instead of restyling
+   it — that CSS lived in landing.css and is gone from it.
+
+   Section map:
+     1. scroll container — the anchor offset the sticky band must clear
+     2. main             — the long-scroll column
+     3. nav              — the sticky MISSION LOG band
+     4. section          — the shared head and the width-capped title
+     5. briefing         — the presentation letter, its areas and notable areas
+     6. education        — rows carrying the surfaced `type` micro-label
+     7. header           — the back-link chip
+     8. empty sections   — the four MC-15/16/17 anchors
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   1. Scroll container
+
+   The landing's viewport lock does not apply here: `.stage--cv` (landing.css)
+   drops both the fixed 100svh treatment and `overflow: hidden`, so /cv scrolls
+   as a document and the scrollport is the root element.
+
+   Anchor landings are offset by the scrollport's `scroll-padding-top`, and it
+   has to clear the sticky band or the target lands UNDER it — the exact defect
+   the site being replaced ships (§7.10). The band's height is NOT a constant: it
+   is one row on a wide desktop, two rows around 1180px, and up to four rows on a
+   phone. CvNav measures the real box with a ResizeObserver and keeps
+   `--cv-nav-h` in sync, so the offset is exact at every width instead of being a
+   guessed constant; the 44px here is only the first-paint fallback for one
+   desktop row, replaced before the reader can click anything.
+
+   `:has()` scopes the offset to /cv, so the landing's own scroll behaviour (it
+   scrolls 16px at 1366x768) is untouched.
+   --------------------------------------------------------------------------- */
+:root {
+  --cv-nav-h: 44px;
+}
+
+html:has(.stage--cv) {
+  scroll-padding-top: calc(var(--cv-nav-h) + 10px);
+}
+
+/* ---------------------------------------------------------------------------
+   2. Main column
+
+   The landing's `.main` is a two-column viewport composition; /cv is a reading
+   column, so it has to RESET what it inherits before its own grid applies — a
+   leftover `grid-template-areas: "lead lead" / "art spec"` over a single column
+   silently renames both tracks.
+
+   1100px is a reading measure, not a layout breakpoint: at 2560x1440 the column
+   stays 1100px and centres, because a 2400px line of 14px mono is unreadable.
+   The prose is then capped again at 74ch (≈622px here), which is the useful
+   measure for mono body copy.
+   --------------------------------------------------------------------------- */
+.main--cv {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: none;
+  grid-template-areas: none;
+  align-content: start;
+  gap: clamp(34px, 5vw, 72px);
+  width: min(100%, 1100px);
+  margin: clamp(26px, 3.6vw, 60px) auto 0;
+  padding-bottom: clamp(48px, 9vh, 140px);
+}
+
+/* ---------------------------------------------------------------------------
+   3. Sticky mission-log nav
+
+   Full-bleed by negative side margin, so no content can slide past it in the
+   --pad gutters. `position: sticky` is >=760px only: below that the six titles
+   wrap to three or four rows, and a ~130px-tall sticky band would eat a fifth of
+   a phone viewport to save one flick of the thumb. At >=760px the band is one or
+   two rows.
+
+   The opaque `--paper` background is load-bearing, not decoration: it is what
+   lets the band cover the content scrolling under it. The wrapping (and NOT an
+   `overflow: auto` strip) is deliberate as well — an inner scroll container
+   keeps its own scrollWidth and the measurement harness has to report that as
+   page spill, so the band wraps instead of scrolling sideways.
+   --------------------------------------------------------------------------- */
+.cv-nav {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 7px clamp(14px, 1.6vw, 28px);
+  margin: clamp(24px, 3.4vw, 56px) calc(var(--pad) * -1) 0;
+  padding: 11px var(--pad) 12px;
+  background: var(--paper);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+@media (min-width: 760px) {
+  .cv-nav {
+    position: sticky;
+    top: 0;
+  }
+}
+
+.cv-nav__title {
+  flex: none;
+  color: var(--ink);
+}
+
+.cv-nav__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px clamp(12px, 1.5vw, 26px);
+  min-width: 0;
+}
+
+.cv-nav__link {
+  display: inline-block;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  border-bottom: 1px solid transparent;
+  transition:
+    color 0.3s var(--ease-out),
+    border-color 0.3s var(--ease-out);
+}
+
+.cv-nav__link:hover,
+.cv-nav__link:focus-visible {
+  color: var(--ink);
+  border-bottom-color: var(--orange);
+}
+
+/* ---------------------------------------------------------------------------
+   4. Section
+
+   `.cv-section` carries `container-type: inline-size` so the descendant title
+   can cap itself in `cqw`. Per §7.4's rule, `cqw` must never appear in THIS
+   element's own declarations: container query units resolve against the nearest
+   ANCESTOR container, so a cqw length here would resolve against the viewport
+   instead of against this box.
+
+   The 1px top hairline is the only separator between sections, which is what
+   keeps a long scroll from reading as a stack of cards.
+   --------------------------------------------------------------------------- */
+.cv-section {
+  container-type: inline-size;
+  position: relative;
+  padding-top: clamp(20px, 2.6vw, 34px);
+  border-top: 1px solid var(--rule);
+}
+
+.cv-section__head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* The 22x4 orange bar is the section's only thick mark — the same 52x4 rule the
+   landing draws under the masthead, shortened to the section scale. */
+.cv-section__mark {
+  flex: none;
+  width: 22px;
+  height: 4px;
+  background: var(--orange);
+}
+
+.cv-section__title {
+  font-family: var(--ff-display);
+  font-weight: 900;
+  font-stretch: 125%;
+  /* Width-capped, never raw vw (§7.2 hard rule 1). The longest UNBREAKABLE word
+     of the six section titles is "INDEPENDIENTES" (13 characters); Hubot Sans
+     expanded 900 sets an uppercase character at ~1.0em ("MOSCARDO" is 8.83em
+     including its slash block), so 15 carries the word plus slack. Longer titles
+     break at their spaces above this cap, which is why the cap is on the word
+     here and not on the whole line as the masthead's 8.95 is. */
+  font-size: min(clamp(22px, 2.8vw, 40px), calc(100cqw / 15));
+  line-height: 0.95;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  overflow-wrap: break-word;
+  color: var(--ink);
+}
+
+/* ---------------------------------------------------------------------------
+   5. Briefing — the presentation letter
+
+   `profile.presentation` is a letter, so it is set as prose: a salutation, the
+   intro paragraph, the areas list that continues its "…relacionados con:", then
+   thanks, availability and the valediction. Every string is a field of
+   src/data/cv.ts; nothing is authored here.
+   --------------------------------------------------------------------------- */
+.cv-brief {
+  max-width: 74ch;
+  margin-top: clamp(18px, 2.2vw, 28px);
+}
+
+.cv-brief__salutation {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+
+.cv-brief__prose {
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink-2);
+}
+
+/* The one emphasized run of the prose is `presentation.intro.highlight`, and the
+   emphasis is a 2px orange underline rather than an orange word: an orange run
+   of text inside a paragraph reads as a second accent colour, which §7.1 bans. */
+.cv-brief__mark {
+  font-weight: 700;
+  color: var(--ink);
+  background-image: linear-gradient(var(--orange), var(--orange));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 2px;
+}
+
+.cv-brief__valediction {
+  margin-top: 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* `presentation.areas` continues the intro's sentence, so it is a plain inline
+   list rather than a bordered block. The 7x2 orange dash is its only decoration.
+   A 250px track floor gives two columns from ~700px up and one below — below
+   that the longest item ("Desarrollo en diversos lenguajes de programación",
+   49 characters ≈ 340px at 13px mono) would otherwise wrap inside a half-width
+   cell and make the list read as a ragged paragraph. */
+.cv-areas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+  gap: 6px 18px;
+  margin-top: 14px;
+}
+
+.cv-areas__item {
+  position: relative;
+  padding-left: 17px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.cv-areas__item::before {
+  content: "";
+  position: absolute;
+  top: 0.62em;
+  left: 0;
+  width: 7px;
+  height: 2px;
+  background: var(--orange);
+}
+
+/* `notableAreas` is the BORDERED list §7.13 asks for, built from the panel
+   idiom: --paper-hi inside a 1px --rule-strong box with dashed row separators
+   and an orange `•` marker, the same construction as .status, so the block reads
+   as a readout plate rather than as more prose. It is NOT capped at the prose
+   measure: a full sentence per row wants the whole column. */
+.cv-notes {
+  margin-top: clamp(20px, 2.4vw, 30px);
+  border: 1px solid var(--rule-strong);
+  background: var(--paper-hi);
+}
+
+.cv-notes__item {
+  position: relative;
+  padding: 10px 16px 10px 34px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.cv-notes__item + .cv-notes__item {
+  border-top: 1px dashed var(--rule-strong);
+}
+
+.cv-notes__item::before {
+  content: "\2022";
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  color: var(--orange);
+}
+
+/* ---------------------------------------------------------------------------
+   6. Education rows
+
+   A 1px --rule-strong box with a hairline between rows, mirroring .status.
+   `type` is the bordered orange micro-label in the row's top-left: §7.9 defect 3
+   records that the field has existed in the inventory since the original
+   component and that no page ever rendered it. It sits inside the §7.13
+   micro-label band (9-10.5px, .16em-.26em tracking), and the year is tabular so
+   the two rows' years stack on the same axis.
+   --------------------------------------------------------------------------- */
+.cv-edu {
+  margin-top: clamp(18px, 2.2vw, 28px);
+  border: 1px solid var(--rule-strong);
+  background: var(--paper-hi);
+}
+
+.cv-edu__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 7px 20px;
+  padding: 16px 18px;
+}
+
+.cv-edu__row + .cv-edu__row {
+  border-top: 1px solid var(--rule);
+}
+
+.cv-edu__type {
+  grid-column: 1;
+  justify-self: start;
+  padding: 2px 7px 1px;
+  border: 1px solid var(--orange);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--orange-ink);
+}
+
+.cv-edu__year {
+  grid-column: 2;
+  align-self: center;
+  justify-self: end;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+}
+
+.cv-edu__degree {
+  grid-column: 1 / -1;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+}
+
+.cv-edu__meta {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+/* ---------------------------------------------------------------------------
+   7. Header back link
+
+   The same object as the landing's `.contact__cta` (§7.8): an internal route
+   rendered as a bordered ink chip on paper that inverts on hover and focus,
+   never as one of the external cards. The rule is duplicated instead of reusing
+   the landing class so `.contact__cta` stays a landing concern and the two can
+   drift without one dragging the other.
+   --------------------------------------------------------------------------- */
+.cv-back {
+  display: inline-block;
+  padding: 3px 10px 2px;
+  border: 1px solid var(--ink);
+  background: var(--paper-hi);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--ink);
+  transition:
+    background-color 0.3s var(--ease-out),
+    color 0.3s var(--ease-out);
+}
+
+.cv-back__arrow {
+  margin-right: 7px;
+  color: var(--orange);
+}
+
+.cv-back:hover,
+.cv-back:focus-visible {
+  background: var(--ink);
+  color: var(--paper-hi);
+}
+
+/* Placement. Base: its own full-width row under the motto. 760px+: right-aligned
+   on that row. 1180px+: `.top` is a flex row, so the grid properties are inert
+   and the chip simply lands after the (right-pushed) motto. */
+.top--cv .cv-back {
+  grid-column: 1 / -1;
+  margin-top: 6px;
+}
+
+@media (min-width: 760px) {
+  .top--cv .cv-back {
+    justify-self: end;
+    margin-top: 10px;
+  }
+}
+
+@media (min-width: 1180px) {
+  /* The landing's >=1180px header is one NON-wrapping flex row: badge,
+     telemetry, motto. /cv adds a fourth item, and at 1180x900 the four exceed
+     the 1130px content box by 91px (measured) — the chip costs ~187px and the
+     row had ~96px of slack. With `nowrap` flex shrinks the motto (it is
+     `min-width: 0` on purpose) and its nowrap word row spills out of the box;
+     with `wrap` the chip moves to a second line instead, which is what a
+     long-scroll header can afford and a locked viewport cannot. */
+  .top--cv {
+    flex-wrap: wrap;
+  }
+
+  .top--cv .cv-back {
+    margin-left: auto;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   8. Empty sections (MC-15/16/17)
+
+   The six ids are frozen (§7.10) and the sticky nav links to all six today, so
+   all six exist now. These four carry only their data-layer `sections[].title`:
+   a dashed hairline and an --ink-soft title mark them as pending without a
+   single invented word.
+   --------------------------------------------------------------------------- */
+.cv-section--empty {
+  border-top-style: dashed;
+}
+
+.cv-section--empty .cv-section__title {
+  color: var(--ink-soft);
+}
+
+/* ---------------------------------------------------------------------------
+   Download strip (§7.16)
+
+   The owner's own CV files, published in two languages. A band, not a section:
+   a recruiter wants the file, not a paragraph about it. It sits between the
+   sticky nav and the reading column so it is reachable before any scrolling, and
+   it stays out of `sections[]` because the six anchor ids are frozen (§7.10).
+
+   The chips reuse the card idiom at a smaller scale — 1px --rule-strong on
+   --paper-hi, an orange arrow that hops on hover, and no shadow, because the only
+   permitted shadow is the landing's interactive card hover.
+   --------------------------------------------------------------------------- */
+.cv-downloads {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px 18px;
+  margin-top: clamp(18px, 2.6vh, 34px);
+}
+
+.cv-downloads__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cv-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 13px;
+  border: 1px solid var(--rule-strong);
+  background: var(--paper-hi);
+  color: var(--ink);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  transition: background-color 0.25s var(--ease-out), color 0.25s var(--ease-out),
+    border-color 0.25s var(--ease-out);
+}
+
+.cv-download__lang {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--orange-ink);
+}
+
+.cv-download__arrow {
+  font-size: 13px;
+  color: var(--orange);
+  transition: transform 0.25s var(--ease-out);
+}
+
+@media (hover: hover) {
+  .cv-download:hover,
+  .cv-download:focus-visible {
+    background: var(--ink);
+    color: var(--paper-hi);
+    border-color: var(--ink);
+  }
+
+  .cv-download:hover .cv-download__arrow,
+  .cv-download:focus-visible .cv-download__arrow {
+    transform: translateY(3px);
+  }
+
+  .cv-download:hover .cv-download__lang,
+  .cv-download:focus-visible .cv-download__lang {
+    color: var(--orange-soft);
+  }
+}

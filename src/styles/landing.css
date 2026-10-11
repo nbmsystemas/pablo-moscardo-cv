@@ -14,7 +14,8 @@
      8. lead             — masthead, tagline, contact, cards CTA
      9. cards            — link cards
     10. shared type      — micro-labels shared with MC-07/08/09
-    11. cv shell         — /cv Stage-2 placeholder (MC-10)
+    11. cv shell        — the /cv placeholder slot, now DELETED (MC-13); the real
+                          mission-log styles live in src/styles/cv.css
     12. short viewports  — the >=1180px packing for <=817px tall viewports (MC-25b)
    ========================================================================== */
 
@@ -1111,67 +1112,17 @@
 }
 
 /* ---------------------------------------------------------------------------
-   11. /cv Stage-2 placeholder shell (MC-10, replaced by MC-13).
+   11. /cv Stage-2 placeholder shell — DELETED by MC-13.
+
+   `.cv-shell`, `.cv-shell__state`, `.cv-shell__title`, `.cv-shell__note`,
+   `.cv-shell__back` and the old block-level `.main--cv` all lived here. MC-13
+   replaced the placeholder with the real mission log, so its CSS is gone rather
+   than restyled; `main--cv`, the sticky nav and the section treatment now live
+   in src/styles/cv.css, imported after this file. What survives of the
+   placeholder's lesson is the width cap: the deleted `.cv-shell__title` spilled
+   its own 62ch shell by 100px at 1440x900, which is why cv.css caps every
+   display title with `min(clamp(...), 100cqw / <em>)`.
    --------------------------------------------------------------------------- */
-.main--cv {
-  display: block;
-  margin-top: var(--head-gap);
-}
-
-.cv-shell {
-  /* MC-13 replaces this placeholder; until then its title must not spill.
-     `container-type` here is what lets the descendant title cap itself against
-     this box: cqw resolves against the nearest ANCESTOR container, so the title
-     may use it but this rule must not. */
-  container-type: inline-size;
-  max-width: 62ch;
-  padding: clamp(20px, 3vw, 44px);
-  background: var(--paper-hi);
-  border: 1px solid var(--rule-strong);
-}
-
-.cv-shell__state {
-  display: block;
-  margin-top: 16px;
-  font-size: 10px;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--orange-ink);
-}
-
-.cv-shell__title {
-  margin-top: 12px;
-  font-family: var(--ff-display);
-  font-weight: 900;
-  font-stretch: 125%;
-  /* Width-capped, never raw vw — the same rule the masthead had to learn. Hubot
-     Sans expanded 900 sets COMPLETO at ~8.95em, and the shell is 62ch wide, so
-     the old `clamp(34px, 7vw, 72px)` overflowed its own container by 100px at
-     1440 and spilled the page. Measured cap: 100cqw / 9.2. */
-  font-size: min(clamp(28px, 5vw, 54px), calc(100cqw / 9.2));
-  line-height: 0.9;
-  letter-spacing: -0.005em;
-  text-transform: uppercase;
-  color: var(--ink);
-}
-
-.cv-shell__note {
-  margin-top: 16px;
-  font-size: 13px;
-  line-height: 1.7;
-  color: var(--ink-soft);
-}
-
-.cv-shell__back {
-  display: inline-block;
-  margin-top: 24px;
-  padding-bottom: 3px;
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--ink);
-  border-bottom: 2px solid var(--orange);
-}
 
 /* ---------------------------------------------------------------------------
    12. Short viewports — >=1180px and <=817px tall (MC-25b)

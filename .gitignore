@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Personal source documents (CVs, cover letters). Kept local on purpose: one of
+# them carries a full DNI, and the publishable copies live in public/cv/ instead.
+/cv/

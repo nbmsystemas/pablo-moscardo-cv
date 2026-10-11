@@ -132,3 +132,18 @@ export interface StatusRow {
   filled: number;
   total: number;
 }
+
+/**
+ * A downloadable document (the owner's own CV files, §7.16).
+ *
+ * `lang` is the language tag the chip shows; `label` is the file's own name in
+ * that language. Kept in the data layer because the set of published documents is
+ * content, not layout — and because one source document in `cv/` is deliberately
+ * NOT published (it carries a full DNI).
+ */
+export interface CvDocument {
+  /** Short language tag, e.g. "EN" / "ES". */
+  lang: string;
+  label: string;
+  href: string;
+}

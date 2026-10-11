@@ -18,6 +18,7 @@
    ========================================================================== */
 
 import type {
+  CvDocument,
   Association,
   Contact,
   EducationItem,
@@ -342,4 +343,18 @@ export const sections: Section[] = [
     title: "Contacto",
     subtitle: "Me complacerá mantener las entrevistas que consideren necesarias",
   },
+];
+
+/**
+ * Downloadable CVs (§7.16), served from `public/cv/`.
+ *
+ * Both are the owner's own files, copied verbatim — the site does not generate
+ * them. The third source document in the local `cv/` folder
+ * (`PABLO EZEQUIEL MOSCARDO.pdf`) is deliberately NOT published: it carries the
+ * owner's full DNI, birth date and marital status, and the site's own data layer
+ * masks the DNI to `27.484.---`. Publishing it would undo that.
+ */
+export const documents: CvDocument[] = [
+  { lang: "EN", label: "CV — English", href: "/cv/pablo-moscardo-cv-en.pdf" },
+  { lang: "ES", label: "CV — Español", href: "/cv/pablo-moscardo-cv-es.pdf" },
 ];
