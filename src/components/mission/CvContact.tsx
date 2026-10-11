@@ -8,9 +8,9 @@ import { contact, sections, socials } from "@/data/cv";
  * The contact-block idiom (§7.8's `.contact`): a 26x6 orange bar, an inset left
  * edge and mono prose, here carrying the real document's data rather than the
  * landing's shortened line. Every string is a field of `contact` / `socials` — the
- * four detail pairs, the five profiles, `invite` and the closing `cta`. Nothing is
- * authored, and `href: null` (the postal address) renders as plain text instead of
- * a dead link.
+ * contact detail pairs, the social profile chips, `invite` and the closing `cta`.
+ * Nothing is authored, and `href: null` (the location row) renders as plain text
+ * instead of a dead link.
  *
  * `invite` and `cta` close the section as the letter's last two lines, which is
  * what §7.13's "`cta` closes it" means: the same salutation/thanks/valediction
@@ -18,7 +18,7 @@ import { contact, sections, socials } from "@/data/cv";
  *
  * The social chips reuse the `.cv-back` / `.cv-download` chip: a bordered ink chip
  * on paper that inverts on hover and focus, with the orange mark as the only
- * accent. All five are external destinations, so each opens in a new tab with
+ * accent. Every chip is an external destination, so each opens in a new tab with
  * `rel="noopener noreferrer"`; the `↗` is decorative and `aria-hidden`, so no
  * caption is invented for assistive tech.
  *

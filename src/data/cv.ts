@@ -26,7 +26,10 @@
         the hyphenless `pablomoscardo` handle the CV documents print, but that
         is not the handle the owner uses, so MC-32 moved this the wrong way;
         MC-45 reverses it here and in src/data/mission.ts.
-     2. GitHub (`github.com/pabloezm`) was missing from `socials` — added.
+     2. GitHub was missing from `socials` — MC-32 added it. The owner has since
+        removed the visible `pabloezm` chip, so only the two organisation
+        profiles stay in `socials`, and the personal URL survives only in the
+        JSON-LD `sameAs` in `index.html`.
      3. The portfolio (`pabloezmoscardo.nbmsystemas.com`) was missing — added.
      4. The profile is CURRENT: NBM Systemas, Wazyloop, Quantum Llama Terminal,
         AguaGestión, JLF Distribuidora and RapiVenta POS plus the modern
@@ -103,7 +106,7 @@ export const profile: Profile = {
     { label: "DNI", value: "27.484.---" },
     { label: "Birth Date", value: "17 July 1979" },
     { label: "Marital Status", value: "Single" },
-    { label: "Address", value: "Jose Ingenieros 1-- 2-, Rafaela" },
+    { label: "Address", value: "Argentina - Rafaela" },
   ],
 };
 
@@ -502,7 +505,7 @@ export const contact: Contact = {
     },
     {
       label: "Location",
-      value: "Jose Ingenieros 1-- 2-, Rafaela",
+      value: "Argentina - Rafaela",
       href: null,
     },
   ],
@@ -521,7 +524,6 @@ export const socials: SocialLink[] = [
   { label: "YouTube", href: "https://www.youtube.com/@QuantumLlamaOficial" },
   { label: "NBMSystemas", href: "https://nbmsystemas.com" },
   { label: "Portfolio", href: "https://pabloezmoscardo.nbmsystemas.com/" },
-  { label: "GitHub · pabloezm", href: "https://github.com/pabloezm" },
 ];
 
 /** Empty on purpose: no association content exists in the inventory or the documents. */

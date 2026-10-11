@@ -827,6 +827,36 @@ links do not break.
 
 ---
 
+## 7.19 The contact surface is deliberately thin (owner corrections, 2026-10-11)
+
+Two owner corrections to what the contact surface publishes. Both **narrow** it.
+
+**The street address is gone.** `Jose Ingenieros 1-- 2-, Rafaela` sat in four places: the visible
+`Location` row of `contact`, rendered by `CvContact` on `/cv`; an `Address` row in `profile.personal`
+that **no view renders** (`CvBriefing`'s comment says so explicitly); and the two legacy components
+`About.tsx` and `Contact.tsx`, which no route mounts because `src/App.tsx` only routes `/` and `/cv`.
+All four now read `Argentina - Rafaela`. The unrendered row keeps its `Address` label by owner decision:
+the value changed, not the model.
+
+That value was load-bearing for a guard in a non-obvious way. The English-only scan stripped the street
+out of its haystack through `PROPER_NOUNS`, because `Jose Ingenieros` trips the `/Ingeniero/` marker while
+being a proper noun that must not be translated. Removing the street made that exemption dead, so it went
+too and the scan now covers the new value with no exemption. **That is also what made a real RED
+available**: dropping the exemption first fails the guard on the street that is still in the data.
+
+**The `GitHub · pabloezm` chip is gone from `socials`.** It was visible on `/cv`, and it is the one chip
+the owner asked to drop; `QuantLlama` and `nbmsystemas` stay. MC-32 had *added* that URL and pinned it in
+a guard, so the guard could not simply be deleted — its premise was revoked by the owner. It is
+**inverted** instead, exactly the way MC-45 inverted the LinkedIn pin: `socials` must not carry that URL
+again, which catches a regression that re-adds it.
+
+**`https://github.com/pabloezm` stays in the JSON-LD `sameAs` by owner decision.** That asymmetry is
+deliberate, not an oversight: the visible chip goes, the structured-data identity claim stays. It is now
+the only place in the repository where that URL is published, which is worth knowing before anyone
+"tidies" one of the two.
+
+---
+
 ## 8. Task checklist
 
 Route legend: `INLINE` = parent · `WRITER` = `gentle-ai-worker` · `VERIFY` = `gentle-ai-verify`.
@@ -1039,6 +1069,18 @@ Risk tier per the Delegated Verification Gate.
   annotations reading `https://linkedin.com/in/pablo-moscardo`. RED is not applicable here and is not
   claimed: the change is a byte-identical binary re-copy plus comments, so the evidence is md5 identity
   and annotation extraction instead of a failing test.
+- [x] **MC-47** **Thin out the contact surface (§7.19).** Drop `Jose Ingenieros 1-- 2-, Rafaela` from all
+  four places it sat, in favour of `Argentina - Rafaela`, and drop the visible `GitHub · pabloezm` chip
+  from `socials` while leaving that URL in the JSON-LD `sameAs` by owner decision. Two guards move with
+  it: the `PROPER_NOUNS` street exemption becomes dead and is removed, and the `CANONICAL_GITHUB` pin is
+  inverted rather than deleted. Data plus comments, no executable effect. Route: WRITER (6 files) +
+  parent (this document). Risk: low, and a real RED exists for both halves — the dead exemption fails the
+  English guard while the street is still in the data, and the inverted pin fails while the chip is still
+  in `socials`. **Landed.** The RED was exactly those two guards, and the language one failed on the
+  `Ingeniero` marker inside "Ingenieros", which is proof that exemption was doing real work rather than
+  decorating the test. GREEN at 43/43, `tsc` exit 0, lint delta 0. `Ingenieros` now has zero occurrences
+  under `src/` and in the README, and `github.com/pabloezm` survives only in the inverted guard and on
+  `index.html:113`.
 - [ ] **MC-19** Responsive audit at 380 / 760 / 1180 / 2000 px.
 - [ ] **MC-20** A11y audit: `sr-only` text, focus order, reduced motion, contrast on `--ink-soft`.
 - [ ] **MC-21** Performance: font payload (expanded-only request), bundle size, dead shadcn audit report.
@@ -1225,3 +1267,4 @@ Slice record (stacked-to-main, superseded from feature-branch-chain):
 | Stage 3 | MC-45 | The owner's LinkedIn handle was wrong on the site, and MC-32 had made it wrong by trusting his own CV documents. The four pinned guards are **inverted, not deleted**, so the same drift is caught in the new direction; the README's stale 42-test claim is corrected to the 43 the suite actually runs. The published PDFs are deliberately NOT patched, and the owner confirms their hyphenless
 annotation is fine. | `2a2d1a7`; `npm test` 43/43 after a 4-failure RED on the guards alone; `tsc -p tsconfig.app.json --noEmit` exit 0; lint 3 errors / 7 warnings unchanged; `rg 'linkedin\.com/in/pablomoscardo' src/data` → 0 matches |
 | Stage 3 | MC-46 | The download chips were serving the 2026-08-22 CV export, whose link annotation still wrote the superseded hyphenless handle, while the owner's regenerated masters had already fixed it. Re-copied both masters verbatim and corrected the provenance comments that cited the cover letter and the OLD CV, neither of which is in `cv/` any more. The two new masters were cleared for publishing *before* the copy: no DNI, birth date or marital status, and the content is the same CV re-exported (1,163 words against 1,159), so the data layer needs no resync. | `9154f48`; md5 identical master↔published for both (EN `7284c77f…`, ES `d1d3a55b…`); `/URI` of both published files reads `pablo-moscardo`; `npm test` 43/43; `tsc` exit 0; lint 3 errors / 7 warnings unchanged; `rg 'linkedin\.com/in/pablomoscardo' src/data` → 0 matches |
+| Stage 3 | MC-47 | The contact surface published a street address in four places (the visible `Location` row on /cv, an `Address` row no view renders, and two legacy components no route mounts) plus a personal `GitHub · pabloezm` chip. Both narrowed on the owner's instruction. The street's Spanish exemption turned out to be load-bearing for the English-only guard and became dead once the street was gone, so it was removed; the GitHub pin was inverted rather than deleted, because MC-32 had *added* that URL and a deleted pin cannot catch the chip coming back. That URL stays in the JSON-LD `sameAs` by owner decision, which is now the only place in the repository where it is published. | `3b93b34`; RED on exactly both guards (the language scan reporting `profile: Ingeniero` and `contact: Ingeniero`; the inverted pin finding the chip) then `npm test` 43/43; `tsc` exit 0; lint delta 0; `rg -ni ingenieros src README.md` → 0 matches; `github.com/pabloezm` only in the inverted guard and `index.html:113` |
