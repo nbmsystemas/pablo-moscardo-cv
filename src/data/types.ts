@@ -26,13 +26,13 @@ export interface Profile {
   fullName: string;
   firstName: string;
   lastName: string;
-  /** "Ingeniero en Sistemas de la Información" */
+  /** "Systems Engineer" */
   title: string;
-  /** "Auditor & Consultor IT | Ethical Hacker | Security Expert" */
+  /** "Senior Software Engineer | AI/LLM Specialist & Full Stack Developer" */
   headline: string;
-  /** "+20 Años de Experiencia en IT" */
+  /** "+20 Years of Experience in IT" */
   experienceBadge: string;
-  /** Footer line: "Ingeniero en Sistemas de Información | IT Auditor & Consultant" */
+  /** Footer line: "Systems Engineer | AI/LLM Specialist & Full Stack Developer" */
   footerRole: string;
   presentation: Presentation;
   personal: PersonalDetail[];
@@ -52,7 +52,7 @@ export interface EducationItem {
   institution: string;
   location: string;
   year: string;
-  /** "Universitario" | "Secundario" — surfaced as a micro-label in /cv. */
+  /** "University" | "Secondary" — surfaced as a micro-label in /cv. */
   type: string;
 }
 
@@ -101,11 +101,18 @@ export interface Association {
   href?: string;
 }
 
-/** Anchor sections of /cv, with the copy the old components used as headings. */
+/**
+ * Anchor sections of /cv.
+ *
+ * The titles are the route's chrome and are English (§7.15). The old Spanish
+ * `subtitle` strings were decorative copy — two of them restated the tenure
+ * figure — so they were dropped with MC-32 rather than translated, and the
+ * optional field went with them instead of being left as an unused hook. /cv
+ * renders `title` only (CvNav, pages/CV.tsx, CvBriefing, CvEducation).
+ */
 export interface Section {
   id: string;
   title: string;
-  subtitle?: string;
 }
 
 /* --- Mission content (src/data/mission.ts) -------------------------------- */

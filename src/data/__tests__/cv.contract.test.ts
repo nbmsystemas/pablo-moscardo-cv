@@ -5,11 +5,13 @@ import { describe, expect, it } from "vitest";
 import {
   associations,
   contact,
+  documents,
   education,
   experience,
   notableAreas,
   profile,
   projects,
+  sections,
   skillGroups,
   socials,
 } from "@/data/cv";
@@ -64,7 +66,7 @@ describe("profile positioning", () => {
    * IA". The headline and footer role must not reduce him to security.
    */
   it("leads with the engineering and full-stack identity, not security alone", () => {
-    expect(profile.title).toMatch(/Ingeniero en Sistemas/i);
+    expect(profile.title).toMatch(/Systems Engineer/i);
     expect(profile.headline).toMatch(/Full Stack/i);
     expect(profile.footerRole).toMatch(/Full Stack/i);
   });
@@ -143,5 +145,206 @@ describe("inventory shape", () => {
    */
   it("leaves associations empty rather than inventing content", () => {
     expect(associations).toEqual([]);
+  });
+});
+
+/**
+ * §7.16: the profile must be CURRENT. The pre-MC-32 file was a transcription of
+ * an old site whose newest entry was a generic "Freelance" role, so the defect
+ * was not a wrong string but a stale inventory: nothing said NBM Systemas, the
+ * live Wazyloop platform, Quantum Llama Terminal or the modern stack, and no
+ * test could fail for it because absence is not a contradiction.
+ *
+ * The backbone asserted here is the documents' own: NBM Systemas as
+ * founder/full-stack developer (2023—present) leading, the featured projects
+ * present, and the technical stack the EN CV publishes.
+ */
+describe("current profile", () => {
+  it("leads with NBM Systemas as the present role", () => {
+    const present = experience.filter((item) => item.current);
+
+    expect(present.length).toBeGreaterThan(0);
+    expect(experience[0]?.company).toBe("NBM Systemas");
+    expect(experience[0]?.period).toMatch(/2023/);
+    expect(experience[0]?.period).toMatch(/present/i);
+  });
+
+  it("carries the technical stack the documents publish", () => {
+    const skills = skillGroups.flatMap((group) => group.skills).join(" | ");
+
+    for (const needle of [
+      "LangChain",
+      "RAG",
+      "FastAPI",
+      "Next.js",
+      "AWS",
+      "Docker",
+      "PostgreSQL",
+      "Supabase",
+      "Appium",
+    ]) {
+      expect(skills).toContain(needle);
+    }
+  });
+
+  it("keeps the documents' featured projects in the inventory", () => {
+    const titles = projects.map((project) => project.title);
+
+    for (const title of [
+      "Wazyloop",
+      "Quantum Llama Terminal",
+      "AguaGestión",
+      "JLF Distribuidora",
+      "RapiVenta POS",
+    ]) {
+      expect(titles).toContain(title);
+    }
+  });
+
+  /**
+   * The old roles stay — the owner is explicit that security, forensics and IT
+   * audit are part of his profile — but they must not outrank the current work,
+   * and the trading platform the documents publish must keep its link.
+   */
+  it("keeps the career history and the published project links", () => {
+    expect(experience.length).toBeGreaterThanOrEqual(6);
+    expect(experience.some((item) => item.current === false)).toBe(true);
+    expect(projects.map((project) => project.link)).toContain(
+      "https://llamaquant.nbmsystemas.com",
+    );
+  });
+});
+
+/**
+ * The canonical profile URLs, read off the authoritative documents (§7.16).
+ *
+ * They are pinned here as literals ON PURPOSE. The defect this guards is a
+ * silent drift of a handle: the site shipped `linkedin.com/in/pablo-moscardo`
+ * while both CVs and the cover letter say `linkedin.com/in/pablomoscardo`, and
+ * nothing failed, because a wrong URL is still a valid string. Pinning the
+ * exact value is the only guard that can catch that.
+ *
+ * Sources: CV-Pablo-Moscardo-EN.pdf / -ES.pdf link annotations
+ * (`https://linkedin.com/in/pablomoscardo`, `https://github.com/pabloezm`,
+ * `https://pabloezmoscardo.nbmsystemas.com/`) and the cover letter, which
+ * repeats the LinkedIn and portfolio URLs in its signature block.
+ */
+const CANONICAL_LINKEDIN = "https://linkedin.com/in/pablomoscardo";
+const CANONICAL_GITHUB = "https://github.com/pabloezm";
+const CANONICAL_PORTFOLIO = "https://pabloezmoscardo.nbmsystemas.com/";
+
+describe("canonical profile links", () => {
+  it("lists the LinkedIn handle the documents publish, not the hyphenated one", () => {
+    expect(socials.map((social) => social.href)).toContain(CANONICAL_LINKEDIN);
+  });
+
+  it("carries the GitHub profile the documents publish", () => {
+    expect(socials.map((social) => social.href)).toContain(CANONICAL_GITHUB);
+  });
+
+  it("carries the portfolio the documents publish", () => {
+    expect(socials.map((social) => social.href)).toContain(CANONICAL_PORTFOLIO);
+  });
+
+  it("gives every profile link a label and an absolute href", () => {
+    for (const social of socials) {
+      expect(social.label.trim()).not.toBe("");
+      expect(social.href).toMatch(/^https?:\/\//);
+    }
+  });
+
+  /**
+   * The scan covers the WHOLE data layer, so the landing's own copy of the
+   * handle (`cards` and `contactLine` in src/data/mission.ts) cannot keep the
+   * superseded spelling while this file is fixed.
+   */
+  it("never reintroduces the superseded LinkedIn handle anywhere in the data layer", () => {
+    const offenders = dataSources.filter((source) =>
+      /linkedin\.com\/in\/pablo-moscardo/i.test(source.text),
+    );
+
+    expect(
+      offenders.map((source) => source.name),
+      `files still carrying the superseded handle: ${offenders.map((s) => s.name).join(", ")}`,
+    ).toEqual([]);
+  });
+});
+
+/**
+ * §7.15: the site is English. `cv.ts` was the last Spanish surface — MC-32
+ * translated it — and translation is exactly the kind of work that leaves a
+ * string behind, because a leftover Spanish field still renders, still type
+ * checks and still passes every content test.
+ *
+ * The probe walks the EXPORTED VALUES (not the file text) so comments and
+ * identifiers cannot produce a false positive, and the marker set is deliberately
+ * narrow: `documents[].label` legitimately says "CV — Español", and the owner's
+ * own month name was translated with the rest, so neither appears here.
+ */
+describe("language", () => {
+  const SPANISH_MARKERS = [
+    /a[nñ]os/i,
+    /Presentaci[oó]n/,
+    /seguridad/i,
+    /desarrollo/i,
+    /Actualidad/,
+    /Estado Civil/,
+    /Fecha de Nacimiento/,
+    /Domicilio/,
+    /Tel[eé]fono/,
+    /Ubicaci[oó]n/,
+    /Conocimientos/,
+    /Experiencia/,
+    /Solicitud/,
+    /Producci[oó]n/,
+    /An[aá]lisis/,
+    /Consultor[ií]a/,
+    /Ingeniero/,
+    /Perito/,
+    /Desarrollador/,
+    /M[aá]s de/,
+  ];
+
+  /**
+   * Names are not copy. This street and this company keep their Spanish
+   * spelling (a proper noun is not translated), so they are stripped before the
+   * scan instead of forcing two otherwise-useful markers out of the guard.
+   */
+  const PROPER_NOUNS = ["Jose Ingenieros", "MG Seguridad"];
+
+  const stripped = (value: unknown) => {
+    let text = JSON.stringify(value);
+    for (const noun of PROPER_NOUNS) text = text.split(noun).join("");
+    return text;
+  };
+
+  it("carries no Spanish left over from the pre-translation copy", () => {
+    const surfaces: [string, unknown][] = [
+      ["profile", profile],
+      ["experience", experience],
+      ["education", education],
+      ["skillGroups", skillGroups],
+      ["notableAreas", notableAreas],
+      ["projects", projects],
+      ["contact", contact],
+      ["socials", socials],
+      ["associations", associations],
+      ["sections", sections],
+      ["documents", documents],
+    ];
+
+    const hits: string[] = [];
+
+    for (const [name, value] of surfaces) {
+      const text = stripped(value);
+      for (const marker of SPANISH_MARKERS) {
+        const match = text.match(marker);
+        if (match) hits.push(`${name}: ${match[0]}`);
+      }
+    }
+
+    expect(hits, `Spanish strings still exported: ${JSON.stringify(hits)}`).toEqual(
+      [],
+    );
   });
 });
