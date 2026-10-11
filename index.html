@@ -3,24 +3,119 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--
+      THE PRODUCTION URL IS DECLARED ONCE, HERE, and every canonical reference
+      below is derived from it: `canonical`, `og:url`, the JSON-LD `Person.url`
+      and `sameAs`, and — outside this file — the `Sitemap:` line in
+      public/robots.txt and the `<loc>` in public/sitemap.xml. If any of those
+      disagree, search engines pick one for you, which is the failure mode this
+      comment exists to prevent. Moving to a new domain means editing this value
+      in four files, not five scattered strings.
+    -->
     <title>Pablo Moscardo — Information Systems Engineer &amp; Full Stack Developer</title>
-    <meta name="description" content="Information Systems Engineer and Full Stack Developer — 20+ years in software, data, DevOps, AI, security and algorithms.">
+    <meta name="description" content="Information Systems Engineer and Full Stack Developer with 20+ years across software, data, DevOps, AI, security and algorithms. Based in Rafaela, Argentina; available fully remote.">
     <meta name="author" content="Pablo Ezequiel Moscardo">
-    <meta name="keywords" content="Pablo Moscardo, Systems Engineer, Full Stack Developer, DevOps, Data Analyst, AI Automation, IT Security, Pen Testing, IT Audit">
+    <meta name="keywords" content="Pablo Moscardo, Systems Engineer, Full Stack Developer, AI LLM Engineer, RAG, LangChain, DevOps, Data Analyst, Algorithmic Trading, IT Security, Pen Testing, IT Audit, Argentina, Remote">
     <meta name="theme-color" content="#f3efe5">
     <meta name="color-scheme" content="light">
+    <link rel="canonical" href="https://pabloezmoscardo.nbmsystemas.com/">
+
     <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
+    <!-- Open Graph. `og:url` must match `canonical` exactly. -->
+    <meta property="og:type" content="profile">
+    <meta property="og:site_name" content="Pablo Moscardo">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:url" content="https://pabloezmoscardo.nbmsystemas.com/">
     <meta property="og:title" content="Pablo Moscardo — Information Systems Engineer &amp; Full Stack Developer">
-    <meta property="og:description" content="Information Systems Engineer and Full Stack Developer with 20+ years across software, data, DevOps, AI, security and algorithms.">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="/pablo-profile.png">
+    <meta property="og:description" content="20+ years building software, data and infrastructure: full stack, DevOps, AI/LLM, security and algorithms. Available fully remote.">
+    <meta property="og:image" content="https://pabloezmoscardo.nbmsystemas.com/pablo-profile.png">
+    <meta property="og:image:width" content="428">
+    <meta property="og:image:height" content="583">
+    <meta property="og:image:alt" content="Pablo Moscardo">
+    <meta property="profile:first_name" content="Pablo">
+    <meta property="profile:last_name" content="Moscardo">
 
+    <!-- X / Twitter. Absolute image URLs are required here, not root-relative. -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@pabloezm">
-    <meta name="twitter:image" content="/pablo-profile.png">
+    <meta name="twitter:creator" content="@pabloezm">
+    <meta name="twitter:title" content="Pablo Moscardo — Information Systems Engineer &amp; Full Stack Developer">
+    <meta name="twitter:description" content="20+ years building software, data and infrastructure: full stack, DevOps, AI/LLM, security and algorithms.">
+    <meta name="twitter:image" content="https://pabloezmoscardo.nbmsystemas.com/pablo-profile.png">
+    <meta name="twitter:image:alt" content="Pablo Moscardo">
+
+    <!--
+      JSON-LD `Person`. This is what lets a search engine answer "who is Pablo
+      Moscardo" with a knowledge panel instead of guessing from page text: it
+      states the name, the role, the employer, the alumni, the languages and the
+      sameAs graph that ties every profile to the same human.
+
+      Every value below is copied from src/data/cv.ts — the same source the page
+      renders — so the structured data cannot drift from what a visitor reads.
+    -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Pablo Ezequiel Moscardo",
+        "givenName": "Pablo",
+        "familyName": "Moscardo",
+        "alternateName": "Pablo Moscardo",
+        "url": "https://pabloezmoscardo.nbmsystemas.com/",
+        "image": "https://pabloezmoscardo.nbmsystemas.com/pablo-profile.png",
+        "email": "mailto:pablo.ezequiel.moscardo@gmail.com",
+        "jobTitle": "Information Systems Engineer | Full Stack Developer",
+        "description": "Information Systems Engineer and Full Stack Developer with 20+ years across software, data, DevOps, AI, security and algorithms.",
+        "worksFor": {
+          "@type": "Organization",
+          "name": "NBM Systemas",
+          "url": "https://nbmsystemas.com"
+        },
+        "alumniOf": {
+          "@type": "CollegeOrUniversity",
+          "name": "National Technological University (UTN)",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "AR"
+          }
+        },
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Rafaela",
+          "addressRegion": "Santa Fe",
+          "addressCountry": "AR"
+        },
+        "knowsLanguage": [
+          { "@type": "Language", "name": "Spanish", "alternateName": "es" },
+          { "@type": "Language", "name": "English", "alternateName": "en" }
+        ],
+        "knowsAbout": [
+          "Software Engineering",
+          "Full Stack Development",
+          "AI and LLM integration",
+          "RAG architectures",
+          "DevOps",
+          "Cloud infrastructure",
+          "Data analysis",
+          "Algorithmic trading",
+          "Information security",
+          "IT auditing",
+          "Computer forensics"
+        ],
+        "sameAs": [
+          "https://linkedin.com/in/pablomoscardo",
+          "https://github.com/QuantLlama",
+          "https://github.com/nbmsystemas",
+          "https://github.com/pabloezm",
+          "https://www.youtube.com/@QuantumLlamaOficial",
+          "https://nbmsystemas.com"
+        ]
+      }
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

@@ -749,6 +749,26 @@ in, so the addressed variant stays in the local `cv/` folder and the site keeps 
 
 ---
 
+## 7.18 Production identity (owner decisions, closing round)
+
+| Decision | Value |
+|---|---|
+| Public URL | `https://pabloezmoscardo.nbmsystemas.com` |
+| Repository | `github.com/nbmsystemas/pablo-moscardo-cv` (renamed from `micv`) |
+| Default branch | `main` — production |
+
+**The URL is declared in exactly one place** so changing it is a one-line edit. It feeds the
+`canonical` link, `og:url`, the JSON-LD `Person.url`, `robots.txt`'s `Sitemap:` line and the sitemap
+itself. Every one of those is worthless if it disagrees with the others, which is why they must not be
+hand-written in five files.
+
+**The repository name was `micv`** — Spanish for "my CV", left over from when the site was Spanish. The
+site is English now, so the old name was the last untranslated thing in it, and it is the string a
+recruiter reads in the URL. GitHub keeps automatic redirects from a renamed repository, so existing
+links do not break.
+
+---
+
 ## 8. Task checklist
 
 Route legend: `INLINE` = parent · `WRITER` = `gentle-ai-worker` · `VERIFY` = `gentle-ai-verify`.
@@ -893,6 +913,18 @@ Risk tier per the Delegated Verification Gate.
   of the antennas. Must respect `prefers-reduced-motion` and must not touch the annotation group's
   legibility (MC-25b fixed an occlusion there once already).
 - [ ] **MC-39** Nav hover motion (owner request), in the spirit of the reference's own hover vocabulary.
+- [ ] **MC-42** **Remove every Lovable artefact.** The repository is presented to recruiters as a
+  portfolio, and today its README is the untouched Lovable template (73 lines, including the project's
+  Lovable URL and "Changes made via Lovable will be committed automatically to this repo"), the build
+  carries `lovable-tagger` as a dev dependency wired into `vite.config.ts`, and `public/placeholder.svg`
+  is an orphan. The one surviving mention is in this document's own §2, which is history and stays.
+- [ ] **MC-43** **A professional README** that describes the project, the stack, the architecture, how to
+  run it, how it is verified, and what was measured — written for a reviewer, not for a prompt tool.
+- [ ] **MC-22** SEO/meta + JSON-LD `Person`, canonical, `og:url`, `og:image` dimensions and alt,
+  `twitter:*`, a sitemap and the `Sitemap:` line, all derived from §7.18's single URL.
+- [ ] **MC-44** Remote block, executed in this order and only after explicit confirmation of the exact
+  commands: rename the repository, repoint the local remote, push the slice branches, open the stacked
+  pull requests, and merge them in order so `main` (production) receives the work.
 - [ ] **MC-18** Stage-2 verification + commit. VERIFY + parent.
 
 ### Stage 3 — polish (not started)

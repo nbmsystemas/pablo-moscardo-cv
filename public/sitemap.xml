@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Two routes, because the site has exactly two: the single-viewport landing and
+  the full CV behind it. Both are canonical and both are in robots.txt.
+
+  The `lastmod` dates are deliberately absent rather than invented. A wrong
+  `lastmod` teaches a crawler to distrust the whole sitemap, and a hand-maintained
+  date is wrong the first time somebody forgets it. The build could generate this
+  file from the commit date; until it does, no date is better than a stale one.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://pabloezmoscardo.nbmsystemas.com/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://pabloezmoscardo.nbmsystemas.com/cv</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>
