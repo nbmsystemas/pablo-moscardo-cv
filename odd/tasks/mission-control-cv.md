@@ -864,9 +864,10 @@ card design (`Portafolio Full Stack en Órbita.png`), with two constraints: **hi
 cropped**, and the shared preview must not be oversized.
 
 **The defect was the aspect ratio, not the photo.** `twitter:card` has been `summary_large_image` since
-MC-22, and that card crops to 2:1. The image behind it was `pablo-profile.png`, a **428x583 portrait**
-(0.73:1). Every platform therefore centre-cropped a portrait into a landscape frame, which is exactly how
-a face gets cut and a preview ends up dominated by one tall image.
+MC-22, and that card shows a landscape frame and centre-crops anything else. The image behind it was
+`pablo-profile.png`, a **428x583 portrait** (0.73:1). Every platform therefore centre-cropped a portrait
+into a landscape frame, which is exactly how a face gets cut and a preview ends up dominated by one tall
+image.
 
 **The card is 1200x628 (1.911:1).** The source is a 1254x1254 square, so a 1.91:1 window has to be chosen
 rather than scaled into. Two measurements decided it: the beige `STACK TECNOLÓGICO` panel starts at
@@ -878,6 +879,14 @@ at all and lands 17px above the text. The 54px come off the left margin, which t
 a share card. PNG-8 reaches 314 KB but its worst error lands in the planet's gradient (max 27/255) where
 banding shows, and JPEG q92 measured better on every axis while being smaller — PSNR 40.5 dB against 38.8.
 `og:image:width` and `og:image:height` must follow the real file or the meta lies.
+
+**Ratios, precisely (review finding R3-001).** The first wording in this section and in `index.html` said
+the card "crops to 2:1", which made a 1.911:1 file look inconsistent with its own stated premise. The
+platforms document **1.91:1** for a large share card, and 1200x628 is exactly that; 2:1 is the looser
+ceiling some of them accept. The distinction is worth keeping because the numbers were checked rather than
+argued: a literal 2:1 crop of 1200x628 would take 14px off the top and 14px off the bottom, and **both
+bands are background** — the hair starts about 50px down and the `Ideas, código` line sits 17px below the
+bottom edge. The framing survives either reading, so only the claim needed fixing.
 
 **`Person.image` deliberately keeps the portrait.** The banner carries text and logos and is a share
 card, not a depiction of a person: scaled to a knowledge-panel thumbnail its text is illegible and its
@@ -1113,8 +1122,9 @@ Risk tier per the Delegated Verification Gate.
 - [x] **MC-48** **Replace the social share image with a real Open Graph card (§7.20).** The owner supplied
   `Portafolio Full Stack en Órbita.png` (1254x1254) and asked for his face to be framed rather than
   cropped, and for the shared preview not to be oversized. The existing `og:image` is a 428x583 portrait
-  under `twitter:card: summary_large_image`, which crops to 2:1 — that is the actual defect. Crop to
-  1200x628 (1.911:1) so no platform crops it, ship JPEG q92 4:4:4 at 239 KB against 1.07 MB of PNG-24, and
+  under `twitter:card: summary_large_image`, which centre-crops anything that is not landscape — that is
+  the actual defect. Crop to 1200x628 (1.911:1), the ratio the platforms document, ship JPEG q92 4:4:4 at
+  239 KB against 1.07 MB of PNG-24, and
   point `og:image` and `twitter:image` at it while `Person.image` keeps the portrait. Asset plus meta, no
   executable effect. Route: INLINE (the asset and one meta file) + parent (this document). Risk: low, but
   the framing is a visual judgement and gets verified by looking at the crop, not by reading a number.

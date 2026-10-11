@@ -28,10 +28,13 @@
     <!-- Open Graph. `og:url` must match `canonical` exactly.
 
          `og:image` is the 1200x628 share card, not the portrait: `twitter:card` is
-         `summary_large_image`, which crops to 2:1, so a portrait here gets its face
-         cut by every platform. `Person.image` further down stays the portrait on
-         purpose — a schema.org photo field wants a photo, and a card's text is
-         illegible at knowledge-panel thumbnail size. -->
+         `summary_large_image`, which shows a landscape frame and centre-crops anything
+         else, so the 0.73:1 portrait that used to sit here had its face cut by every
+         platform. 1200x628 is 1.911:1, the ratio the platforms document; 2:1 is the
+         looser ceiling some of them accept, and the card's content is inset far enough
+         that even that crop would take only background. `Person.image` further down
+         stays the portrait on purpose: a schema.org photo field wants a photo, and a
+         card's text is illegible at knowledge-panel thumbnail size. -->
     <meta property="og:type" content="profile">
     <meta property="og:site_name" content="Pablo Moscardo">
     <meta property="og:locale" content="en_US">
