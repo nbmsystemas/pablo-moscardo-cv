@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
+import * as cvData from "@/data/cv";
 import {
   associations,
   contact,
@@ -346,5 +347,38 @@ describe("language", () => {
     expect(hits, `Spanish strings still exported: ${JSON.stringify(hits)}`).toEqual(
       [],
     );
+  });
+});
+
+describe("brand names", () => {
+  /**
+   * Every string reachable from the data layer's exports.
+   *
+   * The guard below scans VALUES, not source text, and that distinction is the
+   * whole point: the comment in cv.ts that records WHY the name was corrected has
+   * to be able to say what the old name was. A source-text scan makes documenting
+   * the fix impossible — measured: it failed on that very comment.
+   */
+  const collectStrings = (value: unknown, out: string[] = []): string[] => {
+    if (typeof value === "string") out.push(value);
+    else if (Array.isArray(value)) for (const item of value) collectStrings(item, out);
+    else if (value && typeof value === "object")
+      for (const item of Object.values(value)) collectStrings(item, out);
+    return out;
+  };
+
+  /**
+   * The owner's own CVs still carry this project's OLD internal nickname, in both
+   * languages, and the data rebuild copied it verbatim — which is exactly what
+   * "transcribe from the documents, invent nothing" is supposed to do. The owner
+   * has since corrected the record: the project is QuantLlama.
+   *
+   * This guard exists because the failure mode is a RE-TRANSCRIPTION. The next
+   * person to rebuild this layer from `cv/` would faithfully put the old name
+   * back, and nothing else in the suite would notice. A public CV is not the
+   * place for it.
+   */
+  it("does not carry the project's superseded internal nickname", () => {
+    expect(collectStrings(cvData).join("\n")).not.toMatch(/fucking/i);
   });
 });
