@@ -120,7 +120,13 @@ export const experience: ExperienceItem[] = [
   },
   {
     title: "Algorithmic Trading Analyst",
-    company: "Personal project — \"Fucking Trading\"",
+    /* The source documents say `Personal project — "Fucking Trading"`, in both
+       languages, and this layer is built to transcribe them faithfully. The owner
+       has since corrected the record: the project is QuantLlama. This is the ONE
+       place where the data deliberately disagrees with the CVs it was rebuilt
+       from, and a guard in cv.contract.test.ts fails if the old name comes back
+       — which is what a future re-transcription would do. */
+    company: "Personal project — QuantLlama",
     period: "Ongoing",
     current: true,
     description:
