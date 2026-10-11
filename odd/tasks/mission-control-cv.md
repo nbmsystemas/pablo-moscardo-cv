@@ -809,7 +809,23 @@ Risk tier per the Delegated Verification Gate.
   breaking a tenure string (two guards fail), reverted green. Pinned to `vitest@3.2.7` because the
   registry's `latest` (5.0.3) fails to install on npm 11 through an unresolvable optional-peer cycle.
   Evidence: `npm test` 25/25; both tsconfigs clean; lint delta 0.
-- [ ] **MC-13…MC-17** Stage 2 `/cv` per §7.13. Two delegated rounds: MC-13+MC-14, then MC-15+MC-16+MC-17.
+- [ ] **MC-13…MC-17** Stage 2 `/cv` per §7.13. Round 1 (MC-13 + MC-14) **landed**: shell, sticky
+  MISSION LOG nav over the six frozen anchors, Briefing and Education with the `type` micro-label. Two
+  defects were found by measuring, not reading: a direct `/cv#<id>` load scrolled 0px because the browser
+  resolves the fragment before React mounts, and the sections' `boot-up` entrance moved every section
+  below it 14px and settled the target 4px under the sticky band. Round 2 (MC-15 + MC-16 + MC-17) still
+  owes Experience, Skills, Projects, Contact and the footer reuse.
+- [ ] **MC-32** **Rebuild `src/data/cv.ts` in English from the authoritative documents (§7.15, §7.16).**
+  The current data layer is a transcription of the old site and is materially out of date. Includes the
+  four corrections §7.16 proves: the LinkedIn URL, the missing GitHub and portfolio links, and the
+  currency reordering. Data-only, so Vitest gives it real RED/GREEN. Risk: medium (content accuracy —
+  nothing may be invented beyond the sources).
+- [x] **MC-33** Downloadable CVs. **Landed** with MC-13/14: both files in `public/cv/`, the `documents`
+  array in the data layer, and the chip strip on `/cv`. The old DNI-carrying PDF is excluded and `cv/`
+  is gitignored so it cannot be committed by accident.
+- [ ] **MC-34** `/cv` sections filled from the rebuilt data (the round-2 half of MC-15/16/17).
+- [ ] **MC-35** `/cv` chrome in English once `cv.ts` is translated. It falls out of MC-32 for free,
+  because every string on that route is data-driven — verify rather than restate.
 - [ ] **MC-18** Stage-2 verification + commit. VERIFY + parent.
 
 ### Stage 3 — polish (not started)

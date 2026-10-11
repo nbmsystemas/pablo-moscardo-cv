@@ -136,6 +136,27 @@ describe("cards", () => {
     expect(cvCta.href).toBe("/cv");
     expect(cards.some((card) => card.href === "/cv")).toBe(false);
   });
+
+  /**
+   * §7.16: the landing shipped `linkedin.com/in/pablo-moscardo` in BOTH of its
+   * LinkedIn links while the documents say `linkedin.com/in/pablomoscardo`.
+   * Both are pinned to the canonical value — fixing one and leaving the other is
+   * the exact half-fix this asserts against.
+   */
+  it("points every LinkedIn link at the canonical handle the documents publish", () => {
+    const CANONICAL = "https://linkedin.com/in/pablomoscardo";
+    const linkedIn = [
+      ...cards.filter((card) => /linkedin\.com/i.test(card.href)).map((card) => card.href),
+      ...contactLine.links
+        .filter((link) => /linkedin\.com/i.test(link.href))
+        .map((link) => link.href),
+    ];
+
+    expect(linkedIn.length).toBeGreaterThanOrEqual(2);
+    for (const href of linkedIn) {
+      expect(href).toBe(CANONICAL);
+    }
+  });
 });
 
 describe("capability readouts", () => {
