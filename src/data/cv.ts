@@ -40,6 +40,7 @@
    ========================================================================== */
 
 import type {
+  Certification,
   CvDocument,
   Association,
   Contact,
@@ -61,7 +62,7 @@ export const profile: Profile = {
   experienceBadge: "+20 Years of Experience in IT",
   footerRole: "Systems Engineer | AI/LLM Specialist & Full Stack Developer",
   presentation: {
-    salutation: "Dear Sir or Madam:",
+    salutation: "Dear Hiring Team,",
     intro: {
       // The CV's own Professional Summary, followed by the letter's lead-in to
       // the `areas` list below. `highlight` marks the run the UI emphasizes.
@@ -539,4 +540,23 @@ export const sections: Section[] = [
 export const documents: CvDocument[] = [
   { lang: "EN", label: "CV — English", href: "/cv/pablo-moscardo-cv-en.pdf" },
   { lang: "ES", label: "CV — Español", href: "/cv/pablo-moscardo-cv-es.pdf" },
+];
+
+/**
+ * Certifications and continuous training (§7.16).
+ *
+ * Source: `cv/PABLO EZEQUIEL MOSCARDO.pdf`, the owner's OLD CV. The two current
+ * CVs omit this block entirely and the data model had no field for it, so it was
+ * reported as a gap and then filled from the only source that has it — the
+ * owner asked for everything missing to be completed. These are career facts,
+ * not personal data, which is what makes them safe to take from a document whose
+ * DNI is deliberately unpublished.
+ */
+export const certifications: Certification[] = [
+  { name: "CISSP", note: "In progress" },
+  { name: "CobIT", note: "Complementary study" },
+  { name: "AWS Cloud Practitioner Fundamentals", year: "2024" },
+  { name: "Full Stack Web Development with Django and React", year: "2024" },
+  { name: "Automation with Python and Selenium", year: "2023" },
+  { name: "Advanced Pentesting with Kali Linux", year: "2023" },
 ];

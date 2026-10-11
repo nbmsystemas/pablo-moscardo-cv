@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 
-import { education, sections } from "@/data/cv";
+import { certifications, education, sections } from "@/data/cv";
 
 /**
  * CvEducation — the `#educacion` section (MC-14, §7.13).
@@ -14,6 +14,11 @@ import { education, sections } from "@/data/cv";
  * No numeric levels anywhere: §7.9 is explicit that the 16-cell bars are a
  * landing-only visual device, so this section presents skills/education as text.
  * The section title is the data layer's own `sections[].title`.
+ *
+ * Certifications live HERE rather than in a section of their own, because the
+ * six anchor ids are frozen (§7.10) and a qualification list belongs next to the
+ * education it extends. The block comes from the owner's OLD CV (§7.16): the two
+ * current CVs omit it and the model had no field for it until MC-41.
  */
 
 const sectionTitle =
@@ -45,6 +50,21 @@ const CvEducation = () => (
         </li>
       ))}
     </ol>
+
+    <h3 className="cv-edu__subhead">Certifications &amp; continuous training</h3>
+
+    <ul className="cv-certs">
+      {certifications.map((certification) => (
+        <li className="cv-certs__item" key={certification.name}>
+          <span className="cv-certs__name">{certification.name}</span>
+          {/* `year` and `note` are mutually exclusive in practice: the source
+              dates some of these and marks others as in progress. */}
+          <span className="cv-certs__meta">
+            {certification.year ?? certification.note}
+          </span>
+        </li>
+      ))}
+    </ul>
   </section>
 );
 

@@ -154,3 +154,16 @@ export interface CvDocument {
   label: string;
   href: string;
 }
+
+/**
+ * A certification or training record (§7.16).
+ *
+ * `year` and `note` are mutually exclusive in practice: the old CV dates some of
+ * these and marks others as in progress or complementary study. Both are kept
+ * optional rather than forcing a fake date.
+ */
+export interface Certification {
+  name: string;
+  year?: string;
+  note?: string;
+}
