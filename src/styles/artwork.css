@@ -1,0 +1,421 @@
+/* ==========================================================================
+   Mission Control CV — central artwork (MC-07)
+   Owner: MC-07. Styles for <OrbitSystem /> (the ringed gas giant and the
+   PE-01 wedge probe) and <SpecPanel /> (the blueprint annotation column).
+
+   Two measurements drive this file, not taste:
+
+   1. THE BOX IS SIZED AGAINST BOTH AXES, AND IT STILL HAS TO BE. MC-25 removed
+      the panel row, so the art column owns the full stage height between the
+      header and the footer (measured slot: 489px at 1180x900, 621px at
+      1440x900, 912px at 2000x900 — up from 431 / 546 / 802). The footer's
+      198-290px still comes out of the same stage, so a full-width box would be
+      ~471px tall at 2000x900 against a ~450px column: the width cap keeps the
+      rendered HEIGHT at `--art-max-vh` (cap = `--art-max-vh * ratio`, and
+      height = cap / ratio). Re-tune the three variables below to move the
+      budget, then re-measure 1366x768 and 2000x900 — the two viewports where the
+      cap is active.
+
+      The scene stays 1200x620 (1.935). At 1440x900 the box therefore renders
+      621x321: the reference's box WIDTH exactly (§7.11: .viz__box is 621x497),
+      but not its height, because the reference's scene is authored at ~1.25.
+      A taller box cannot be reached from here — the wrapper's extra height would
+      be empty sky, because the SVG inside keeps its own viewBox ratio. Growing
+      the artwork taller means re-authoring that viewBox in <OrbitSystem />,
+      which is an artwork change and was outside MC-25's edit surfaces.
+
+   2. HAIRLINES MUST SURVIVE THE DOWNSCALE. The scene is authored at
+      1200x620 and rendered between ~431px and ~710px wide, i.e. a 0.36x-0.59x
+      scale. A 1 user-unit stroke would render as a 0.36px ghost, so every rule
+      that must read as a 1px rule carries `vector-effect: non-scaling-stroke`
+      (stroke widths are then device pixels, exactly as the design contract
+      specifies them: "1px", "every 6th tick in orange at 1.5px").
+
+   Scene layers carry `--depth` (1 = backdrop … 5 = foreground) and boot
+   back-to-front through the shared `--d` / `animation-delay: var(--d, 0s)`
+   convention. Every keyframe reused here already exists in motion.css
+   (boot-flicker, spin, planet-spin, probe-fly, probe-bob, plume, visor, blink,
+   plot); nothing was added to that file.
+
+   Type scale is NOT redefined here (MC-01 owns it in landing.css): this file
+   only adds layout, geometry and color. The one exception is `.probe__reg`,
+   which is an in-scene SVG registration mark rather than site type.
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   1. Sizing budget — the one block the parent re-tunes.
+   `--art-max-vh` moved 32vh -> 40vh for MC-25. At 32vh the width cap was 32vh x
+   1.9355 = 557px at a 900px viewport, i.e. the box was HEIGHT-capped at 557x288
+   and could never use the track the composition now gives it. At 40vh the cap is
+   697px, so the box is width-bound at 1440x900 (621px — the reference's own box
+   width) and still height-capped at 2000x900 (697x360), which is what protects
+   the viewport lock there.
+   --------------------------------------------------------------------------- */
+.orbit-system {
+  --art-ratio-w: 1200;
+  --art-ratio-h: 620;
+  --art-max-vh: 40vh;
+
+  position: relative;
+  aspect-ratio: var(--art-ratio-w) / var(--art-ratio-h);
+  width: min(
+    100%,
+    calc(var(--art-max-vh) * var(--art-ratio-w) / var(--art-ratio-h))
+  );
+  margin-right: auto;
+}
+
+.orbit-system__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---------------------------------------------------------------------------
+   2. Scene layers
+   --------------------------------------------------------------------------- */
+.art-layer {
+  animation: boot-flicker 0.9s linear both;
+  animation-delay: var(--d, calc(var(--depth, 1) * 90ms));
+}
+
+/* --- backdrop: halo, orbit decoration, tick ring, moon rails ------------- */
+
+.art-halo__stop--core {
+  stop-color: var(--orange);
+  stop-opacity: 0.22;
+}
+
+.art-halo__stop--mid {
+  stop-color: var(--orange);
+  stop-opacity: 0.12;
+}
+
+.art-halo__stop--edge {
+  stop-color: var(--orange);
+  stop-opacity: 0;
+}
+
+.art-orbit {
+  fill: none;
+  stroke: var(--orange);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.5;
+}
+
+.art-orbit--dash {
+  stroke-dasharray: 3 8;
+  animation: spin 140s linear infinite;
+}
+
+/* Rotating decorations pivot on the giant's centre, never on the scene origin:
+   transform-box defaults to `view-box`, so the px lengths below are user
+   units measured from the viewBox origin. */
+.art-orbit--dash,
+.art-tickring {
+  transform-origin: 800px 300px;
+}
+
+.art-tickring {
+  animation: spin 200s linear infinite reverse;
+}
+
+.art-tick {
+  stroke: var(--ink);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.16;
+}
+
+.art-tick--major {
+  stroke: var(--orange);
+  stroke-width: 1.5px;
+  opacity: 0.6;
+}
+
+.art-moon-orbit {
+  fill: none;
+  stroke: var(--rule-strong);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 2 7;
+  opacity: 0.8;
+}
+
+/* --- ring system --------------------------------------------------------- */
+
+.art-ring {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.art-ring--outer {
+  stroke: var(--rule-strong);
+  stroke-width: 2.5px;
+  opacity: 0.85;
+}
+
+.art-ring--wide {
+  stroke: var(--rule-strong);
+  stroke-width: 1px;
+  opacity: 0.7;
+}
+
+.art-ring--hot {
+  stroke: var(--orange-soft);
+  stroke-width: 1.5px;
+  opacity: 0.8;
+}
+
+.art-ring--hot-thin {
+  stroke: var(--orange-soft);
+  stroke-width: 1px;
+  opacity: 0.55;
+}
+
+/* --- the body ------------------------------------------------------------ */
+
+/* Lit from 36% 32%; the five stops are the contract's ramp plus the
+   #a95a26 -> #6d3a1c midpoint, which is an interpolation, not a new hue. */
+.art-giant {
+  fill: url(#mc07-body);
+}
+
+.art-texture {
+  /* fill-box is load-bearing: the keyframe translates -50%, and with the
+     default `transform-box: view-box` that -50% resolves against the 1200-unit
+     viewBox (-600) instead of against the 600-unit texture group (-300), which
+     would tear the seamless scroll. */
+  transform-box: fill-box;
+  animation: planet-spin 180s linear infinite;
+}
+
+.art-haze {
+  fill: var(--orange-soft);
+  opacity: 0.1;
+}
+
+.art-storm {
+  fill: var(--orange-soft);
+  opacity: 0.18;
+}
+
+.art-storm--open {
+  fill: none;
+  stroke: var(--orange-soft);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.32;
+}
+
+.art-graticule {
+  fill: none;
+  stroke: var(--ink-faint);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.26;
+}
+
+/* Hard-edged band where the rings cut the sunlight off the cloud tops. */
+.art-giant__shadow {
+  fill: var(--ink);
+  opacity: 0.2;
+}
+
+/* --- moons --------------------------------------------------------------- */
+
+.art-moon {
+  fill: var(--ink);
+  stroke: var(--ink);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+.art-moon__ring {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.4;
+}
+
+/* ---------------------------------------------------------------------------
+   3. PE-01 · Vigilante — wedge hull, swept fins, folded radiators, dish
+   --------------------------------------------------------------------------- */
+.probe {
+  filter: drop-shadow(
+    14px 22px 14px color-mix(in srgb, var(--orange) 22%, transparent)
+  );
+}
+
+.probe__fly {
+  animation: probe-fly 2.2s var(--ease-out) 0.35s both;
+}
+
+.probe__bob {
+  animation: probe-bob 7s ease-in-out 2.55s infinite;
+}
+
+.probe__hull,
+.probe__fin,
+.probe__panel,
+.probe__feed {
+  fill: var(--ink);
+}
+
+/* The panels would read as part of the hull if they shared its plain ink, so
+   they keep a hot edge on the single accent hue. */
+.probe__panel {
+  stroke: var(--orange-soft);
+  stroke-width: 1px;
+  stroke-opacity: 0.55;
+  vector-effect: non-scaling-stroke;
+}
+
+.probe__crease {
+  fill: none;
+  stroke: var(--paper-hi);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.4;
+}
+
+.probe__dish {
+  fill: var(--ink);
+  stroke: var(--ink);
+  stroke-width: 2px;
+  vector-effect: non-scaling-stroke;
+}
+
+.probe__dish-inner {
+  fill: none;
+  stroke: var(--paper-hi);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.3;
+}
+
+.probe__strut {
+  stroke: var(--ink);
+  stroke-width: 1.5px;
+  vector-effect: non-scaling-stroke;
+}
+
+.probe__sensor,
+.probe__sensor-glow {
+  fill: var(--orange);
+  animation: visor 1.8s step-end infinite;
+}
+
+.probe__sensor-glow {
+  opacity: 0.25;
+}
+
+.probe__nav {
+  fill: var(--orange);
+  animation: blink 1.6s step-end infinite;
+  animation-delay: var(--d, 0s);
+}
+
+/* Registration mark: an in-scene SVG label, not site type. JetBrains Mono 700
+   at letter-spacing .12em is the contract's own value. */
+.probe__reg {
+  font-family: var(--ff-mono);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  fill: var(--paper-hi);
+  opacity: 0.92;
+}
+
+.probe__plume {
+  fill: var(--orange);
+  opacity: 0.45;
+  /* fill-box + origin at the left edge so the plume pulses back toward the
+     tail instead of shrinking around its own centre. */
+  transform-box: fill-box;
+  transform-origin: 0;
+  animation: plume 0.32s ease-in-out infinite;
+}
+
+.probe__plume--core {
+  fill: var(--orange-soft);
+  opacity: 0.8;
+  animation-duration: 0.27s;
+}
+
+/* ---------------------------------------------------------------------------
+   4. SpecPanel — the annotation column (150-190px wide)
+   --------------------------------------------------------------------------- */
+.spec {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.spec__label {
+  padding-left: 9px;
+  border-left: 1px solid var(--orange);
+}
+
+.spec__label > span {
+  display: block;
+  animation-delay: var(--d, 0s);
+}
+
+.spec__label > span:nth-child(1),
+.spec__label > span:nth-child(3) {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.spec__label > span:nth-child(2) {
+  color: var(--ink-soft);
+}
+
+.spec__label > span:nth-child(4) {
+  color: var(--orange);
+}
+
+.spec__plot {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* pathLength="1" + stroke-dasharray: 1 turns the shared `plot` keyframe into a
+   draw-on; the per-path `--i` walks the outline, then the dimensions. */
+.spec__plot-path {
+  fill: none;
+  stroke: var(--ink-soft);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  animation: plot 0.9s var(--ease-out) both;
+  animation-delay: calc(0.35s + var(--i, 0) * 90ms);
+}
+
+.spec__plot-path--axis {
+  stroke: var(--orange);
+}
+
+.spec__plot-path--hot {
+  stroke: var(--orange);
+}
+
+.spec__plot-path--dim {
+  stroke: var(--rule-strong);
+}
+
+.spec__dim {
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  fill: var(--ink);
+}
+
+.spec__dim--muted {
+  fill: var(--ink-faint);
+}

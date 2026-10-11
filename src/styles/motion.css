@@ -1,0 +1,234 @@
+/* ==========================================================================
+   Mission Control CV — motion vocabulary
+   Owner: MC-01. Every Stage-1/2/3 writer reuses these names and timings so the
+   whole site moves like one machine.
+
+   Stagger rule: set `--d` on the element (or rely on `--i` for per-glyph and
+   per-path loops) — the helper classes below already read
+   `animation-delay: var(--d, 0s)`.
+   ========================================================================== */
+
+/* --- entrance ------------------------------------------------------------- */
+
+/* Opacity stutter used for booting elements. */
+@keyframes boot-flicker {
+  0% {
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.9;
+  }
+  18% {
+    opacity: 0.1;
+  }
+  34% {
+    opacity: 1;
+  }
+  52% {
+    opacity: 0.35;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes boot-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes boot-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Per-glyph title entrance: shadowed orange -> skewed -> settle to ink. */
+@keyframes glyph-in {
+  0% {
+    opacity: 0;
+    color: var(--orange);
+    transform: translateY(0.22em) skew(-14deg);
+  }
+  34% {
+    opacity: 1;
+    color: var(--orange);
+    transform: translateY(0.22em) skew(-14deg);
+  }
+  100% {
+    opacity: 1;
+    color: var(--ink);
+    transform: translateY(0) skew(0deg);
+  }
+}
+
+@keyframes slash-in {
+  from {
+    opacity: 0;
+    transform: translateX(-0.6em) skew(-28deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) skew(-28deg);
+  }
+}
+
+/* --- ambient / interactive ------------------------------------------------ */
+
+@keyframes badge-load {
+  from {
+    width: 0;
+  }
+  to {
+    width: 38%;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.15;
+  }
+}
+
+@keyframes arrow-hop {
+  0% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  45% {
+    transform: translate(9px, -9px);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-9px, 9px);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes hatch-run {
+  to {
+    background-position: 7px 0;
+  }
+}
+
+@keyframes card-scan {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@keyframes plot {
+  from {
+    stroke-dashoffset: 1px;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Texture-scroll used by the gas giant (MC-07). */
+@keyframes planet-spin {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes probe-fly {
+  from {
+    transform: translate(560px, 0);
+  }
+  to {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes probe-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@keyframes plume {
+  0%,
+  100% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(0.32);
+  }
+}
+
+@keyframes visor {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes eye-scan {
+  from {
+    transform: translateX(-14px);
+  }
+  to {
+    transform: translateX(14px);
+  }
+}
+
+@keyframes pip {
+  50% {
+    transform: rotate(45deg) scale(0.75);
+  }
+}
+
+@keyframes bar-charge {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* --- helpers -------------------------------------------------------------- */
+
+.boot-in {
+  animation: boot-up 0.8s var(--ease-out) both;
+  animation-delay: var(--d, 0s);
+}
+
+.boot-in-scale {
+  animation: boot-scale 1.6s var(--ease-out) both;
+  animation-delay: var(--d, 0s);
+}
+
+.boot-in-flicker {
+  animation: boot-flicker 0.9s linear both;
+  animation-delay: var(--d, 0s);
+}

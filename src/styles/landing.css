@@ -1,0 +1,1358 @@
+/* ==========================================================================
+   Mission Control CV — landing shell
+   Owners: MC-01 (foundation), MC-05 (badge / telemetry / motto),
+           MC-06 (masthead / tagline / contact), MC-10 (stage composition).
+
+   Section map:
+     1. stage            — the page shell and the >=1180px viewport lock
+     2. frame            — blueprint frame marks (>=1180px only)
+     3. top              — badge / telemetry / motto header grid
+     4. badge            — orange clipped slab
+     5. telemetry        — location + live UTC mission clock
+     6. motto            — EXPLORAR / AUDITAR / CONSTRUIR / REPETIR
+     7. main             — responsive composition grid (v2: no second row)
+     8. lead             — masthead, tagline, contact, cards CTA
+     9. cards            — link cards
+    10. shared type      — micro-labels shared with MC-07/08/09
+    11. cv shell         — /cv Stage-2 placeholder (MC-10)
+    12. short viewports  — the >=1180px packing for <=817px tall viewports (MC-25b)
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   1. Stage
+   Below 1180px the stage grows naturally and the document scrolls normally.
+   The single-viewport lock (fixed height + overflow: hidden) is >=1180px only,
+   so mobile can never clip content.
+   --------------------------------------------------------------------------- */
+.stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: var(--pad) var(--pad) 0;
+  isolation: isolate;
+}
+
+@media (min-width: 1180px) {
+  /* Viewport lock. `min-height` (not `height`) on purpose: when the content
+     genuinely fits, the stage is exactly one viewport tall and the page does
+     not scroll; on short viewports the stage GROWS instead of silently
+     clipping the footer behind overflow: hidden. */
+  .stage {
+    min-height: 100svh;
+    overflow: hidden;
+  }
+}
+
+/* /cv is a long-scroll route: same shell treatment, no viewport lock. */
+.stage--cv {
+  min-height: 100svh;
+  overflow: visible;
+}
+
+@media (min-width: 1180px) {
+  .stage--cv {
+    min-height: 100svh;
+    overflow: visible;
+  }
+}
+
+/* Full-bleed footer band. MC-09 only owns what lives inside it. */
+.foot {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  height: var(--foot-h);
+  margin: 0 calc(var(--pad) * -1);
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------------------
+   2. Blueprint frame — a pure decoration layer, hidden below 1180px.
+   --------------------------------------------------------------------------- */
+.frame {
+  display: none;
+}
+
+@media (min-width: 1180px) {
+  .frame {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .frame__rule-top {
+    position: absolute;
+    top: 0;
+    left: calc(var(--pad) + var(--badge-w) + 30px);
+    right: var(--pad);
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .frame__rule-right {
+    position: absolute;
+    top: 15%;
+    right: var(--pad);
+    width: 1px;
+    height: 34%;
+    background: var(--rule);
+  }
+
+  /* 13px `+` registration crosses. */
+  .frame__cross {
+    position: absolute;
+    width: 13px;
+    height: 13px;
+  }
+
+  .frame__cross::before,
+  .frame__cross::after {
+    content: "";
+    position: absolute;
+    background: var(--ink-faint);
+  }
+
+  .frame__cross::before {
+    top: 6px;
+    left: 0;
+    width: 13px;
+    height: 1px;
+  }
+
+  .frame__cross::after {
+    top: 0;
+    left: 6px;
+    width: 1px;
+    height: 13px;
+  }
+
+  .frame__cross--top {
+    top: 17%;
+    left: 63%;
+  }
+
+  .frame__cross--left {
+    top: 41%;
+    left: 2.2%;
+  }
+
+  .frame__cross--mid {
+    top: 57%;
+    left: 46.5%;
+  }
+
+  .frame__cross--r2 {
+    top: 7%;
+    right: 3.4%;
+  }
+
+  /* 2px x 52% orange bar cut into three segments. */
+  .frame__ticks {
+    position: absolute;
+    top: 20%;
+    left: 2.2%;
+    width: 2px;
+    height: 52%;
+    background: linear-gradient(
+      to bottom,
+      var(--orange) 0 31%,
+      transparent 31% 69%,
+      var(--orange) 69% 100%
+    );
+  }
+
+  .frame__dots--left,
+  .frame__dots--viz {
+    position: absolute;
+    background-image: radial-gradient(var(--ink-faint) 1px, transparent 1.4px);
+    background-size: 13px 13px;
+  }
+
+  .frame__dots--left {
+    top: 30%;
+    left: 0;
+    width: 22%;
+    height: 42%;
+    background-image: radial-gradient(var(--orange) 1px, transparent 1.4px);
+    opacity: 0.5;
+    -webkit-mask-image: linear-gradient(to right, #000 0%, transparent 100%);
+    mask-image: linear-gradient(to right, #000 0%, transparent 100%);
+  }
+
+  .frame__dots--viz {
+    right: 0;
+    bottom: 27%;
+    width: 17%;
+    height: 30%;
+    opacity: 0.75;
+    -webkit-mask-image: linear-gradient(to left, #000 0%, transparent 100%);
+    mask-image: linear-gradient(to left, #000 0%, transparent 100%);
+  }
+
+  /* 120px vertical 7/7 dashed bar. */
+  .frame__dash {
+    position: absolute;
+    top: 18%;
+    right: 3.4%;
+    width: 1px;
+    height: 120px;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--ink-faint) 0 7px,
+      transparent 7px 14px
+    );
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   3. Top header grid
+   base:    badge | telemetry, motto spans the full width on row 2
+   760px+:  badge | telemetry | motto
+   1180px+: flex row with the motto pushed right
+   --------------------------------------------------------------------------- */
+.top {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 18px 20px;
+  align-items: start;
+}
+
+.top__badge {
+  position: relative;
+  grid-area: 1 / 1;
+}
+
+.top__telemetry {
+  grid-area: 1 / 2;
+  min-width: 0;
+}
+
+.top__motto {
+  display: flex;
+  grid-area: 2 / 1 / 3 / -1;
+}
+
+@media (min-width: 760px) {
+  .top {
+    grid-template-columns: auto auto minmax(0, 1fr);
+    gap: 0 26px;
+  }
+
+  .top__telemetry {
+    align-self: start;
+    margin-top: 34px;
+  }
+
+  .top__motto {
+    /* Row 2, full width, right aligned. The motto word row plus its 220px track
+       needs ~600px, which the 1fr column cannot give below 1180px. */
+    grid-area: 2 / 1 / 3 / -1;
+    align-self: start;
+    justify-content: flex-end;
+    min-width: 0;
+    margin-top: 10px;
+    margin-left: auto;
+  }
+}
+
+@media (min-width: 1180px) {
+  .top {
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(20px, 2.6vw, 48px);
+  }
+
+  .top__motto {
+    margin-top: 10px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   4. Badge — orange clipped slab + monogram + pixel grid + load bar.
+   The wrapper carries the decorations so they escape the slab's clip-path.
+   --------------------------------------------------------------------------- */
+.badge {
+  position: relative;
+  width: var(--badge-w);
+}
+
+.badge__slab {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 208 / 150;
+  container-type: inline-size;
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  gap: 4%;
+  /* Percentage padding resolves against the wrapper width — deliberately NOT
+     cqw: container query units used in a container's OWN declarations resolve
+     against the nearest ancestor container (the viewport here), which inflated
+     the slab to ~288px tall. Descendants below use cqw against this element. */
+  padding: 5.6% 6.4% 4.6%;
+  background: var(--orange);
+  color: var(--ink);
+  clip-path: polygon(0 0, 78% 0, 100% 30.5%, 100% 100%, 0 100%);
+  animation: boot-flicker 0.9s linear both;
+  animation-delay: var(--d, 0.12s);
+}
+
+.badge__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 4cqw;
+  min-height: 0;
+}
+
+.badge__monogram {
+  flex: none;
+  width: 56cqw;
+  height: auto;
+}
+
+.badge__pixels {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2.4cqw;
+  margin-top: 1.5cqw;
+}
+
+.badge__pixel {
+  width: 5.2cqw;
+  height: 5.2cqw;
+  background: rgb(22 22 26 / 16%);
+}
+
+.badge__pixel--ink {
+  background: var(--ink);
+}
+
+.badge__pixel--light {
+  background: var(--on-orange);
+}
+
+.badge__pixel--blink {
+  background: var(--ink);
+  animation: blink 1.6s step-end infinite;
+}
+
+.badge__label {
+  font-size: 6.2cqw;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.badge__load {
+  height: 2px;
+  overflow: hidden;
+  background: rgb(22 22 26 / 20%);
+}
+
+/* Same accent family, dark enough to read on the orange slab. */
+.badge__load-fill {
+  display: block;
+  width: 38%;
+  height: 100%;
+  background: var(--orange-ink);
+  animation: badge-load 1.4s var(--ease-out) both;
+  animation-delay: var(--d, 0.12s);
+}
+
+.badge__rule {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 13px);
+  width: 1px;
+  height: 76%;
+  background: var(--orange);
+}
+
+.badge__elbow {
+  position: absolute;
+  right: -7px;
+  bottom: 4px;
+  width: 28px;
+  height: 2px;
+  background: linear-gradient(45deg, var(--orange-soft), var(--orange));
+  transform: rotate(-45deg);
+  transform-origin: right center;
+}
+
+/* ---------------------------------------------------------------------------
+   5. Telemetry — location + live UTC mission clock + hatch bar.
+   The border and tick marks live on the wrapper so the hatch bar can sit in
+   the block without invalidating the <dl> content model.
+   --------------------------------------------------------------------------- */
+.telemetry {
+  position: relative;
+  min-width: 0;
+  padding-left: 14px;
+  border-left: 1px solid var(--rule-strong);
+}
+
+.telemetry::before,
+.telemetry::after {
+  content: "";
+  position: absolute;
+  left: -1px;
+  width: 5px;
+  height: 2px;
+  background: var(--orange);
+}
+
+.telemetry::before {
+  top: 0;
+}
+
+.telemetry::after {
+  bottom: 0;
+}
+
+.telemetry__rows {
+  display: grid;
+  gap: 9px;
+}
+
+.telemetry__row {
+  display: grid;
+  gap: 4px;
+}
+
+.telemetry__label {
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.telemetry__value {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.telemetry__hatch {
+  width: 66px;
+  height: 7px;
+  margin-top: 11px;
+  transform: skew(-32deg);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--ink) 0 4px,
+    transparent 4px 9px
+  );
+  opacity: 0.75;
+}
+
+/* ---------------------------------------------------------------------------
+   6. Motto — the four-step loop and its charge track.
+   `--step` runs 1..4 so the fill reads 25% -> 100% with the active word.
+   --------------------------------------------------------------------------- */
+.motto {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  /* min-width: 0 so the row can be squeezed below its min-content width, and
+     wrap so the words reflow instead of pushing a horizontal scrollbar.
+     Both are reverted to nowrap at 760px+, where the row has room. */
+  min-width: 0;
+  flex-wrap: wrap;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+@media (min-width: 760px) {
+  .motto {
+    flex-wrap: nowrap;
+  }
+}
+
+.motto__word {
+  transition: color 0.9s var(--ease-out);
+}
+
+.motto__word.is-active {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.motto__sep {
+  color: var(--rule-strong);
+}
+
+.motto__track {
+  position: relative;
+  flex: none;
+  width: 220px;
+  max-width: 220px;
+  height: 3px;
+  background: var(--rule);
+}
+
+.motto__fill {
+  display: block;
+  width: calc(var(--step, 1) * 25%);
+  height: 100%;
+  background: var(--orange);
+  transition: width 0.9s var(--ease-out);
+}
+
+.motto__plus {
+  display: none;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--orange);
+}
+
+@media (min-width: 760px) {
+  .motto__plus {
+    display: block;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   7. Main composition (MC-25 / §7.12)
+   base:    lead -> art (+ its orbit panel) -> spec, one column
+   760px+:  lead across the top, then art | spec
+   1180px+: one row, lead | art, the spec strip sharing the art grid area
+
+   There is NO "row 2" any more. The reference has none either (§7.11): its art
+   column owns the full stage height (at 1440x900 .viz is 51->704 while .main is
+   159->704), its status panel is a stage-level aside floating over the footer
+   band, and its orbit panel sits in the art column's empty bottom-right corner.
+   Our Stage-1 row 2 is exactly what starved the artwork (546x282 at 1440x900 vs
+   the reference's 621x497) and squeezed both panels into a 336px rail (status
+   336x116 vs the reference's 504x214 — 2.8x the area).
+   --------------------------------------------------------------------------- */
+.main {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "lead"
+    "art"
+    "spec";
+  gap: clamp(18px, 2.2vw, 34px);
+  align-content: start;
+  margin-top: var(--head-gap);
+}
+
+.main__lead {
+  grid-area: lead;
+  min-width: 0;
+}
+
+.main__art {
+  grid-area: art;
+  min-width: 0;
+}
+
+.main__spec {
+  grid-area: spec;
+  min-width: 0;
+}
+
+/* The status plate: an ordinary block between <main> and the footer below
+   1180px, an absolutely positioned plate over the footer band above it. The width
+   lives here rather than on `.status` on purpose — a percentage width on the
+   child of an absolutely positioned box resolves against that box's own
+   shrink-to-fit width, which measured a 354px aside around a 480px panel and
+   spilled the whole stage horizontally (101px at 1180x900). */
+.status-aside {
+  min-width: 0;
+  width: min(100%, 560px);
+  margin-top: clamp(18px, 2.2vw, 34px);
+}
+
+@media (min-width: 760px) {
+  .main {
+    /* The masthead needs the full width here: at 65px "MOSCARDO" is ~578px wide,
+       which no half-column can hold. */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "lead lead"
+      "art spec";
+    margin-top: clamp(20px, 3vh, 40px);
+    align-items: start;
+  }
+}
+
+@media (min-width: 1180px) {
+  /* The reference's own split, including its missing column gap: .intro 648px +
+     .viz 731px = 1379.5px = the whole 1440px stage minus its padding. That is
+     what lets the art box reach the reference's width — 731 (column) - 110
+     (annotation strip) = 621. A column gap would come straight out of the
+     artwork, so there is none.
+
+     `grid-template-rows: 1fr` (not `auto`) is load-bearing: a single auto row in
+     a definite-height grid is content-sized, which would leave .main__lead
+     shorter than .main and kill the `margin-top: auto` that settles the card
+     strip at the column's bottom. */
+  .main {
+    grid-template-columns: minmax(0, 47%) minmax(0, 1fr);
+    grid-template-rows: 1fr;
+    grid-template-areas: "lead art";
+    column-gap: 0;
+    align-items: stretch;
+    margin-top: 0;
+  }
+
+  /* `container-type` is what makes the title's width cap possible: the longest
+     line ("MOSCARDO" + the slash block) is 8.83em wide, so the title is capped at
+     100cqw / --title-em instead of overflowing the 47% column. See .title__line. */
+  .main__lead {
+    display: flex;
+    flex-direction: column;
+    grid-area: lead;
+    container-type: inline-size;
+  }
+
+  /* The annotation strip costs the art column exactly the reference's 110px:
+     .viz is 731px wide at 1440 and its box is 621px. */
+  .main__art {
+    grid-area: art;
+    align-self: start;
+    width: calc(100% - 110px);
+    margin-top: calc(-1 * clamp(30px, 5.4vh, 72px));
+  }
+
+  .main__spec {
+    grid-area: art;
+    justify-self: end;
+    align-self: start;
+    width: 110px;
+  }
+
+  /* Floats the status plate over the footer band, right-aligned, and fully
+     visible: the reference clips its own panel (1440x900: panel bottom 912
+     inside a 900px stage) and we deliberately do not (§7.11). Width is the
+     reference's own formula — 35% of the viewport reproduces 480/504/680px at
+     1180/1440/2000. */
+  .status-aside {
+    position: absolute;
+    right: var(--pad);
+    bottom: 0;
+    z-index: 3;
+    width: clamp(480px, 35%, 680px);
+    margin-top: 0;
+  }
+
+  /* Settles the card strip at the bottom of the lead column. */
+  .cards {
+    margin-top: auto;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   8. Lead column — masthead, tagline, contact
+   --------------------------------------------------------------------------- */
+.title {
+  display: block;
+  font-family: var(--ff-display);
+  font-weight: 900;
+  font-stretch: 125%;
+  text-transform: uppercase;
+  letter-spacing: -0.005em;
+  line-height: 0.9;
+  color: var(--ink);
+  /* Width of the longest title line in ems ("MOSCARDO" + the slash block) at
+     Hubot Sans expanded 900. Measured at 8.83em; 8.95 carries ~1.4% of slack so
+     sub-pixel rounding can never push the line past its column. Used by the
+     >=1180px `min(..., calc(100cqw / var(--title-em)))` cap. */
+  --title-em: 8.95;
+}
+
+/* The display face is Hubot Sans expanded at 900, and the widest title line
+   ("MOSCARDO" + the slash block) measures 8.83em. The raw clamps below are the
+   design scale; where the lead column cannot pay for them (phones, and the
+   narrow lead column from 1180px up) the width cap binds so the title never
+   runs past its column. */
+.title__line {
+  display: block;
+  font-size: min(clamp(34px, 12.6vw, 64px), 9.7vw);
+  white-space: nowrap;
+}
+
+@media (min-width: 760px) {
+  .title__line {
+    font-size: clamp(56px, 8.6vw, 84px);
+  }
+}
+
+@media (min-width: 1180px) {
+  /* The reference scale, restored (§7.2 / §7.11) and width-capped per §7.2's own
+     hard rule 1. MC-10b cut it to 4.3vw (~18% down) only to buy the art track;
+     that track no longer exists, so the cut does too.
+
+     §7.12 also asks for a min(16vw, 276px) indent on the masthead. The indent and
+     this scale are arithmetically impossible together with our face: the longest
+     line is 8.83em, so a 5.25vw title needs 46.35vw of hardset width PLUS the
+     16vw indent = 62.35vw inside a 47vw column — a 15.35vw overshoot (221px at
+     1440x900). Something has to give, and it is not the title: the owner's
+     correction is that objects must be bigger, not smaller. So the indent is the
+     part that does not survive, and the cap binds at ~96% of the reference scale
+     instead of the indent binding at 63% of it. */
+  .title__line {
+    font-size: min(clamp(60px, 5.25vw, 108px), calc(100cqw / var(--title-em)));
+  }
+}
+
+@media (min-width: 2000px) {
+  /* Continues the reference scale: 5.25vw capped at 150px. */
+  .title__line {
+    font-size: min(clamp(108px, 5.25vw, 150px), calc(100cqw / var(--title-em)));
+  }
+}
+
+.title__glyph {
+  display: inline-block;
+  white-space: pre;
+  animation: glyph-in 0.85s linear both;
+  animation-delay: calc(0.25s + var(--i, 0) * 55ms);
+}
+
+.title__slashes {
+  display: inline-block;
+  width: 0.78em;
+  height: 0.34em;
+  margin-left: 0.16em;
+  vertical-align: 0.2em;
+  transform: skew(-28deg);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--orange) 0 0.13em,
+    transparent 0.13em 0.25em
+  );
+  animation: slash-in 0.9s var(--ease-out) both;
+  animation-delay: calc(0.25s + var(--i, 0) * 55ms);
+}
+
+.title__rule {
+  display: block;
+  width: 52px;
+  height: 4px;
+  margin-top: clamp(12px, 1.3vh, 20px);
+  background: var(--orange);
+}
+
+.tagline {
+  max-width: 54ch;
+  margin-top: clamp(13px, 1.5vh, 22px);
+  font-size: clamp(13px, 1vw, 16px);
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.tagline__caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.05em;
+  margin-left: 0.28em;
+  vertical-align: -0.18em;
+  background: var(--orange);
+  animation: blink 1.1s step-end infinite;
+}
+
+.contact {
+  position: relative;
+  margin-top: clamp(13px, 1.6vh, 24px);
+  /* Aligns the contact row with the card strip: the reference insets both by
+     2vw (measured .cards and .contact at x=59 inside a column at x=30). */
+  margin-left: 2vw;
+  padding-left: 30px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ink-2);
+}
+
+.contact__links {
+  margin-top: 2px;
+}
+
+/* `/cv` as a CTA, never a peer card (§7.8): a bordered internal <Link>, visually
+   distinct from the six external cards — ink border on paper, inverting on hover
+   and focus exactly like a card does. `vertical-align: 1px` rides the chip on the
+   links line, so the contact block stays two rows tall. */
+.contact__cta {
+  display: inline-block;
+  margin-left: 12px;
+  padding: 3px 10px 2px;
+  border: 1px solid var(--ink);
+  background: var(--paper-hi);
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+  vertical-align: 1px;
+  transition:
+    background-color 0.3s var(--ease-out),
+    color 0.3s var(--ease-out);
+}
+
+.contact__cta-arrow {
+  margin-left: 7px;
+  color: var(--orange);
+}
+
+.contact__cta:hover,
+.contact__cta:focus-visible {
+  background: var(--ink);
+  color: var(--paper-hi);
+}
+
+.contact::before {
+  content: "";
+  position: absolute;
+  top: 0.5em;
+  left: 0;
+  width: 26px;
+  height: 6px;
+  background: var(--orange);
+}
+
+.contact__link {
+  color: var(--ink);
+  background-image: linear-gradient(var(--orange), var(--orange));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0 2px;
+  transition: background-size 0.3s var(--ease-out);
+}
+
+.contact__link:hover,
+.contact__link:focus-visible {
+  background-size: 100% 2px;
+}
+
+/* ---------------------------------------------------------------------------
+   9. Link cards
+   --------------------------------------------------------------------------- */
+.cards {
+  margin-top: clamp(14px, 1.8vh, 26px);
+  /* The reference's own 2vw inset. It is what makes the strip 620px wide inside
+     a 648px column at 1440x900, i.e. the measured 196x76 card. */
+  padding-left: 2vw;
+}
+
+.cards__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 152px), 1fr));
+  gap: 14px;
+}
+
+@media (min-width: 760px) {
+  .cards__list {
+    /* Six cards, a filled 3x2 grid at reference metrics. Stage 1 used 4 columns
+       plus a double-width first card to close a 7-card row; the seventh card is
+       gone (§7.8), so the fill is exact and no card can break a name mid-word
+       ("NBMSYSTEMAS" did, at an 88px track). */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(12px, 1.1vw, 16px);
+  }
+}
+
+.card {
+  --card-shadow: 0 16px 30px -18px rgb(22 22 26 / 70%);
+
+  position: relative;
+  display: block;
+  min-height: clamp(58px, 6.4vh, 76px);
+  padding: 9px 20px 16px 20px;
+  background: var(--paper-hi);
+  border: 1px solid var(--rule-strong);
+  color: var(--ink);
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    transform 0.32s var(--ease-out),
+    background-color 0.32s var(--ease-out),
+    color 0.32s var(--ease-out);
+}
+
+/* Reference card metrics, re-measured 2026-10-10 (§7.11): 196x76 at 1440x900,
+   padding 12px 30px 14px 16px, and a height floor of 8.4vh = 75.6px at 900.
+   This block must stay BELOW the base .card rule: same specificity, so source
+   order decides, and the Stage-1 override above the base rule was dead code
+   (measured: the card rendered 9px 20px 16px, the base padding). */
+@media (min-width: 760px) {
+  .card {
+    min-height: clamp(66px, 8.4vh, 90px);
+    padding: 12px 30px 14px 16px;
+  }
+
+  .card__hatch {
+    left: 16px;
+  }
+}
+
+.card__fig {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  transition:
+    color 0.32s var(--ease-out),
+    opacity 0.32s var(--ease-out);
+}
+
+.card__name {
+  display: block;
+  margin-top: 5px;
+  font-size: clamp(10px, 0.9vw, 12.5px);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  /* NOT `anywhere`: this was masking the real defect, which was 88px grid
+     tracks inside a 53% column. Words must break at spaces, never mid-word. */
+  overflow-wrap: break-word;
+}
+
+.card__arrow {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 12px;
+  line-height: 1;
+  color: inherit;
+  opacity: 0.75;
+}
+
+.card__hatch {
+  position: absolute;
+  left: 20px;
+  bottom: 8px;
+  width: 46px;
+  height: 5px;
+  transform: skew(-32deg);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--orange) 0 4px,
+    transparent 4px 9px
+  );
+}
+
+.card__corner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  border-top: 1px solid var(--ink);
+  border-left: 1px solid var(--ink);
+  transition:
+    width 0.32s var(--ease-out),
+    height 0.32s var(--ease-out),
+    border-color 0.32s var(--ease-out);
+}
+
+.card__tri {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-bottom: 12px solid var(--rule-strong);
+  transition: border-bottom-color 0.32s var(--ease-out);
+}
+
+.card__scan {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 35%,
+    rgb(250 247 240 / 55%) 50%,
+    transparent 65%
+  );
+  background-size: 200% 100%;
+  background-position: 200% 0;
+  opacity: 0;
+}
+
+/* Interaction state. Hover is deliberately duplicated under :focus-visible so
+   keyboard users get the same affordance while touch devices never latch it. */
+@media (hover: hover) {
+  .card:hover {
+    background: var(--ink);
+    color: var(--paper-hi);
+    transform: translateY(-3px);
+    box-shadow: var(--card-shadow);
+  }
+
+  .card:hover .card__fig {
+    color: var(--paper-hi);
+    opacity: 0.7;
+  }
+
+  .card:hover .card__corner {
+    width: 24px;
+    height: 24px;
+    border-color: var(--orange);
+  }
+
+  .card:hover .card__tri {
+    border-bottom-color: var(--orange);
+  }
+
+  .card:hover .card__hatch {
+    animation: hatch-run 0.5s linear infinite;
+  }
+
+  .card:hover .card__scan {
+    opacity: 1;
+    animation: card-scan 0.9s var(--ease-out);
+  }
+
+  .card:hover .card__arrow {
+    animation: arrow-hop 0.5s var(--ease-out);
+  }
+}
+
+.card:focus-visible {
+  background: var(--ink);
+  color: var(--paper-hi);
+  transform: translateY(-3px);
+  box-shadow: var(--card-shadow);
+}
+
+.card:focus-visible .card__fig {
+  color: var(--paper-hi);
+  opacity: 0.7;
+}
+
+.card:focus-visible .card__corner {
+  width: 24px;
+  height: 24px;
+  border-color: var(--orange);
+}
+
+.card:focus-visible .card__tri {
+  border-bottom-color: var(--orange);
+}
+
+.card:focus-visible .card__hatch {
+  animation: hatch-run 0.5s linear infinite;
+}
+
+.card:focus-visible .card__scan {
+  opacity: 1;
+  animation: card-scan 0.9s var(--ease-out);
+}
+
+.card:focus-visible .card__arrow {
+  animation: arrow-hop 0.5s var(--ease-out);
+}
+
+/* ---------------------------------------------------------------------------
+   10. Shared micro-label typography.
+   MC-01 owns type; MC-07/08/09 extend these names in artwork.css / panels.css
+   (layout + color only) instead of redefining the type scale.
+   --------------------------------------------------------------------------- */
+.card__fig,
+.spec__label,
+.panel-title,
+.status__label,
+.status__value,
+.orbit__item,
+.foot__label {
+  font-family: var(--ff-mono);
+  text-transform: uppercase;
+}
+
+.spec__label {
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+  line-height: 1.4;
+}
+
+/* Reference type spec, re-measured 2026-10-10 (§7.11): 10.5px / 15.75,
+   ls 2.52px. .spec__label stays at 9.5px on purpose — it is an annotation in a
+   110px strip, not a panel heading. */
+.panel-title {
+  font-size: 10.5px;
+  letter-spacing: 2.52px;
+  line-height: 15.75px;
+}
+
+.status__value,
+.spec__dim {
+  font-variant-numeric: tabular-nums;
+}
+
+.panel-title {
+  display: inline-block;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* Orange clipped title chip — shared with MC-08's SYSTEM STATUS panel. */
+.panel-title--clip {
+  padding: 6px 12px 5px;
+  background: var(--orange);
+  color: var(--on-orange);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 20px) 100%, 0 100%);
+}
+
+/* ---------------------------------------------------------------------------
+   11. /cv Stage-2 placeholder shell (MC-10, replaced by MC-13).
+   --------------------------------------------------------------------------- */
+.main--cv {
+  display: block;
+  margin-top: var(--head-gap);
+}
+
+.cv-shell {
+  /* MC-13 replaces this placeholder; until then its title must not spill.
+     `container-type` here is what lets the descendant title cap itself against
+     this box: cqw resolves against the nearest ANCESTOR container, so the title
+     may use it but this rule must not. */
+  container-type: inline-size;
+  max-width: 62ch;
+  padding: clamp(20px, 3vw, 44px);
+  background: var(--paper-hi);
+  border: 1px solid var(--rule-strong);
+}
+
+.cv-shell__state {
+  display: block;
+  margin-top: 16px;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--orange-ink);
+}
+
+.cv-shell__title {
+  margin-top: 12px;
+  font-family: var(--ff-display);
+  font-weight: 900;
+  font-stretch: 125%;
+  /* Width-capped, never raw vw — the same rule the masthead had to learn. Hubot
+     Sans expanded 900 sets COMPLETO at ~8.95em, and the shell is 62ch wide, so
+     the old `clamp(34px, 7vw, 72px)` overflowed its own container by 100px at
+     1440 and spilled the page. Measured cap: 100cqw / 9.2. */
+  font-size: min(clamp(28px, 5vw, 54px), calc(100cqw / 9.2));
+  line-height: 0.9;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.cv-shell__note {
+  margin-top: 16px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+
+.cv-shell__back {
+  display: inline-block;
+  margin-top: 24px;
+  padding-bottom: 3px;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink);
+  border-bottom: 2px solid var(--orange);
+}
+
+/* ---------------------------------------------------------------------------
+   12. Short viewports — >=1180px and <=817px tall (MC-25b)
+
+   D1 is "/ = exactly one viewport, no scroll", and the common laptop class is
+   the hard case: a 1440x900 or 1600x900 laptop with browser chrome leaves a
+   780-800px viewport. Measured before this block, binding object in every case
+   the lead column:
+
+     1180x784  doc 793  +9     1440x784  doc 788  +4
+     1366x768  doc 775  +7     1600x784  doc 814  +30
+     1600x800  doc 817  +17
+
+   The squeeze is deliberately HEIGHT-SCOPED. At 900px+ the lock already holds
+   and the composition is accepted, so squeezing there would move the card strip
+   for no benefit; scoped to short viewports the normal-height layout stays
+   byte-identical. Levers in the contract's order: (1) the lead column's
+   inter-block gaps, (2) --foot-h, bounded by the landscape's crop window,
+   (3) the status clearance lift, which lives in panels.css.
+
+   There is no `.main` top gap to spend here: at >=1180px `.main` is already
+   `margin-top: 0`, so the whole budget is inside the lead column.
+
+   `--foot-h` is declared in tokens.css, which is not a surface of this round,
+   so the short-height band is re-declared here, where `.foot` consumes it.
+
+   THE --foot-h RAMP IS DERIVED, NOT PICKED. Below 818px the base
+   `clamp(180px, 22vh, 290px)` parks on its 180px floor, so the band stops
+   shrinking exactly where the viewport stops shrinking — that is where the
+   overflow appears. The term `(818px - 100vh) * 0.5` is zero at the hand-off,
+   so the ramp is continuous with the base clamp (measured 179px at 817 vs 180px
+   at 818). The 150px floor is above the landscape's own honest minimum and
+   above the motto plate's: the topmost required scene feature (the beacon glow
+   and the top cota label) sits at scene y 186 of 360, which across the matrix
+   floors the band at 79px (1180 wide) to 107px (1600 wide); the motto plate
+   needs 71px of plate plus the --pad inset, ~105px at 1600. 150px spends
+   neither. See the MC-25b report for the per-width derivation.
+
+   THE QUERY RUNS 3px PAST THE RAMP'S HAND-OFF (820, not 817) to close a pocket
+   it would otherwise leave at 1600px wide. Measured: with the ramp handed off
+   at 818 but the base gaps restored, 1600x818 needs 820px and 1600x820 needs
+   821px, i.e. a 1-2px scroll that the harness's own +1px tolerance would have
+   reported as `pageScroll: false`. Above the base gaps the band is exactly
+   viewport-sized (1600x821-826 measure 0px of overflow), so 820 is the last
+   height that needs them.
+   --------------------------------------------------------------------------- */
+@media (min-width: 1180px) and (max-height: 820px) {
+  :root {
+    --foot-h: clamp(150px, calc(22vh - (818px - 100vh) * 0.5), 180px);
+  }
+
+  /* Measured at 784px: 12 -> 8 (title rule), 13 -> 9 (tagline), 13 -> 9
+     (contact), 14.11 -> 11 (cards) = 15.1px of the 30px the worst viewport
+     (1600x784) needs; the --foot-h ramp pays the rest. */
+  .title__rule {
+    margin-top: 8px;
+  }
+
+  .tagline,
+  .contact {
+    margin-top: 9px;
+  }
+
+  .cards {
+    margin-top: 11px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   WIDE + SHORT BAND (>=1720px wide, <=1000px tall)
+
+   The 820px band above is not enough on its own, because the content floor rises
+   with viewport WIDTH while the stage height does not: every object here scales
+   from vw, so at 1920 the lead column's title alone is 187px tall where at 1440 it
+   is 146px. Measured floors before this band: 1366 -> 730, 1440 -> 743,
+   1600 -> 769, but 1920 -> 880, 2000 -> 889, 2560 -> 990. The 820px band therefore
+   left a hole at 1920x820 (+17), 1920x860 (+10), 2000x850 (+23) and 2560x950 (+20)
+   — which is the ordinary 1920x1080 or 2560x1080 monitor with browser chrome.
+
+   THE RAMP IS CONTINUOUS WITH THE BASE CLAMP AND WITH THE 820px BAND. At 1000px
+tall `62vh - 400px` is exactly 220px, the same value the base
+   `clamp(180px, 22vh, 290px)` resolves to, so the hand-off is seamless in both
+   directions and no viewport sees a jump. The 130px floor is still above the
+   landscape's own honest minimum from the 820px band's derivation (107px at 1600
+   wide) and above the motto plate's ~105px, so it spends neither.
+
+   Deliberately width-scoped: 1440x900 and 1600x900 keep the verified 198px footer,
+   and 1920x1080 / 2560x1440 stay outside the band entirely.
+   --------------------------------------------------------------------------- */
+@media (min-width: 1720px) and (max-height: 1000px) {
+  :root {
+    --foot-h: clamp(130px, calc(62vh - 400px), 220px);
+  }
+
+  .title__rule {
+    margin-top: 6px;
+  }
+
+  .tagline,
+  .contact {
+    margin-top: 7px;
+  }
+
+  .cards {
+    margin-top: 9px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   11. Boot sequence
+
+   The page powers up in reading order, the way a console would: badge, then
+   telemetry, motto, the masthead glyphs, the title rule, the tagline, the card
+   strip, the contact row, and finally the readout panels.
+
+   §7.6 already asked for this ("stagger element entrances with a `--d` custom
+   property and `animation-delay: var(--d, 0s)`") and Stage 1 only ever wired the
+   badge and the masthead glyphs. Everything else appeared instantly, so the page
+   had no boot at all — the owner noticed the reference's tagline flickering in
+   and asked for the effect. The reference's own cadence was measured, not
+   guessed: telemetry 200ms, motto 350ms, tagline 700ms, title rule 900ms, cards
+   950ms + 70ms per item, contact 1450ms, panels 1500/1600ms.
+
+   `both` fill mode is load-bearing: it holds the from-state (opacity 0) during
+   the delay, which is what makes a stagger visible instead of a flash of
+   pre-rendered content.
+
+   Reduced motion needs nothing here. base.css forces
+   `animation-duration: 1ms !important` and `animation-delay: 0s !important` on
+   every element, so each one lands on its final keyframe immediately.
+
+   The card delays are literal per-index values rather than `calc(var(--d) + …)`
+   because `--d` is inherited: an override set anywhere above the list would
+   collapse all six cards onto one delay and destroy the stagger.
+   --------------------------------------------------------------------------- */
+.telemetry {
+  animation: boot-flicker 0.9s linear both;
+  animation-delay: var(--d, 0.2s);
+}
+
+.motto {
+  animation: boot-flicker 0.9s linear both;
+  animation-delay: var(--d, 0.35s);
+}
+
+.tagline {
+  animation: boot-flicker 0.9s linear both;
+  animation-delay: var(--d, 0.7s);
+}
+
+.title__rule {
+  animation: boot-up 0.8s var(--ease-out) both;
+  animation-delay: var(--d, 0.9s);
+}
+
+.cards__list > li {
+  animation: boot-up 0.8s var(--ease-out) both;
+  animation-delay: 0.95s;
+}
+
+.cards__list > li:nth-child(2) {
+  animation-delay: 1.02s;
+}
+
+.cards__list > li:nth-child(3) {
+  animation-delay: 1.09s;
+}
+
+.cards__list > li:nth-child(4) {
+  animation-delay: 1.16s;
+}
+
+.cards__list > li:nth-child(5) {
+  animation-delay: 1.23s;
+}
+
+.cards__list > li:nth-child(6) {
+  animation-delay: 1.3s;
+}
+
+.contact {
+  animation: boot-up 0.8s var(--ease-out) both;
+  animation-delay: var(--d, 1.45s);
+}

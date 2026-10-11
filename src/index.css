@@ -1,97 +1,54 @@
+/* Mission Control CV — style entry point.
+
+   Tailwind stays in the pipeline only for the untouched shadcn layer that still
+   compiles (src/components/ui/**). The Mission Control CV system itself is plain
+   CSS with custom properties: see the six imports below.
+
+   IMPORT ORDER IS LOAD-BEARING (measured, not assumed): Vite resolves CSS
+   @import with postcss-import, which refuses to inline an @import that follows
+   any other statement — it emits
+   "@import must precede all other statements (besides @charset or empty @layer)"
+   and the imported file never reaches the bundle (the whole design system would
+   silently ship as Tailwind output only). So the six imports come first and the
+   Tailwind directives follow them.
+
+   Cascade consequence of that order: preflight lands AFTER our reset. Every
+   Mission Control rule is a class selector with an explicit border color, so it
+   wins over preflight's element-level resets; the only overlapped utility is
+   `.sr-only`, whose two definitions are equivalent.
+
+   Stage note: `artwork.css` (MC-07) and `panels.css` (MC-08 / MC-09) have both
+   landed; Stage-2 (`/cv`) reuses this same import list. */
+@import "./styles/tokens.css";
+@import "./styles/base.css";
+@import "./styles/motion.css";
+@import "./styles/landing.css";
+@import "./styles/artwork.css";
+@import "./styles/panels.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
+/* ---------------------------------------------------------------------------
+   Minimal shadcn compatibility tokens.
+   The old dark HSL blocks (navy canvas, cyan/green gradients, Inter) were
+   removed with the redesign; the values below only keep the untouched shadcn
+   primitives (Toaster, Sonner, TooltipProvider) sitting on the new paper canvas.
+   Tailwind hoists this @layer base block to the @tailwind base position, so it
+   lands after src/styles/base.css.
+   --------------------------------------------------------------------------- */
 @layer base {
   :root {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
-
-    --card: 217 33% 17%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 217 33% 17%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 189 92% 55%;
-    --primary-foreground: 222 47% 11%;
-
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
-
-    --accent: 142 76% 36%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217 33% 25%;
-    --input: 217 33% 25%;
-    --ring: 189 92% 55%;
-
-    --radius: 0.75rem;
-
-    /* Custom tokens for CV design */
-    --gradient-primary: linear-gradient(135deg, hsl(189 92% 55% / 0.2), hsl(142 76% 36% / 0.2));
-    --gradient-hero: linear-gradient(to bottom right, hsl(222 47% 11%), hsl(217 33% 17%));
-    --shadow-glow: 0 0 40px hsl(189 92% 55% / 0.3);
-    --shadow-card: 0 10px 30px hsl(0 0% 0% / 0.3);
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    
-    --sidebar-background: 217 33% 17%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 189 92% 55%;
-    --sidebar-primary-foreground: 222 47% 11%;
-    --sidebar-accent: 217 33% 25%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217 33% 25%;
-    --sidebar-ring: 189 92% 55%;
+    --radius: 0;
   }
 
-  .dark {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
-    --card: 217 33% 17%;
-    --card-foreground: 210 40% 98%;
-    --popover: 217 33% 17%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 189 92% 55%;
-    --primary-foreground: 222 47% 11%;
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 142 76% 36%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 25%;
-    --input: 217 33% 25%;
-    --ring: 189 92% 55%;
-    --sidebar-background: 217 33% 17%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 189 92% 55%;
-    --sidebar-primary-foreground: 222 47% 11%;
-    --sidebar-accent: 217 33% 25%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217 33% 25%;
-    --sidebar-ring: 189 92% 55%;
-  }
-}
-
-@layer base {
   * {
-    @apply border-border;
+    border-color: var(--rule);
   }
 
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--paper);
+    color: var(--ink);
   }
 }
